@@ -1,0 +1,35 @@
+{
+  "id": "html",
+  "title": "HTML",
+  "levels": [
+    {
+      "level": 0,
+      "title": "Absolute Basics",
+      "lessons": [
+        {
+          "id": "html-l0-1",
+          "title": "What is the Web?",
+          "theory": "The World Wide Web is a system of interconnected documents accessed via the Internet. Think of it as a giant library where every book is connected to others by hyperlinks.",
+          "example_code": "<!-- A simple webpage -->\n<!DOCTYPE html>\n<html>\n<head>\n  <title>My First Page</title>\n</head>\n<body>\n  <h1>Hello, Web!</h1>\n</body>\n</html>",
+          "try_it": "Create an HTML file with your name as a heading and save it.",
+          "quiz_questions": [
+            {
+              "question": "What does HTML stand for?",
+              "options": ["Hyper Text Markup Language", "High Tech Modern Language", "Hyper Transfer Module Language"],
+              "correctAnswer": 0,
+              "explanation": "HTML stands for Hyper Text Markup Language — it's the standard language for creating web pages."
+            }
+          ]
+        },
+        {
+          "id": "html-l0-2",
+          "title": "What is HTML?",
+          "theory": "HTML is the backbone of every website. It provides structure and meaning to content. Think of HTML as the skeleton of a body — it gives shape but doesn't add color or movement.",
+          "example_code": "<h1>Heading 1</h1>\n<h2>Heading 2</h2>\n<h3>Heading 3</h3>\n<p>This is a paragraph.</p>",
+          "try_it": "Create a page with all six heading levels and a paragraph.",
+          "quiz_questions": []
+        }
+      ]
+    }
+  ]
+}
