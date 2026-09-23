@@ -1,0 +1,138 @@
+{
+  "html": {
+    "levels": [
+      {
+        "levelIndex": 0,
+        "title": { "en": "Introduction", "ru": "Введение", "uz": "Kirish" },
+        "description": { "en": "Get to know the web and HTML.", "ru": "Познакомьтесь с вебом и HTML.", "uz": "Veb va HTML ni o'rganing." },
+        "lessons": [
+          { "slug": "what-is-the-web", "title": { "en": "What is the Web?", "ru": "Что такое Веб?", "uz": "Veb nima?" }, "orderIndex": 0, "difficulty": "beginner", "estimatedTime": "5 min" },
+          { "slug": "what-is-html", "title": { "en": "What is HTML?", "ru": "Что такое HTML?", "uz": "HTML nima?" }, "orderIndex": 1, "difficulty": "beginner", "estimatedTime": "5 min" }
+        ]
+      },
+      {
+        "levelIndex": 1,
+        "title": { "en": "HTML Basics", "ru": "Основы HTML", "uz": "HTML Asoslari" },
+        "description": { "en": "Learn fundamental HTML tags.", "ru": "Изучите основные HTML-теги.", "uz": "HTML asosiy teglarini o'rganing." },
+        "lessons": [
+          { "slug": "html-structure", "title": { "en": "HTML Structure and Tags", "ru": "Структура HTML и теги", "uz": "HTML Tuzilma va Teglar" }, "orderIndex": 0, "difficulty": "beginner", "estimatedTime": "10 min" },
+          { "slug": "text-formatting", "title": { "en": "Text Formatting", "ru": "Форматирование текста", "uz": "Matn Formatlash" }, "orderIndex": 1, "difficulty": "beginner", "estimatedTime": "10 min" }
+        ]
+      },
+      {
+        "levelIndex": 2,
+        "title": { "en": "Text and Links", "ru": "Текст и Ссылки", "uz": "Matn va Havolalar" },
+        "description": { "en": "Format text and create hyperlinks.", "ru": "Форматируйте текст и создавайте гиперссылки.", "uz": "Matnni formatlash va havolalar yaratish." },
+        "lessons": [
+          { "slug": "links", "title": { "en": "Links and Hyperlinks", "ru": "Ссылки и Гиперссылки", "uz": "Havolalar" }, "orderIndex": 0, "difficulty": "beginner", "estimatedTime": "10 min" },
+          { "slug": "images", "title": { "en": "Images", "ru": "Изображения", "uz": "Rasmlar" }, "orderIndex": 1, "difficulty": "beginner", "estimatedTime": "10 min" }
+        ]
+      },
+      {
+        "levelIndex": 3,
+        "title": { "en": "Images and Media", "ru": "Изображения и Медиа", "uz": "Rasmlar va Media" },
+        "description": { "en": "Add images, audio, and video.", "ru": "Добавьте изображения, аудио и видео.", "uz": "Rasmlar, audio va qo'shishingni qo'shing." },
+        "lessons": [
+          { "slug": "media", "title": { "en": "Media Elements", "ru": "Медиа-элементы", "uz": "Media Elementlar" }, "orderIndex": 0, "difficulty": "beginner", "estimatedTime": "10 min" },
+          { "slug": "audio-video", "title": { "en": "Audio and Video", "ru": "Аудио и Видео", "uz": "Audio va Video" }, "orderIndex": 1, "difficulty": "beginner", "estimatedTime": "10 min" }
+        ]
+      },
+      {
+        "levelIndex": 4,
+        "title": { "en": "Lists and Tables", "ru": "Списки и Таблицы", "uz": "Royxatlar va Jadvallar" },
+        "description": { "en": "Organize data with lists and tables.", "ru": "Организируйте данные со списками и таблицами.", "uz": "Royxatlar va jadvallar bilan ma'lumotlarni tashkil qiling." },
+        "lessons": [
+          { "slug": "lists", "title": { "en": "Lists", "ru": "Списки", "uz": "Royxatlar" }, "orderIndex": 0, "difficulty": "beginner", "estimatedTime": "10 min" },
+          { "slug": "tables", "title": { "en": "Tables", "ru": "Таблицы", "uz": "Jadvallar" }, "orderIndex": 1, "difficulty": "beginner", "estimatedTime": "10 min" }
+        ]
+      },
+      {
+        "levelIndex": 5,
+        "title": { "en": "Forms", "ru": "Формы", "uz": "Formalar" },
+        "description": { "en": "Collect user input with forms.", "ru": "Собирайте ввод пользователей с помощью форм.", "uz": "Foydalanuvchi kiritishini to'plash uchun formalar." },
+        "lessons": [
+          { "slug": "form-elements", "title": { "en": "Form Elements", "ru": "Элементы форм", "uz": "Forma Elementlari" }, "orderIndex": 0, "difficulty": "beginner", "estimatedTime": "10 min" },
+          { "slug": "form-validation", "title": { "en": "Form Validation", "ru": "Валидация форм", "uz": "Forma Tekshirish" }, "orderIndex": 1, "difficulty": "beginner", "estimatedTime": "10 min" }
+        ]
+      },
+      {
+        "levelIndex": 6,
+        "title": { "en": "Semantic HTML", "ru": "Семантический HTML", "uz": "Semantik HTML" },
+        "description": { "en": "Write meaningful, accessible markup.", "ru": "Напишите осмысленную, доступную разметку.", "uz": "Ma'noni anglatuvchi, kirish imkoniyati bo'lgan yozuv." },
+        "lessons": [
+          { "slug": "semantic-tags", "title": { "en": "Semantic Tags", "ru": "Семантические теги", "uz": "Semantik Teglar" }, "orderIndex": 0, "difficulty": "beginner", "estimatedTime": "10 min" }
+        ]
+      },
+      {
+        "levelIndex": 7,
+        "title": { "en": "Accessibility", "ru": "Доступность", "uz": "Qulaylik" },
+        "description": { "en": "Make the web usable for everyone.", "ru": "Сделайте веб доступным для всех.", "uz": "Vebni har bir uchun foydalanuvchi qilish." },
+        "lessons": [
+          { "slug": "a11y-basics", "title": { "en": "Accessibility Basics", "ru": "Основы доступности", "uz": "Qulaylik Asoslari" }, "orderIndex": 0, "difficulty": "beginner", "estimatedTime": "10 min" }
+        ]
+      },
+      {
+        "levelIndex": 8,
+        "title": { "en": "Mini Projects", "ru": "Мини Проекты", "uz": "Kichik Loyihalar" },
+        "description": { "en": "Apply what you have learned.", "ru": "Примените то, что вы узнали.", "uz": "O'rgansingiz narsalarni qo'llang." },
+        "lessons": [
+          { "slug": "personal-page", "title": { "en": "Personal Page", "ru": "Личная Страница", "uz": "Shaxsiy Sahifa" }, "orderIndex": 0, "difficulty": "beginner", "estimatedTime": "15 min" }
+        ]
+      },
+      {
+        "levelIndex": 9,
+        "title": { "en": "Final Project", "ru": "Финальный Проект", "uz": "Oxirgi Loyiha" },
+        "description": { "en": "Build a complete website.", "ru": "Постройте полный веб-сайт.", "uz": "To'liq veb-sayt qurishing." },
+        "lessons": [
+          { "slug": "final-website", "title": { "en": "Build Your Website", "ru": "Постройте Ваш Веб-Сайт", "uz": "Veb-Saytingizni Quring" }, "orderIndex": 0, "difficulty": "beginner", "estimatedTime": "30 min" }
+        ]
+      }
+    ]
+  },
+  "css": {
+    "levels": [
+      { "levelIndex": 0, "title": { "en": "Introduction", "ru": "Введение", "uz": "Kirish" }, "description": { "en": "Get to know CSS.", "ru": "Познакомьтесь с CSS.", "uz": "CSS ni o'rganing." }, "lessons": [{ "slug": "what-is-css", "title": { "en": "What is CSS?", "ru": "Что такое CSS?", "uz": "CSS nima?" }, "orderIndex": 0 }] },
+      { "levelIndex": 1, "title": { "en": "Selectors and Properties", "ru": "Селекторы и Свойства", "uz": "Selectorlar va Xususiyatlar" }, "description": { "en": "Target elements and style them.", "ru": "Выберите элементы и стилизуйте их.", "uz": "Elementlarni tanlang va ularni bezang." }, "lessons": [{ "slug": "selectors", "title": { "en": "Selectors", "ru": "Селекторы", "uz": "Selectorlar" }, "orderIndex": 0 }] },
+      { "levelIndex": 2, "title": { "en": "Box Model", "ru": "Модель Блока", "uz": "Blok Modeli" }, "description": { "en": "Understand spacing and sizing.", "ru": "Поймите отступы и размеры.", "uz": "Oraliqlar va o'lchamni tushuning." }, "lessons": [{ "slug": "box-model", "title": { "en": "Box Model", "ru": "Модель Блока", "uz": "Blok Modeli" }, "orderIndex": 0 }] },
+      { "levelIndex": 3, "title": { "en": "Flexbox", "ru": "Flexbox", "uz": "Flexboks" }, "description": { "en": "Master flexible layouts.", "ru": "Освойте гибкие макеты.", "uz": "Elastik maketlarni bosing." }, "lessons": [{ "slug": "flexbox", "title": { "en": "Flexbox", "ru": "Flexbox", "uz": "Flexboks" }, "orderIndex": 0 }] },
+      { "levelIndex": 4, "title": { "en": "Grid", "ru": "Сетка", "uz": "Grid" }, "description": { "en": "Create complex 2D layouts.", "ru": "Создайте сложные двумерные макеты.", "uz": "Murakkab 2D maketlar yaratish." }, "lessons": [{ "slug": "grid", "title": { "en": "Grid Layout", "ru": "Сетка Макет", "uz": "Grid Maket" }, "orderIndex": 0 }] },
+      { "levelIndex": 5, "title": { "en": "Responsive Design", "ru": "Адаптивный Дизайн", "uz": "Adaptiv Dizayn" }, "description": { "en": "Build for all screen sizes.", "ru": "Стройте для всех размеров экрана.", "uz": "Barcha ekran o'lchamlari uchun qurish." }, "lessons": [{ "slug": "responsive", "title": { "en": "Responsive Design", "ru": "Адаптивный Дизайн", "uz": "Adaptiv Dizayn" }, "orderIndex": 0 }] },
+      { "levelIndex": 6, "title": { "en": "Animations", "ru": "Анимации", "uz": "Animatsiyalar" }, "description": { "en": "Add motion and transitions.", "ru": "Добавьте движение и переходы.", "uz": "Harakat va o'tishlarni qo'shing." }, "lessons": [{ "slug": "animations", "title": { "en": "Animations", "ru": "Анимации", "uz": "Animatsiyalar" }, "orderIndex": 0 }] },
+      { "levelIndex": 7, "title": { "en": "CSS Variables", "ru": "CSS Переменные", "uz": "CSS O'zgaruvchilar" }, "description": { "en": "Write maintainable styles.", "ru": "Пишите поддерживаемые стили.", "uz": "Saqlanadigan uslublar yozing." }, "lessons": [{ "slug": "variables", "title": { "en": "CSS Variables", "ru": "CSS Переменные", "uz": "CSS O'zgaruvchilar" }, "orderIndex": 0 }] },
+      { "levelIndex": 8, "title": { "en": "Mini Projects", "ru": "Мини Проекты", "uz": "Kichik Loyihalar" }, "description": { "en": "Apply what you have learned.", "ru": "Примените то, что вы узнали.", "uz": "O'rgansingiz narsalarni qo'llang." }, "lessons": [{ "slug": "portfolio", "title": { "en": "Portfolio Page", "ru": "Страница Портфолио", "uz": "Portfey Sahifa" }, "orderIndex": 0 }] },
+      { "levelIndex": 9, "title": { "en": "Final Project", "ru": "Финальный Проект", "uz": "Oxirgi Loyiha" }, "description": { "en": "Build a styled portfolio.", "ru": "Постройте оформленное портфолио.", "uz": "Bezatilgan portfey qurishing." }, "lessons": [{ "slug": "final-portfolio", "title": { "en": "Build Portfolio", "ru": "Постройте Портфолио", "uz": "Portfey Quring" }, "orderIndex": 0 }] }
+    ]
+  },
+  "javascript": {
+    "levels": [
+      { "levelIndex": 0, "title": { "en": "Introduction", "ru": "Введение", "uz": "Kirish" }, "description": { "en": "Get to know JavaScript.", "ru": "Познакомьтесь с JavaScript.", "uz": "JavaScript ni o'rganing." }, "lessons": [{ "slug": "what-is-js", "title": { "en": "What is JavaScript?", "ru": "Что такое JavaScript?", "uz": "JavaScript nima?" }, "orderIndex": 0 }] },
+      { "levelIndex": 1, "title": { "en": "Variables and Data Types", "ru": "Переменные и Типы Данных", "uz": "O'zgaruvchilar va Ma'lumot Turlari" }, "description": { "en": "Store and manipulate data.", "ru": "Храните и обрабатывайте данные.", "uz": "Ma'lumotlarni saqlang va boshqaring." }, "lessons": [{ "slug": "variables", "title": { "en": "Variables", "ru": "Переменные", "uz": "O'zgaruvchilar" }, "orderIndex": 0 }] },
+      { "levelIndex": 2, "title": { "en": "Operators", "ru": "Операторы", "uz": "Operatorlar" }, "description": { "en": "Perform calculations and comparisons.", "ru": "Выполняйте вычисления и сравнения.", "uz": "Hisoblashlar va taqqoslashlar." }, "lessons": [{ "slug": "operators", "title": { "en": "Operators", "ru": "Операторы", "uz": "Operatorlar" }, "orderIndex": 0 }] },
+      { "levelIndex": 3, "title": { "en": "Conditions", "ru": "Условия", "uz": "Shartlar" }, "description": { "en": "Make decisions in your code.", "ru": "Принимайте решения в коде.", "uz": "Kodda qaror qabul qiling." }, "lessons": [{ "slug": "conditions", "title": { "en": "Conditions", "ru": "Условия", "uz": "Shartlar" }, "orderIndex": 0 }] },
+      { "levelIndex": 4, "title": { "en": "Loops", "ru": "Циклы", "uz": "Loop'lar" }, "description": { "en": "Repeat actions efficiently.", "ru": "Повторяйте действия эффективно.", "uz": "Amallarni samarali takrorlang." }, "lessons": [{ "slug": "loops", "title": { "en": "Loops", "ru": "Циклы", "uz": "Loop'lar" }, "orderIndex": 0 }] },
+      { "levelIndex": 5, "title": { "en": "Functions", "ru": "Функции", "uz": "Funktsiyalar" }, "description": { "en": "Write reusable code blocks.", "ru": "Пишите переиспользуемые блоки кода.", "uz": "Qayta ishlatiladigan kod bloklari yozing." }, "lessons": [{ "slug": "functions", "title": { "en": "Functions", "ru": "Функции", "uz": "Funktsiyalar" }, "orderIndex": 0 }] },
+      { "levelIndex": 6, "title": { "en": "Arrays and Objects", "ru": "Массивы и Объекты", "uz": "Massivlar va Objektlar" }, "description": { "en": "Work with collections of data.", "ru": "Работайте с коллекциями данных.", "uz": "Ma'lumotlar to'plamlari bilan ishlang." }, "lessons": [{ "slug": "arrays", "title": { "en": "Arrays", "ru": "Массивы", "uz": "Massivlar" }, "orderIndex": 0 }] },
+      { "levelIndex": 7, "title": { "en": "DOM Manipulation", "ru": "Манипуляция DOM", "uz": "DOM Boshqaruvi" }, "description": { "en": "Interact with the web page.", "ru": "Взаимодействуйте с веб-страницей.", "uz": "Veb sahifaga o'zaro ta'sir qiling." }, "lessons": [{ "slug": "dom", "title": { "en": "DOM Manipulation", "ru": "Манипуляция DOM", "uz": "DOM Boshqaruvi" }, "orderIndex": 0 }] },
+      { "levelIndex": 8, "title": { "en": "Events", "ru": "События", "uz": "Voqealar" }, "description": { "en": "Respond to user actions.", "ru": "Реагируйте на действия пользователя.", "uz": "Foydalanuvchi harakatlariga javob bering." }, "lessons": [{ "slug": "events", "title": { "en": "Events", "ru": "События", "uz": "Voqealar" }, "orderIndex": 0 }] },
+      { "levelIndex": 9, "title": { "en": "ES6+ Features", "ru": "Возможности ES6+", "uz": "ES6+ Xususiyatlar" }, "description": { "en": "Use modern JavaScript.", "ru": "Используйте современный JavaScript.", "uz": "Zamonaviy JavaScript istibqolng." }, "lessons": [{ "slug": "es6", "title": { "en": "ES6+", "ru": "ES6+", "uz": "ES6+" }, "orderIndex": 0 }] },
+      { "levelIndex": 10, "title": { "en": "Async Programming", "ru": "Асинхронное Программирование", "uz": "Asinxron Dasturlash" }, "description": { "en": "Handle asynchronous operations.", "ru": "Обрабатывайте асинхронные операции.", "uz": "Asinxron operatsiyalarni bosing." }, "lessons": [{ "slug": "async", "title": { "en": "Async/Await", "ru": "Async/Await", "uz": "Async/Await" }, "orderIndex": 0 }] },
+      { "levelIndex": 11, "title": { "en": "Final Project", "ru": "Финальный Проект", "uz": "Oxirgi Loyiha" }, "description": { "en": "Build an interactive website.", "ru": "Постройте интерактивный веб-сайт.", "uz": "Interaktiv veb-sayt qurishing." }, "lessons": [{ "slug": "final-project", "title": { "en": "Build Interactive Site", "ru": "Постройте Интерактивный Сайт", "uz": "Interaktiv Sayt Quring" }, "orderIndex": 0 }] }
+    ]
+  },
+  "python": {
+    "levels": [
+      { "levelIndex": 0, "title": { "en": "Introduction", "ru": "Введение", "uz": "Kirish" }, "description": { "en": "Get to know Python.", "ru": "Познакомьтесь с Python.", "uz": "Python ni o'rganing." }, "lessons": [{ "slug": "what-is-python", "title": { "en": "What is Python?", "ru": "Что такое Python?", "uz": "Python nima?" }, "orderIndex": 0 }] },
+      { "levelIndex": 1, "title": { "en": "Variables and Data Types", "ru": "Переменные и Типы Данных", "uz": "O'zgaruvchilar va Ma'lumot Turlari" }, "description": { "en": "Store and manipulate data.", "ru": "Храните и обрабатывайте данные.", "uz": "Ma'lumotlarni saqlang va boshqaring." }, "lessons": [{ "slug": "python-variables", "title": { "en": "Variables", "ru": "Переменные", "uz": "O'zgaruvchilar" }, "orderIndex": 0 }] },
+      { "levelIndex": 2, "title": { "en": "Operators", "ru": "Операторы", "uz": "Operatorlar" }, "description": { "en": "Perform calculations and comparisons.", "ru": "Выполняйте вычисления и сравнения.", "uz": "Hisoblashlar va taqqoslashlar." }, "lessons": [{ "slug": "python-operators", "title": { "en": "Operators", "ru": "Операторы", "uz": "Operatorlar" }, "orderIndex": 0 }] },
+      { "levelIndex": 3, "title": { "en": "Conditionals", "ru": "Условия", "uz": "Shartlar" }, "description": { "en": "Make decisions in your code.", "ru": "Принимайте решения в коде.", "uz": "Kodda qaror qabul qiling." }, "lessons": [{ "slug": "conditionals", "title": { "en": "Conditionals", "ru": "Условия", "uz": "Shartlar" }, "orderIndex": 0 }] },
+      { "levelIndex": 4, "title": { "en": "Loops", "ru": "Циклы", "uz": "Loop'lar" }, "description": { "en": "Repeat actions efficiently.", "ru": "Повторяйте действия эффективно.", "uz": "Amallarni samarali takrorlang." }, "lessons": [{ "slug": "loops", "title": { "en": "Loops", "ru": "Циклы", "uz": "Loop'lar" }, "orderIndex": 0 }] },
+      { "levelIndex": 5, "title": { "en": "Functions", "ru": "Функции", "uz": "Funktsiyalar" }, "description": { "en": "Write reusable code blocks.", "ru": "Пишите переиспользуемые блоки кода.", "uz": "Qayta ishlatiladigan kod bloklari yozing." }, "lessons": [{ "slug": "functions", "title": { "en": "Functions", "ru": "Функции", "uz": "Funktsiyalar" }, "orderIndex": 0 }] },
+      { "levelIndex": 6, "title": { "en": "Lists and Tuples", "ru": "Списки и Кортежи", "uz": "Royxatlar va Kortejlars" }, "description": { "en": "Work with ordered collections.", "ru": "Работайте с упорядоченными коллекциями.", "uz": "Tartiblangan to'plamlar bilan ishlang." }, "lessons": [{ "slug": "lists", "title": { "en": "Lists and Tuples", "ru": "Списки и Кортежи", "uz": "Royxatlar va Kortejlars" }, "orderIndex": 0 }] },
+      { "levelIndex": 7, "title": { "en": "Dictionaries and Sets", "ru": "Словари и Множества", "uz": "Luftmalar va To'plamlar" }, "description": { "en": "Work with key-value pairs.", "ru": "Работайте с парами ключ-значение.", "uz": "Kalit-qiymat juftlari bilan ishlang." }, "lessons": [{ "slug": "dictionaries", "title": { "en": "Dictionaries", "ru": "Словари", "uz": "Luftmalar" }, "orderIndex": 0 }] },
+      { "levelIndex": 8, "title": { "en": "File Handling", "ru": "Работа с Файлами", "uz": "Fayllar bilan Ishlash" }, "description": { "en": "Read and write files.", "ru": "Читайте и записывайте файлы.", "uz": "Fayllarni o'qing va yozing." }, "lessons": [{ "slug": "files", "title": { "en": "File Handling", "ru": "Работа с Файлами", "uz": "Fayllar bilan Ishlash" }, "orderIndex": 0 }] },
+      { "levelIndex": 9, "title": { "en": "OOP Basics", "ru": "Основы ООП", "uz": "OOAs Asoslari" }, "description": { "en": "Object-oriented programming.", "ru": "Объектно-ориентированное программирование.", "uz": "Ob'ekt-uchun dasturlash." }, "lessons": [{ "slug": "oop", "title": { "en": "OOP Basics", "ru": "Основы ООП", "uz": "OOAs Asoslari" }, "orderIndex": 0 }] },
+      { "levelIndex": 10, "title": { "en": "Libraries", "ru": "Библиотеки", "uz": "Kitobxonalar" }, "description": { "en": "Use powerful Python packages.", "ru": "Используйте мощные пакеты Python.", "uz": "Kuchli Python paketlarini istibqolng." }, "lessons": [{ "slug": "libraries", "title": { "en": "Libraries", "ru": "Библиотеки", "uz": "Kitobxonalar" }, "orderIndex": 0 }] },
+      { "levelIndex": 11, "title": { "en": "Final Project", "ru": "Финальный Проект", "uz": "Oxirgi Loyiha" }, "description": { "en": "Build a complete application.", "ru": "Постройте полное приложение.", "uz": "To'liq ilova qurishing." }, "lessons": [{ "slug": "final-project", "title": { "en": "Build Calculator App", "ru": "Постройте Калькулятор", "uz": "Kalkulyator Ilova Quring" }, "orderIndex": 0 }] }
+    ]
+  }
+}
