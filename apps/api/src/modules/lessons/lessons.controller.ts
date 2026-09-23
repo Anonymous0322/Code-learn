@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, UseGuards, Req } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
+import { PrismaService } from '../../prisma/prisma.service';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
 import { z } from 'zod';
 
 const CompleteLessonSchema = z.object({
@@ -21,10 +21,10 @@ export class LessonsController {
 
     if (!course) return { success: false, data: null, message: 'Course not found', timestamp: new Date().toISOString() };
 
-    const level = course.levels.find((l) => l.lessons.some((ls) => ls.slug === lessonSlug));
+    const level = course.levels.find((l: any) => l.lessons.some((ls: any) => ls.slug === lessonSlug));
     if (!level) return { success: false, data: null, message: 'Lesson not found', timestamp: new Date().toISOString() };
 
-    const lesson = level.lessons.find((ls) => ls.slug === lessonSlug);
+    const lesson = level.lessons.find((ls: any) => ls.slug === lessonSlug);
     if (!lesson) return { success: false, data: null, message: 'Lesson not found', timestamp: new Date().toISOString() };
 
     const translations = await this.prisma.lessonTranslation.findMany({
@@ -37,8 +37,7 @@ export class LessonsController {
   }
 
   private buildContent(lesson: any, translations: any[]) {
-    const enTranslation = translations.find((t) => t.language === 'en') || translations[0];
-    const translation = translations.find((t) => t.language === 'en') || null;
+    const translation = translations.find((t: any) => t.language === 'en') || translations[0];
 
     return {
       title: translation?.title || lesson.title,
@@ -56,9 +55,9 @@ export class LessonsController {
 
   @Post('progress/complete-lesson')
   @UseGuards(JwtAuthGuard)
-  async completeLesson(@Body(ZodValidationPipe(CompleteLessonSchema)) body: z.infer<typeof CompleteLessonSchema>, @Req() req: any) {
+  async completeLesson(@Body(new ZodValidationPipe(CompleteLessonSchema)) body: z.infer<typeof CompleteLessonSchema>, @Req() req: { user?: { sub: string } }) {
     const { lessonId } = body;
-    const userId = req.user.sub;
+    const userId = req.user?.sub || 'unknown';
 
     const progress = await this.prisma.userProgress.upsert({
       where: {

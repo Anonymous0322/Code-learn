@@ -1,7 +1,7 @@
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, Logger } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -21,16 +21,8 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  const config = new DocumentBuilder()
-    .setTitle('CodeLearn API')
-    .setDescription('Programming Learning Platform API')
-    .setVersion('1.0')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
-
-  await app.listen(3001);
-  logger.log('CodeLearn API server running on port 3001');
+  await app.listen(process.env.PORT || 3001);
+  logger.log(`CodeLearn API server running on port ${process.env.PORT || 3001}`);
 }
 
 bootstrap();

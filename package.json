@@ -15,9 +15,9 @@
     "lint:web": "cd apps/web && npm run lint",
     "lint:api": "cd apps/api && npm run lint",
     "typecheck": "npm run typecheck:web && npm run typecheck:api",
-    "db:migrate": "npx prisma migrate dev",
+    "db:migrate": "cd apps/api && npx prisma migrate dev",
     "db:seed": "tsx scripts/seed.ts",
-    "test": "echo \"Tests passed\""
+    "db:generate": "cd apps/api && npx prisma generate"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",

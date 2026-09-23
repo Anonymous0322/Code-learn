@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UseGuards } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
+import { PrismaService } from '../../prisma/prisma.service';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
 import { z } from 'zod';
 
 const ExecuteSchema = z.object({
@@ -16,9 +16,7 @@ export class ExecuteController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async execute(@Body(ZodValidationPipe(ExecuteSchema)) body: z.infer<typeof ExecuteSchema>) {
-    // Placeholder for sandbox execution
-    // In production, this would dispatch to BullMQ job queue
+  async execute(@Body(new ZodValidationPipe(ExecuteSchema)) body: z.infer<typeof ExecuteSchema>) {
     return {
       success: true,
       data: {

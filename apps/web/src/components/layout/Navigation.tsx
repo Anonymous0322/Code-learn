@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useContext } from 'react';
-import { ThemeContext } from './providers';
+import { ThemeContext } from '../providers';
 import clsx from 'clsx';
 
 export function Navigation() {

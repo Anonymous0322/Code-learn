@@ -1,6 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
+import { PrismaService } from '../../prisma/prisma.service';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
 import { z } from 'zod';
 
 const RegisterSchema = z.object({
@@ -19,7 +19,7 @@ export class AuthController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Post('register')
-  async register(@Body(ZodValidationPipe(RegisterSchema)) body: z.infer<typeof RegisterSchema>) {
+  async register(@Body(new ZodValidationPipe(RegisterSchema)) body: z.infer<typeof RegisterSchema>) {
     const { email, password, name } = body;
 
     const existing = await this.prisma.user.findUnique({ where: { email } });
@@ -31,7 +31,7 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body(ZodValidationPipe(LoginSchema)) body: z.infer<typeof LoginSchema>) {
+  async login(@Body(new ZodValidationPipe(LoginSchema)) body: z.infer<typeof LoginSchema>) {
     const { email, password } = body;
 
     const user = await this.prisma.user.findUnique({ where: { email } });

@@ -2,13 +2,17 @@ import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
+interface RequestWithUser extends Request {
+  user?: { sub: string };
+}
+
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(private readonly jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<Request>();
-    const authHeader = request.headers.authorization;
+    const request = context.switchToHttp().getRequest<RequestWithUser>();
+    const authHeader = request.headers.authorization as string | undefined;
 
     if (!authHeader?.startsWith('Bearer ')) {
       throw new UnauthorizedException('No token provided');

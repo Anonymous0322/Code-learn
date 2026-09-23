@@ -1,7 +1,7 @@
-import { Controller, Get, Param, Query, UseGuards, Req } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
 import { z } from 'zod';
 
 const GetCoursesQuerySchema = z.object({
@@ -15,11 +15,11 @@ export class CoursesController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get()
-  async findAll(@Query(ZodValidationPipe(GetCoursesQuerySchema)) query: z.infer<typeof GetCoursesQuerySchema>) {
-    const { page = '1', search, language } = query;
+  async findAll(@Query(new ZodValidationPipe(GetCoursesQuerySchema)) query: z.infer<typeof GetCoursesQuerySchema>) {
+    const { page = '1', search, language } = query as { page?: string; search?: string; language?: string };
     const skip = (parseInt(page) - 1) * 20;
 
-    const where: any = { isActive: true };
+    const where: Record<string, unknown> = { isActive: true };
     if (language) where.languageCode = language;
     if (search) where.slug = { contains: search, mode: 'insensitive' };
 
@@ -71,21 +71,21 @@ export class CoursesController {
 
     if (!course) return { success: false, data: null, message: 'Course not found', timestamp: new Date().toISOString() };
 
-    const roadmap = course.levels.map((level) => ({
+    const roadmap = course.levels.map((level: any) => ({
       levelIndex: level.levelIndex,
       title: level.title,
       description: level.description,
-      lessons: level.lessons.map((lesson) => ({
+      lessons: level.lessons.map((lesson: any) => ({
         id: lesson.id,
         slug: lesson.slug,
-        title: lesson.translations[0]?.title || lesson.title || 'Untitled',
+        title: lesson.translations && lesson.translations[0] ? lesson.translations[0].title : (lesson as any).title || 'Untitled',
         orderIndex: lesson.orderIndex,
         estimatedTime: lesson.estimatedTime,
         isLocked: lesson.isLocked,
       })),
     }));
 
-    return { success: true, data: { course: course.title, roadmap }, message: 'Roadmap retrieved', timestamp: new Date().toISOString() };
+    return { success: true, data: { course: (course as any).title, roadmap }, message: 'Roadmap retrieved', timestamp: new Date().toISOString() };
   }
 
   @Get(':slug/levels')
