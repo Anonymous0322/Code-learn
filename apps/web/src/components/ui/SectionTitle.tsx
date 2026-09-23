@@ -1,7 +1,3 @@
-import { ReactNode } from 'react';
-import { motion } from 'framer-motion';
-import clsx from 'clsx';
-
 interface SectionTitleProps {
   title: string;
   subtitle?: string;

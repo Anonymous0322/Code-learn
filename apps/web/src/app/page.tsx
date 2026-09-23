@@ -3,18 +3,12 @@ import { HeroSection } from '@/components/page/HeroSection';
 import { LanguageCards } from '@/components/page/LanguageCards';
 import { StatsSection } from '@/components/page/StatsSection';
 import { FeatureSection } from '@/components/page/FeatureSection';
+import { courses } from '@/lib/data';
 
 export const metadata: Metadata = {
   title: 'CodeLearn — Learn Programming',
   description: 'Master programming from zero to hero. Interactive lessons, real-time code practice, and progress tracking.',
 };
-
-const languages = [
-  { label: 'HTML', desc: 'Structure the Web', icon: '🌐' },
-  { label: 'CSS', desc: 'Style the Web', icon: '🎨' },
-  { label: 'JavaScript', desc: 'Make it Alive', icon: '⚡' },
-  { label: 'Python', desc: 'General Purpose', icon: '🐍' },
-];
 
 const features = [
   { icon: '🎓', title: 'Interactive Lessons', description: 'Learn with step-by-step explanations and code examples.' },
@@ -43,7 +37,7 @@ export default function HomePage() {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-text-primary mb-12 text-center gradient-text">Choose Your Language</h2>
-          <LanguageCards languages={languages} />
+          <LanguageCards languages={courses.map(c => ({ label: c.title, desc: c.description, icon: c.languageCode === 'html' ? '🌐' : c.languageCode === 'css' ? '🎨' : c.languageCode === 'javascript' ? '⚡' : '🐍' }))} />
         </div>
       </section>
 

@@ -1,5 +1,3 @@
-import { ReactNode } from 'react';
-
 interface LanguageCardsProps {
   languages: { label: string; desc: string; icon: string }[];
 }

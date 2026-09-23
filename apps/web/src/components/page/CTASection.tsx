@@ -1,6 +1,3 @@
-import { ReactNode } from 'react';
-import { motion } from 'framer-motion';
-
 interface CTASectionProps {
   title: string;
   description: string;

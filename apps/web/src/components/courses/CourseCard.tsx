@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import clsx from 'clsx';
-import { Course } from '@/types/course';
+import { Course } from '@/types';
 
 interface CourseCardProps {
   course: Course;
@@ -19,19 +17,14 @@ export function CourseCard({ course }: CourseCardProps) {
     advanced: 'bg-neon-pink/20 text-neon-pink',
   };
 
+  const baseClasses = 'bg-glass border border-border-subtle rounded-xl overflow-hidden backdrop-blur-sm hover:border-neon-blue/30 transition-all duration-300 cursor-pointer';
+  const hoverClasses = isHovered ? ' shadow-lg shadow-neon-blue/10' : '';
+
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 300 }}
+    <div
+      className={baseClasses + hoverClasses}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={clsx(
-        'bg-glass border border-border-subtle rounded-xl overflow-hidden backdrop-blur-sm',
-        'hover:border-neon-blue/30 transition-all duration-300 cursor-pointer',
-        isHovered && 'shadow-lg shadow-neon-blue/10',
-      )}
     >
       <Link href={`/courses/${course.slug}`}>
         <div className="p-6">
@@ -42,7 +35,7 @@ export function CourseCard({ course }: CourseCardProps) {
               {course.languageCode === 'javascript' && '⚡'}
               {course.languageCode === 'python' && '🐍'}
             </div>
-            <span className={clsx('px-3 py-1 rounded-full text-xs font-medium', difficultyColors[course.difficulty as keyof typeof difficultyColors] || difficultyColors.beginner)}>
+            <span className={`px-3 py-1 rounded-full text-xs font-medium ${difficultyColors[course.difficulty as keyof typeof difficultyColors] || difficultyColors.beginner}`}>
               {course.difficulty}
             </span>
           </div>
@@ -56,6 +49,6 @@ export function CourseCard({ course }: CourseCardProps) {
           </div>
         </div>
       </Link>
-    </motion.div>
+    </div>
   );
 }

@@ -19,7 +19,7 @@ export function LoginForm() {
     resolver: zodResolver(LoginSchema),
   });
 
-  const onSubmit = async (data: LoginForm) => {
+  const onSubmit = async (_data: LoginForm) => {
     setLoading(true);
     // API call would go here
     setLoading(false);

@@ -20,7 +20,7 @@ export function RegisterForm() {
     resolver: zodResolver(RegisterSchema),
   });
 
-  const onSubmit = async (data: RegisterForm) => {
+  const onSubmit = async (_data: RegisterForm) => {
     setLoading(true);
     // API call would go here
     setLoading(false);

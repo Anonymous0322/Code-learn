@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import clsx from 'clsx';
 import Link from 'next/link';
-import { Lesson } from '@/types/lesson';
-import { Course } from '@/types/course';
+import { Lesson } from '@/types';
+import { Course } from '@/types';
+import { courses } from '@/lib/data';
 
 interface LessonPageProps {
   lesson: Lesson;
@@ -15,49 +15,49 @@ interface LessonPageProps {
 export function LessonPage({ lesson, course }: LessonPageProps) {
   const [activeTab, setActiveTab] = useState<'theory' | 'code' | 'summary'>('theory');
 
-  const navigation = [
-    { slug: 'what-is-the-web', title: 'What is the Web?' },
-    { slug: 'what-is-html', title: 'What is HTML?' },
-    { slug: 'html-structure', title: 'HTML Structure and Tags' },
-    { slug: 'text-formatting', title: 'Text Formatting' },
-  ];
+  const courseData = courses.find(c => c.slug === course.slug);
+  const levels = courseData?.levels || [];
+
+  const navigation = levels.flatMap((level: any) =>
+    (level.lessons || []).map((l: any) => ({
+      slug: l.slug,
+      title: l.title,
+    }))
+  );
+
+  const isActive = (slug: string) => slug === lesson.slug;
 
   return (
     <div className="animate-fade-in">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: Lesson Navigation */}
         <div className="lg:col-span-1">
           <div className="bg-glass border border-border-subtle rounded-xl p-4 backdrop-blur-sm">
             <h3 className="font-semibold text-text-primary mb-4">Course Path</h3>
             <nav className="space-y-1">
-              {navigation.map((lesson, idx) => {
-                const isActive = lesson.slug === lesson.slug;
-                return (
-                  <Link
-                    key={lesson.slug}
-                    href={`/learn/${course.slug}/${lesson.slug}`}
-                    className={clsx(
-                      'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200',
-                      isActive
-                        ? 'bg-neon-blue/10 text-neon-blue border border-neon-blue/20'
-                        : 'text-text-secondary hover:text-text-primary hover:bg-glass',
-                    )}
-                  >
-                    <span className={clsx(
-                      'w-6 h-6 rounded-full flex items-center justify-center text-xs',
-                      isActive ? 'bg-neon-blue text-white' : 'bg-bg-secondary text-text-muted border border-border-subtle',
-                    )}>
-                      {idx + 1}
-                    </span>
-                    {lesson.title}
-                  </Link>
-                );
-              })}
+              {navigation.map((nav, idx) => (
+                <Link
+                  key={nav.slug}
+                  href={`/learn/${course.slug}/${nav.slug}`}
+                  className={clsx(
+                    'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200',
+                    isActive(nav.slug)
+                      ? 'bg-neon-blue/10 text-neon-blue border border-neon-blue/20'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-glass',
+                  )}
+                >
+                  <span className={clsx(
+                    'w-6 h-6 rounded-full flex items-center justify-center text-xs',
+                    isActive(nav.slug) ? 'bg-neon-blue text-white' : 'bg-bg-secondary text-text-muted border border-border-subtle',
+                  )}>
+                    {idx + 1}
+                  </span>
+                  {nav.title}
+                </Link>
+              ))}
             </nav>
           </div>
         </div>
 
-        {/* Center: Lesson Content */}
         <div className="lg:col-span-2">
           <div className="bg-glass border border-border-subtle rounded-xl p-6 backdrop-blur-sm">
             <div className="flex items-center gap-3 mb-6">
@@ -69,7 +69,6 @@ export function LessonPage({ lesson, course }: LessonPageProps) {
 
             <h1 className="text-2xl font-bold text-text-primary mb-6">{lesson.title}</h1>
 
-            {/* Tab Navigation */}
             <div className="flex gap-1 mb-6 border-b border-border-subtle">
               {(['theory', 'code', 'summary'] as const).map((tab) => (
                 <button
@@ -87,10 +86,9 @@ export function LessonPage({ lesson, course }: LessonPageProps) {
               ))}
             </div>
 
-            {/* Tab Content */}
             <div className="min-h-[300px]">
               {activeTab === 'theory' && (
-                <div className="prose prose-invert max-w-none">
+                <div>
                   <p className="text-text-secondary leading-relaxed">
                     {lesson.theory || 'Theory content coming soon. This lesson covers the fundamental concepts you need to understand.'}
                   </p>
@@ -132,7 +130,6 @@ export function LessonPage({ lesson, course }: LessonPageProps) {
               )}
             </div>
 
-            {/* Navigation Buttons */}
             <div className="flex justify-between mt-8 pt-6 border-t border-border-subtle">
               <button className="px-6 py-3 rounded-xl border border-border-subtle text-text-secondary hover:border-neon-blue/30 hover:text-neon-blue transition-all">
                 ← Previous Lesson
@@ -144,7 +141,6 @@ export function LessonPage({ lesson, course }: LessonPageProps) {
           </div>
         </div>
 
-        {/* Right: Quick Info */}
         <div className="lg:col-span-1">
           <div className="space-y-4">
             <div className="bg-glass border border-border-subtle rounded-xl p-4 backdrop-blur-sm">
@@ -163,7 +159,7 @@ export function LessonPage({ lesson, course }: LessonPageProps) {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-text-muted">Difficulty</span>
-                  <span className="text-text-primary">Beginner</span>
+                  <span className="text-text-primary">{lesson.difficulty}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-text-muted">Time</span>

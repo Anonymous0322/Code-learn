@@ -31,6 +31,15 @@ export interface Lesson {
   isLocked: boolean;
   title?: string;
   level?: any;
+  theory?: string;
+  exampleCode?: string;
+  exampleExplanation?: string;
+  tryIt?: string;
+  commonMistakes?: string;
+  tips?: string;
+  summary?: string;
+  syntax?: string;
+  content?: Record<string, string> | null;
 }
 
 export interface LessonTranslation {
