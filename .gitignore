@@ -3,8 +3,9 @@ node_modules/
 dist/
 build/
 *.md
-!.README.md
-!.CODELEARN_FULL_PLAN.md
+!README.md
+!CODELEARN_FULL_PLAN.md
+!docs/**/*.md
 .env
 .env.local
 .env.*.local
