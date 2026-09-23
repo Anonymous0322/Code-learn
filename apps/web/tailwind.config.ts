@@ -2,6 +2,7 @@
 module.exports = {
   content: [
     './src/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -36,25 +37,6 @@ module.exports = {
         lg: '16px',
         xl: '24px',
         full: '9999px',
-      },
-      animation: {
-        'shimmer': 'shimmer 1.5s infinite linear',
-        'fade-in': 'fadeIn 300ms ease-in-out',
-        'slide-up': 'slideUp 400ms ease-out',
-      },
-      keyframes: {
-        shimmer: {
-          '0%': { backgroundPosition: '-200% 0' },
-          '100%': { backgroundPosition: '200% 0' },
-        },
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        slideUp: {
-          '0%': { opacity: '0', transform: 'translateY(20px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
       },
     },
   },

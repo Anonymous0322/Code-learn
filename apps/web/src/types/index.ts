@@ -8,17 +8,8 @@ export interface Course {
   orderIndex: number;
   isActive: boolean;
   createdAt: string;
-  updatedAt: string;
-  translations?: CourseTranslation[];
-  levels?: Level[];
-}
-
-export interface CourseTranslation {
-  id: string;
-  courseId: string;
-  language: string;
-  title: string;
-  description: string | null;
+  title?: string;
+  levels?: any[];
 }
 
 export interface Level {
@@ -38,7 +29,8 @@ export interface Lesson {
   difficulty: string;
   estimatedTime: string | null;
   isLocked: boolean;
-  translations?: LessonTranslation[];
+  title?: string;
+  level?: any;
 }
 
 export interface LessonTranslation {
@@ -46,7 +38,6 @@ export interface LessonTranslation {
   lessonId: string;
   language: string;
   title: string;
-  content: Record<string, string> | null;
   theory: string | null;
   exampleCode: string | null;
   exampleExplanation: string | null;
@@ -55,6 +46,7 @@ export interface LessonTranslation {
   tips: string | null;
   summary: string | null;
   syntax: string | null;
+  content: Record<string, string> | null;
 }
 
 export interface UserProgress {

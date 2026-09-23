@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getLesson } from '@/lib/api/lessons';
-import { getCourseBySlug } from '@/lib/api/courses';
+import { getLesson } from '@/lib/api/client';
+import { getCourseBySlug } from '@/lib/api/client';
 import { LessonPage } from '@/components/lesson/LessonPage';
 
 interface PageProps {
@@ -13,11 +13,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!lesson) return { title: 'Lesson Not Found' };
   return {
     title: `${lesson.title} — CodeLearn`,
-    description: lesson.theory?.substring(0, 160) || `Learn ${lesson.title}.`,
   };
 }
 
-export default async function LessonPage({ params }: PageProps) {
+export default async function LessonDetailPage({ params }: PageProps) {
   const lesson = await getLesson(params.courseSlug, params.lessonSlug);
   if (!lesson) notFound();
 
