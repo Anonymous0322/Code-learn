@@ -1,4 +1,16 @@
+'use client';
+
+import { usePathname } from 'next/navigation';
+import { useI18n } from '@/components/providers';
+
 export function Footer() {
+  const pathname = usePathname();
+  const { t } = useI18n();
+
+  if (pathname?.startsWith('/auth') || pathname?.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <footer className="border-t border-border-subtle bg-bg-secondary/50 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -11,12 +23,12 @@ export function Footer() {
               <span className="text-lg font-bold text-text-primary">CodeLearn</span>
             </div>
             <p className="text-sm text-text-secondary">
-              Master programming from absolute zero. Interactive lessons, real-time code practice.
+              {t('heroText')}
             </p>
           </div>
 
           <div>
-            <h4 className="font-semibold text-text-primary mb-4">Courses</h4>
+            <h4 className="font-semibold text-text-primary mb-4">{t('courses')}</h4>
             <ul className="space-y-2">
               {['HTML', 'CSS', 'JavaScript', 'Python'].map((course) => (
                 <li key={course}>
@@ -29,16 +41,16 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-text-primary mb-4">Resources</h4>
+            <h4 className="font-semibold text-text-primary mb-4">{t('footerResources')}</h4>
             <ul className="space-y-2">
-              <li><a href="/about" className="text-sm text-text-secondary hover:text-neon-blue transition-colors">About</a></li>
+              <li><a href="/about" className="text-sm text-text-secondary hover:text-neon-blue transition-colors">{t('about')}</a></li>
               <li><a href="/faq" className="text-sm text-text-secondary hover:text-neon-blue transition-colors">FAQ</a></li>
-              <li><a href="/contact" className="text-sm text-text-secondary hover:text-neon-blue transition-colors">Contact</a></li>
+              <li><a href="/contact" className="text-sm text-text-secondary hover:text-neon-blue transition-colors">{t('footerContact')}</a></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-semibold text-text-primary mb-4">Connect</h4>
+            <h4 className="font-semibold text-text-primary mb-4">{t('footerConnect')}</h4>
             <div className="flex gap-3">
               {[
                 { label: 'GitHub', icon: 'G' },
@@ -62,7 +74,7 @@ export function Footer() {
             © {new Date().getFullYear()} CodeLearn. All rights reserved.
           </p>
           <div className="flex gap-4">
-            {['Privacy', 'Terms', 'Sitemap'].map((link) => (
+            {[t('footerPrivacy'), t('footerTerms'), t('footerSitemap')].map((link) => (
               <a key={link} href="#" className="text-sm text-text-muted hover:text-text-secondary transition-colors">
                 {link}
               </a>
