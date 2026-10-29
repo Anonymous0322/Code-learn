@@ -20,10 +20,12 @@ type RegisterFormValues = z.infer<typeof RegisterSchema>;
 export function RegisterForm() {
   const router = useRouter();
   const { t } = useI18n();
-  const { register: registerUser } = useAuthStore();
+  const { register: registerUser, resendConfirmation } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [confirmationEmail, setConfirmationEmail] = useState<string | null>(null);
 
   const localizedSchema = RegisterSchema.extend({
     name: z.string().min(2, t('nameMin')),
@@ -38,6 +40,7 @@ export function RegisterForm() {
     setLoading(true);
     setErrorMsg(null);
     setSuccessMsg(null);
+    setConfirmationEmail(null);
 
     const res = await registerUser(data.name, data.email, data.password);
     setLoading(false);
@@ -52,9 +55,23 @@ export function RegisterForm() {
         }
       } else {
         setSuccessMsg(res.message || 'Hisob yaratildi. Emailingizni tasdiqlang.');
+        setConfirmationEmail(data.email);
       }
     } else {
       setErrorMsg(res.message || 'Ro\'yxatdan o\'tishda xatolik yuz berdi');
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!confirmationEmail) return;
+    setResending(true);
+    setErrorMsg(null);
+    const result = await resendConfirmation(confirmationEmail);
+    setResending(false);
+    if (result.success) {
+      setSuccessMsg(result.message);
+    } else {
+      setErrorMsg(result.message);
     }
   };
 
@@ -72,6 +89,16 @@ export function RegisterForm() {
           <div className="mb-4 p-3 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs text-center font-medium">
             {successMsg}
           </div>
+        )}
+        {confirmationEmail && (
+          <button
+            type="button"
+            onClick={handleResendConfirmation}
+            disabled={resending}
+            className="mb-4 w-full text-center text-xs text-neon-cyan hover:text-white disabled:opacity-50"
+          >
+            {resending ? 'Xat yuborilmoqda...' : 'Tasdiqlash xatini qayta yuborish'}
+          </button>
         )}
 
 

@@ -5,9 +5,9 @@ The web app is deployed from `apps/web`. Supabase stores authentication, course 
 ## 1. Create and configure Supabase
 
 1. Create a Supabase project and save its database password somewhere secure.
-2. In **SQL Editor**, run the migration files in `supabase/migrations` in chronological order. For an existing database, run only migrations that have not already been applied; do not rerun the initial schema migration. If you have already applied earlier migrations, run `20261029000200_allow_creator_demotion.sql` to let a creator assign any role and change existing creators to another role in the app.
+2. In **SQL Editor**, run the migration files in `supabase/migrations` in chronological order. For an existing database, run only migrations that have not already been applied; do not rerun the initial schema migration. These migrations create the app's tables, including `public.profiles`, and create profiles for Auth users who registered earlier.
 3. In **Project Settings → API**, copy the project URL and the publishable/anon key. The browser uses only these public values; never use a `service_role` key in the app or Vercel client environment.
-4. In **Authentication → URL Configuration**, set the site URL to the Vercel production URL and add the production and local development URLs to the redirect URL allow-list.
+4. In **Authentication → URL Configuration**, set the site URL to your production URL. Add `http://localhost:3000/**` to the redirect URL allow-list for local development and add your production domain (for example, `https://your-domain.example/**`). Confirmation emails return to the same origin where the user registered, so the app must be running there when the link is opened.
 5. Register your account and confirm its email if confirmation is enabled. In **Authentication → Users**, copy your account's UUID (Auth UID). In the SQL Editor, verify it is your account and promote its profile:
 
    ```sql
@@ -43,7 +43,17 @@ npm ci
 npm run dev
 ```
 
-The first sign-up may require email confirmation depending on the Supabase Auth settings.
+Keep the development server running while opening a local confirmation link. If a link has expired, return to registration and use **Tasdiqlash xatini qayta yuborish**. If login reports that `public.profiles` is missing from the schema cache, check the table in Supabase SQL Editor:
+
+```sql
+select to_regclass('public.profiles') as profiles_table;
+```
+
+If the result is `null`, apply the pending migrations under `supabase/migrations` in chronological order. If the table exists, refresh the Supabase API schema cache:
+
+```sql
+notify pgrst, 'reload schema';
+```
 
 ## 3. Deploy with GitHub and Vercel
 

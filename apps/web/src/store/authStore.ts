@@ -36,6 +36,7 @@ interface AuthState {
   fetchUsers: () => Promise<void>;
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   register: (name: string, email: string, password: string) => Promise<{ success: boolean; message?: string }>;
+  resendConfirmation: (email: string) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<void>;
   updateUserRole: (targetUserId: string, newRole: UserRole) => Promise<{ success: boolean; message: string }>;
   toggleUserStatus: (targetUserId: string) => Promise<{ success: boolean; message: string }>;
@@ -67,6 +68,10 @@ function authError(error: unknown, fallback: string) {
   if (code === 'weak_password') return 'Parol juda oddiy. Kamida 6 ta belgi kiriting.';
   if (code === 'email_address_invalid') return 'Email formati noto‘g‘ri.';
   const message = (error as { message?: string })?.message;
+  const lowerMessage = message?.toLowerCase() ?? '';
+  if (code === 'PGRST205' || (lowerMessage.includes('public.profiles') && lowerMessage.includes('schema cache'))) {
+    return 'Supabase’da public.profiles jadvali topilmadi. SQL Editor’da barcha migratsiyalarni ishga tushiring; jadval mavjud bo‘lsa, API sxema keshini yangilang.';
+  }
   return message ? `${fallback} ${message}` : fallback;
 }
 
@@ -166,7 +171,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { data, error } = await getSupabase().auth.signUp({
         email,
         password: passwordInput,
-        options: { data: { name } },
+        options: {
+          data: { name },
+          emailRedirectTo: window.location.origin,
+        },
       });
       if (error) throw error;
       if (!data.user) throw new Error('Supabase hisob yaratmadi.');
@@ -180,6 +188,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (error) {
       set({ loading: false });
       return { success: false, message: authError(error, 'Ro‘yxatdan o‘tishda xatolik yuz berdi.') };
+    }
+  },
+
+  resendConfirmation: async emailInput => {
+    try {
+      const { error } = await getSupabase().auth.resend({
+        type: 'signup',
+        email: emailInput.trim().toLowerCase(),
+        options: { emailRedirectTo: window.location.origin },
+      });
+      if (error) throw error;
+      return { success: true, message: 'Tasdiqlash xati emailingizga qayta yuborildi.' };
+    } catch (error) {
+      return { success: false, message: authError(error, 'Tasdiqlash xatini yuborib bo‘lmadi.') };
     }
   },
 

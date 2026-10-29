@@ -19,21 +19,24 @@ type LoginFormValues = z.infer<typeof LoginSchema>;
 export function LoginForm() {
   const router = useRouter();
   const { t } = useI18n();
-  const { login } = useAuthStore();
+  const { login, resendConfirmation } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [confirmationMsg, setConfirmationMsg] = useState<string | null>(null);
 
   const localizedSchema = LoginSchema.extend({
     email: z.string().email(t('invalidEmail')),
     password: z.string().min(6, t('passwordMin')),
   });
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
+  const { register, handleSubmit, getValues, formState: { errors } } = useForm<LoginFormValues>({
     resolver: zodResolver(localizedSchema),
   });
 
   const onSubmit = async (data: LoginFormValues) => {
     setLoading(true);
     setErrorMsg(null);
+    setConfirmationMsg(null);
 
     const res = await login(data.email, data.password);
     setLoading(false);
@@ -50,6 +53,25 @@ export function LoginForm() {
     }
   };
 
+  const handleResendConfirmation = async () => {
+    const email = getValues('email').trim();
+    if (!email) {
+      setErrorMsg(t('invalidEmail'));
+      return;
+    }
+
+    setResending(true);
+    setErrorMsg(null);
+    setConfirmationMsg(null);
+    const result = await resendConfirmation(email);
+    setResending(false);
+    if (result.success) {
+      setConfirmationMsg(result.message);
+    } else {
+      setErrorMsg(result.message);
+    }
+  };
+
   return (
     <div className="max-w-md mx-auto">
       <div className="bg-glass border border-border-subtle rounded-xl p-8 backdrop-blur-sm shadow-xl">
@@ -58,6 +80,11 @@ export function LoginForm() {
         {errorMsg && (
           <div className="mb-4 p-3 rounded-lg bg-red-500/15 border border-red-500/30 text-red-300 text-xs text-center font-medium">
             {errorMsg}
+          </div>
+        )}
+        {confirmationMsg && (
+          <div className="mb-4 p-3 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs text-center font-medium">
+            {confirmationMsg}
           </div>
         )}
 
@@ -90,6 +117,14 @@ export function LoginForm() {
             {loading ? t('submittingLogin') : t('submitLogin')}
           </Button>
         </form>
+        <button
+          type="button"
+          onClick={handleResendConfirmation}
+          disabled={resending}
+          className="mt-4 w-full text-center text-xs text-neon-cyan hover:text-white disabled:opacity-50"
+        >
+          {resending ? 'Xat yuborilmoqda...' : 'Tasdiqlash xatini qayta yuborish'}
+        </button>
       </div>
     </div>
   );
