@@ -1,21 +1,19 @@
-import { Metadata } from 'next';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Login — CodeLearn',
-  description: 'Sign in to your CodeLearn account.',
-};
+import Link from 'next/link';
+import { LoginForm } from '@/components/auth/LoginForm';
+import { useI18n } from '@/components/providers';
 
 export default function LoginPage() {
+  const { t } = useI18n();
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-bg-primary">
-      <div className="w-full max-w-md px-4">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">
-            CL
-          </div>
-          <h1 className="text-2xl font-bold text-text-primary">Welcome Back</h1>
-          <p className="text-text-secondary">Sign in to continue your learning journey.</p>
-        </div>
+    <div className="relative flex min-h-[calc(100vh-68px)] items-center justify-center overflow-hidden px-4 py-16">
+      <div className="premium-grid pointer-events-none absolute inset-0 opacity-40" />
+      <div className="relative z-10 w-full max-w-md">
+        <div className="mb-8 text-center"><Link href="/" className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-neon-cyan/40 bg-neon-blue/15 font-mono text-sm font-bold text-neon-cyan">&lt;/&gt;</Link><h1 className="font-[Space_Grotesk] text-3xl font-semibold text-white">{t('loginTitle')}</h1><p className="mt-2 text-sm text-slate-400">{t('loginSubtitle')}</p></div>
+        <LoginForm />
+        <p className="mt-6 text-center text-sm text-slate-500">{t('loginNew')} <Link href="/auth/register" className="text-neon-cyan hover:text-white">{t('loginCreate')}</Link></p>
       </div>
     </div>
   );

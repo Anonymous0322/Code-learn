@@ -9,6 +9,7 @@ export interface Course {
   isActive: boolean;
   createdAt: string;
   title?: string;
+  translations?: Partial<Record<'en' | 'ru' | 'uz', { title?: string; description?: string }>>;
   levels?: any[];
 }
 
@@ -32,6 +33,15 @@ export interface Lesson {
   title?: string;
   level?: any;
   theory?: string;
+  description?: string;
+  videoUrl?: string;
+  editorLanguage?: 'html' | 'css' | 'javascript';
+  starterCode?: string;
+  quiz?: { id: string; question: string; options: string[]; correctIndex: number; explanation?: string }[];
+  exercise?: {
+    instructions: string;
+    checks: { id: string; label: string; selector: string; type: 'element' | 'text' | 'style'; expected?: string; property?: string }[];
+  } | null;
   exampleCode?: string;
   exampleExplanation?: string;
   tryIt?: string;

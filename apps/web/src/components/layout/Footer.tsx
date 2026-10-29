@@ -7,7 +7,7 @@ export function Footer() {
   const pathname = usePathname();
   const { t } = useI18n();
 
-  if (pathname?.startsWith('/auth') || pathname?.startsWith('/admin')) {
+  if (pathname?.startsWith('/auth') || pathname?.startsWith('/admin') || pathname?.startsWith('/learn/')) {
     return null;
   }
 
@@ -71,7 +71,7 @@ export function Footer() {
 
         <div className="border-t border-border-subtle pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-text-muted">
-            © {new Date().getFullYear()} CodeLearn. All rights reserved.
+            © {new Date().getFullYear()} CodeLearn. {t('allRightsReserved')}
           </p>
           <div className="flex gap-4">
             {[t('footerPrivacy'), t('footerTerms'), t('footerSitemap')].map((link) => (

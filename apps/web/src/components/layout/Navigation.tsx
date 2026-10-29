@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import { useI18n, Language } from '@/components/providers';
+import { useAuthStore } from '@/store/authStore';
 
 // ===== SVG FLAGS =====
 function FlagEN({ size = 'sm' }: { size?: 'sm'|'md' }) {
@@ -193,6 +194,9 @@ export function Navigation() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { t } = useI18n();
+  const currentUser = useAuthStore(state => state.currentUser);
+  const logout = useAuthStore(state => state.logout);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const isActive = (p: string) => pathname === p;
 
@@ -209,7 +213,7 @@ export function Navigation() {
 
           {/* Desktop nav links */}
           <div className="hidden items-center gap-1 md:flex">
-            {['/', '/courses', '/roadmap', '/about'].map(path => (
+            {['/', '/courses', '/roadmap', '/projects', '/challenge', '/achievements', '/about'].map(path => (
               <Link
                 key={path}
                 href={path}
@@ -218,7 +222,7 @@ export function Navigation() {
                   isActive(path) ? 'bg-[#3b82f6]/10 text-[#3b82f6]' : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 )}
               >
-                {path === '/' ? t('home') : path === '/courses' ? t('courses') : path === '/roadmap' ? t('roadmap') : t('about')}
+                {path === '/' ? t('home') : path === '/courses' ? t('courses') : path === '/roadmap' ? t('roadmap') : path === '/projects' ? 'Loyihalar' : path === '/challenge' ? 'Kunlik mashq' : path === '/achievements' ? 'Yutuqlar' : t('about')}
               </Link>
             ))}
           </div>
@@ -227,8 +231,28 @@ export function Navigation() {
           <div className="hidden items-center gap-3 sm:flex">
             <LangDropdown />
             <span className="h-4 w-px bg-white/10"/>
-            <Link href="/auth/login" className="rounded-lg border border-white/10 px-3 py-2 text-xs font-semibold text-slate-300 hover:border-[#19d4ff]/40 hover:text-white transition-colors">{t('login')}</Link>
-            <Link href="/auth/register" className="rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] px-3 py-2 text-xs font-bold text-white shadow-lg shadow-[#3b82f6]/20">{t('signup')}</Link>
+            {currentUser ? (
+              <div className="relative">
+                <button onClick={() => setProfileOpen(open => !open)} aria-expanded={profileOpen} aria-label="Open profile menu" className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] py-1.5 pl-1.5 pr-3 text-left hover:border-[#19d4ff]/40">
+                  <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] text-xs font-bold text-white">
+                    {currentUser.avatar ? <img src={currentUser.avatar} alt="" className="h-full w-full object-cover" /> : currentUser.name.trim().charAt(0).toUpperCase()}
+                  </span>
+                  <span className="max-w-28 truncate text-xs font-semibold text-slate-200">{currentUser.name}</span>
+                  <svg className={clsx('h-3 w-3 text-slate-400 transition-transform', profileOpen && 'rotate-180')} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                {profileOpen && <div className="absolute right-0 top-full z-50 mt-2 w-52 rounded-xl border border-white/10 bg-[#090e1f] p-1.5 shadow-xl">
+                  <div className="border-b border-white/10 px-3 py-2"><p className="truncate text-sm font-semibold text-white">{currentUser.name}</p><p className="truncate text-xs text-slate-400">{currentUser.email}</p></div>
+                  <Link href="/profile" onClick={() => setProfileOpen(false)} className="mt-1 block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.07]">{t('profile')}</Link>
+                  <Link href="/study-plan" onClick={() => setProfileOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.07]">Haftalik reja</Link>
+                  <Link href="/portfolio" onClick={() => setProfileOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.07]">Mening portfolioim</Link>
+                  {(currentUser.role === 'admin' || currentUser.role === 'creator') && <Link href="/admin" onClick={() => setProfileOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.07]">{t('adminPanel')}</Link>}
+                  <button onClick={() => { setProfileOpen(false); void logout(); }} className="w-full rounded-lg px-3 py-2 text-left text-sm text-red-300 hover:bg-red-500/10">{t('signOut')}</button>
+                </div>}
+              </div>
+            ) : <>
+              <Link href="/auth/login" className="rounded-lg border border-white/10 px-3 py-2 text-xs font-semibold text-slate-300 hover:border-[#19d4ff]/40 hover:text-white transition-colors">{t('login')}</Link>
+              <Link href="/auth/register" className="rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] px-3 py-2 text-xs font-bold text-white shadow-lg shadow-[#3b82f6]/20">{t('signup')}</Link>
+            </>}
           </div>
 
           {/* Mobile: lang + burger */}
@@ -252,7 +276,7 @@ export function Navigation() {
         {mobileOpen && (
           <div className="animate-fade-in border-t border-white/10 py-4 md:hidden">
             <div className="grid gap-1 mb-4">
-              {[['/', t('home')], ['/courses', t('courses')], ['/roadmap', t('roadmap')], ['/about', t('about')]].map(([href, label]) => (
+              {[[ '/', t('home')], ['/courses', t('courses')], ['/roadmap', t('roadmap')], ['/projects', 'Loyihalar'], ['/challenge', 'Kunlik mashq'], ['/achievements', 'Yutuqlar'], ['/about', t('about')]].map(([href, label]) => (
                 <Link
                   key={href}
                   href={href}
@@ -269,10 +293,16 @@ export function Navigation() {
 
             <div className="border-t border-white/10 pt-4 px-1">
               <LangPills onClose={() => setMobileOpen(false)} />
-              <div className="mt-4 grid grid-cols-2 gap-2 border-t border-white/10 pt-4">
+              {currentUser ? <div className="mt-4 grid gap-2 border-t border-white/10 pt-4">
+                <Link href="/profile" onClick={() => setMobileOpen(false)} className="rounded-lg border border-white/10 px-4 py-3 text-sm font-semibold text-white">{currentUser.name} · {t('profile')}</Link>
+                <Link href="/study-plan" onClick={() => setMobileOpen(false)} className="rounded-lg px-4 py-2 text-sm text-slate-300">Haftalik reja</Link>
+                <Link href="/portfolio" onClick={() => setMobileOpen(false)} className="rounded-lg px-4 py-2 text-sm text-slate-300">Mening portfolioim</Link>
+                {(currentUser.role === 'admin' || currentUser.role === 'creator') && <Link href="/admin" onClick={() => setMobileOpen(false)} className="rounded-lg px-4 py-2 text-sm text-slate-300">{t('adminPanel')}</Link>}
+                <button onClick={() => { setMobileOpen(false); void logout(); }} className="rounded-lg px-4 py-2 text-left text-sm text-red-300">{t('signOut')}</button>
+              </div> : <div className="mt-4 grid grid-cols-2 gap-2 border-t border-white/10 pt-4">
                 <Link href="/auth/login" onClick={() => setMobileOpen(false)} className="flex items-center justify-center rounded-lg border border-white/10 py-2.5 text-xs font-semibold text-slate-300 hover:border-white/30 hover:text-white transition-colors">{t('login')}</Link>
                 <Link href="/auth/register" onClick={() => setMobileOpen(false)} className="flex items-center justify-center rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] py-2.5 text-xs font-bold text-white shadow-md">{t('signup')}</Link>
-              </div>
+              </div>}
             </div>
           </div>
         )}

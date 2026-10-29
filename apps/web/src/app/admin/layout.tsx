@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -10,14 +10,14 @@ import { useCourseStore } from '@/store/courseStore';
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { currentUser, initialized, initialize, loginAs, logout } = useAuthStore();
+  const { currentUser, initialized, logout } = useAuthStore();
   const { initialize: initCourses } = useCourseStore();
+  const courseSyncError = useCourseStore(state => state.syncError);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    initialize();
-    initCourses();
-  }, [initialize, initCourses]);
+    if (initialized && currentUser) void initCourses();
+  }, [initialized, currentUser, initCourses]);
 
   if (!initialized) {
     return (
@@ -40,44 +40,19 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </div>
           <h2 className="text-2xl font-bold text-white mb-2">Admin Panelga Kirish</h2>
           <p className="text-sm text-slate-400 mb-6">
-            Admin panelni boshqarish uchun avval tizimga Administrator yoki Creator sifatida kiring.
+            Admin panelni boshqarish uchun avval tizimga Administrator yoki Creator hisobi orqali kiring.
           </p>
 
-          <div className="space-y-3 mb-6">
-            <p className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Tezkor sinov uchun tanlang:</p>
-            <button
-              onClick={() => loginAs('creator')}
-              className="w-full flex items-center justify-between p-3 rounded-xl bg-purple-500/15 border border-purple-500/30 hover:bg-purple-500/25 text-white transition-all text-sm font-medium"
-            >
-              <div className="flex items-center gap-2">
-                <span>👑</span>
-                <span>Bosh Admin (Creator)</span>
-              </div>
-              <span className="text-[10px] bg-purple-500/30 text-purple-200 px-2 py-0.5 rounded font-mono">Barcha huquqlar</span>
-            </button>
-
-            <button
-              onClick={() => loginAs('admin')}
-              className="w-full flex items-center justify-between p-3 rounded-xl bg-blue-500/15 border border-blue-500/30 hover:bg-blue-500/25 text-white transition-all text-sm font-medium"
-            >
-              <div className="flex items-center gap-2">
-                <span>🛡️</span>
-                <span>Admin Nazoratchi</span>
-              </div>
-              <span className="text-[10px] bg-blue-500/30 text-blue-200 px-2 py-0.5 rounded font-mono">Admin</span>
-            </button>
-          </div>
-
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3">
             <Link
               href="/auth/login"
-              className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple text-white text-xs font-bold shadow-lg shadow-neon-blue/20"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple text-white text-xs font-bold shadow-lg shadow-neon-blue/20 text-center"
             >
-              Login sahifasiga o'tish
+              Login orqali kirish
             </Link>
             <Link
               href="/"
-              className="flex-1 py-2.5 rounded-xl border border-white/10 hover:border-white/20 text-slate-300 text-xs font-medium"
+              className="w-full py-2.5 rounded-xl border border-white/10 hover:border-white/20 text-slate-300 text-xs font-medium text-center"
             >
               Bosh sahifa
             </Link>
@@ -107,21 +82,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             Admin panel faqat <strong className="text-purple-300">Creator (Bosh admin)</strong> va <strong className="text-blue-300">Admin</strong> larga ochiladi.
           </p>
 
-          <div className="p-3 mb-6 rounded-xl bg-white/[0.03] border border-white/10 text-left">
-            <p className="text-xs text-slate-400 mb-2 font-semibold">Tezkor test: rolni almashtirish:</p>
-            <button
-              onClick={() => loginAs('creator')}
-              className="w-full py-2 px-3 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/40 text-purple-200 text-xs font-semibold flex items-center justify-between"
-            >
-              <span>👑 Bosh Admin (Creator) sifatida kirish</span>
-              <span>→</span>
-            </button>
-          </div>
-
           <div className="flex gap-3">
             <Link
               href="/"
-              className="flex-1 py-2.5 rounded-xl bg-neon-blue/20 hover:bg-neon-blue/30 text-neon-cyan text-xs font-bold border border-neon-cyan/30"
+              className="flex-1 py-2.5 rounded-xl bg-neon-blue/20 hover:bg-neon-blue/30 text-neon-cyan text-xs font-bold border border-neon-cyan/30 text-center"
             >
               Bosh sahifaga qaytish
             </Link>
@@ -144,6 +108,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     { label: 'Boshqaruv', href: '/admin', icon: '📊' },
     { label: 'Kurslar boshqaruvi', href: '/admin/courses', icon: '📚' },
     { label: 'Darslar va Modullar', href: '/admin/lessons', icon: '📖' },
+    { label: 'Darslar bo‘yicha fikrlar', href: '/admin/feedback', icon: '💬' },
     { label: 'Foydalanuvchilar & Rollar', href: '/admin/users', icon: '👥' },
     { label: 'Tizim Sozlamalari', href: '/admin/settings', icon: '⚙️' },
   ];
@@ -157,6 +122,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <span className="font-bold text-white text-sm">Admin Panel</span>
         </Link>
         <button
+          type="button"
+          aria-label={sidebarOpen ? 'Admin menyusini yopish' : 'Admin menyusini ochish'}
+          aria-expanded={sidebarOpen}
+          aria-controls="admin-sidebar"
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="p-2 rounded-lg bg-white/5 text-slate-300 hover:text-white"
         >
@@ -166,6 +135,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
       {/* Sidebar */}
       <aside
+        id="admin-sidebar"
+        aria-label="Admin menyusi"
         className={clsx(
           'fixed inset-y-0 left-0 z-50 w-64 bg-[#080d1f] border-r border-white/10 flex flex-col justify-between transition-transform duration-200 md:static md:translate-x-0',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
@@ -227,13 +198,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </div>
 
           {/* Nav links */}
-          <nav className="px-3 space-y-1">
+          <nav aria-label="Admin bo‘limlari" className="px-3 space-y-1">
             {navItems.map((item) => {
               const active = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={active ? 'page' : undefined}
                   onClick={() => setSidebarOpen(false)}
                   className={clsx(
                     'flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150',
@@ -252,31 +224,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
         {/* Sidebar Footer */}
         <div className="p-3 border-t border-white/10 space-y-2">
-          {/* Fast Role Switcher */}
-          <div className="p-2 rounded-lg bg-black/40 border border-white/5">
-            <p className="text-[9px] uppercase tracking-wider text-slate-400 font-semibold mb-1.5">Rolni sinash:</p>
-            <div className="grid grid-cols-2 gap-1">
-              <button
-                onClick={() => loginAs('creator')}
-                className={clsx(
-                  'px-2 py-1 rounded text-[10px] font-bold font-mono transition-all',
-                  isCreator ? 'bg-purple-600 text-white' : 'bg-white/5 text-slate-400 hover:text-white'
-                )}
-              >
-                👑 Creator
-              </button>
-              <button
-                onClick={() => loginAs('admin')}
-                className={clsx(
-                  'px-2 py-1 rounded text-[10px] font-bold font-mono transition-all',
-                  currentUser.role === 'admin' ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-400 hover:text-white'
-                )}
-              >
-                🛡️ Admin
-              </button>
-            </div>
-          </div>
-
           <Link
             href="/"
             className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-lg border border-white/10 hover:border-white/20 text-xs text-slate-300 hover:text-white transition-colors"
@@ -298,6 +245,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
       {/* Main Content Area */}
       <main className="flex-1 min-w-0 bg-[#060913] p-4 sm:p-6 lg:p-8 overflow-y-auto">
+        {courseSyncError && <div role="alert" className="mb-5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">{courseSyncError}</div>}
         {children}
       </main>
     </div>

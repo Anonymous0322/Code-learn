@@ -13,6 +13,7 @@ export default function AdminCoursesPage() {
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
   const [languageCode, setLanguageCode] = useState('');
+  const [iconUrl, setIconUrl] = useState('');
   const [description, setDescription] = useState('');
   const [difficulty, setDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('beginner');
   const [isActive, setIsActive] = useState(true);
@@ -23,6 +24,7 @@ export default function AdminCoursesPage() {
     setTitle('');
     setSlug('');
     setLanguageCode('');
+    setIconUrl('');
     setDescription('');
     setDifficulty('beginner');
     setIsActive(true);
@@ -34,51 +36,65 @@ export default function AdminCoursesPage() {
     setTitle(course.title);
     setSlug(course.slug);
     setLanguageCode(course.languageCode);
+    setIconUrl(course.iconUrl || '');
     setDescription(course.description);
     setDifficulty(course.difficulty);
     setIsActive(course.isActive);
     setModalOpen(true);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !slug.trim()) {
+    let saveSucceeded = false;
+    const normalizedSlug = slug.toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-|-$/g, '');
+    if (!title.trim() || !normalizedSlug) {
       setNotice({ text: 'Iltimos, barcha majburiy maydonlarni to\'ldiring!', type: 'error' });
       return;
     }
 
+    if (courses.some(course => course.slug === normalizedSlug && course.id !== editingCourse?.id)) {
+      setNotice({ text: 'Bu URL nomi bilan kurs mavjud. Boshqa slug tanlang.', type: 'error' });
+      return;
+    }
+
     if (editingCourse) {
-      const res = updateCourse(editingCourse.id, {
+      const res = await updateCourse(editingCourse.id, {
         title,
-        slug: slug.toLowerCase().trim(),
-        languageCode: (languageCode || slug).toLowerCase().trim(),
+        slug: normalizedSlug,
+        languageCode: (languageCode || normalizedSlug).toLowerCase().trim(),
+        iconUrl: iconUrl.trim() || null,
+        translations: {},
         description,
         difficulty,
         isActive,
       });
-      setNotice({ text: res.message, type: 'success' });
+      setNotice({ text: res.message, type: res.success ? 'success' : 'error' });
+      saveSucceeded = res.success;
     } else {
-      const res = addCourse({
+      const res = await addCourse({
         title,
-        slug: slug.toLowerCase().trim(),
-        languageCode: (languageCode || slug).toLowerCase().trim(),
+        slug: normalizedSlug,
+        languageCode: (languageCode || normalizedSlug).toLowerCase().trim(),
+        iconUrl: iconUrl.trim() || null,
+        translations: {},
         description,
         difficulty,
         orderIndex: courses.length,
         isActive,
         levels: [],
       });
-      setNotice({ text: res.message, type: 'success' });
+      setNotice({ text: res.message, type: res.success ? 'success' : 'error' });
+      saveSucceeded = res.success;
     }
 
-    setModalOpen(false);
+    if (saveSucceeded) setModalOpen(false);
     setTimeout(() => setNotice(null), 3000);
   };
 
-  const handleDelete = (id: string, courseTitle: string) => {
+  const handleDelete = async (id: string, courseTitle: string) => {
     if (confirm(`Haqiqatan ham "${courseTitle}" kursini o'chirmoqchimisiz?`)) {
-      const res = deleteCourse(id);
-      setNotice({ text: res.message, type: 'success' });
+      const res = await deleteCourse(id);
+      setNotice({ text: res.message, type: res.success ? 'success' : 'error' });
       setTimeout(() => setNotice(null), 3000);
     }
   };
@@ -201,8 +217,8 @@ export default function AdminCoursesPage() {
 
       {/* Modal for Add / Edit */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="max-w-lg w-full bg-[#0d132b] border border-white/15 rounded-2xl p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/80 p-4 backdrop-blur-sm animate-fade-in sm:items-center">
+          <div className="my-auto max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-2xl border border-white/15 bg-[#0d132b] p-4 shadow-2xl sm:p-6">
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
               <h2 className="font-bold text-base text-white">
                 {editingCourse ? 'Kursni Tahrirlash' : 'Yangi Kurs Qo\'shish'}
@@ -245,6 +261,18 @@ export default function AdminCoursesPage() {
                     className="w-full px-3 py-2 rounded-xl bg-[#060914] border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-neon-cyan"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-300 mb-1 font-medium">Kurs logotipi (rasm manzili)</label>
+                <input
+                  type="text"
+                  placeholder="/images/logos/react.svg yoki https://..."
+                  value={iconUrl}
+                  onChange={(e) => setIconUrl(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#060914] border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-neon-cyan"
+                />
+                <p className="mt-1 text-[10px] text-slate-500">Rasmni public/images/logos papkasiga joylang va shu yerga /images/logos/fayl.svg deb kiriting.</p>
               </div>
 
               <div>

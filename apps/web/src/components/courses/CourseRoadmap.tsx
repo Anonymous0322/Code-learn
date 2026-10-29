@@ -1,91 +1,50 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { Course } from '@/types';
+import { useAuthStore } from '@/store/authStore';
+import { useLearningProgressStore } from '@/store/learningProgressStore';
 
-interface CourseRoadmapProps {
-  course: Course;
-  progress: any | null;
-}
+interface CourseRoadmapProps { course: Course; progress: unknown | null }
 
-export function CourseRoadmap({ course, progress }: CourseRoadmapProps) {
-  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
+const toSlug = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-  const progressPercent = progress ? Math.round((progress.completedLessons / progress.totalLessons) * 100) : 0;
+export function CourseRoadmap({ course }: CourseRoadmapProps) {
+  const userId = useAuthStore(state => state.currentUser?.id || null);
+  const completedLessonIds = useLearningProgressStore(state => state.completedLessonIds);
+  const initializeProgress = useLearningProgressStore(state => state.initialize);
+  useEffect(() => { initializeProgress(userId); }, [initializeProgress, userId]);
 
-  return (
-    <div className="animate-fade-in">
-      <div className="mb-8">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-neon-blue/20 to-neon-purple/20 flex items-center justify-center text-3xl">
-            {course.languageCode === 'html' && '🌐'}
-            {course.languageCode === 'css' && '🎨'}
-            {course.languageCode === 'javascript' && '⚡'}
-            {course.languageCode === 'python' && '🐍'}
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-text-primary">{course.title}</h1>
-            <p className="text-text-secondary mt-1">{course.description}</p>
-          </div>
-        </div>
-
-        <div className="bg-bg-secondary rounded-full h-3 overflow-hidden border border-border-subtle">
-          <div className="h-full bg-gradient-to-r from-neon-blue to-neon-purple rounded-full" style={{ width: `${progressPercent}%`, transition: 'width 800ms ease-out' }} />
-        </div>
-        <p className="text-sm text-text-muted mt-2">{progressPercent}% complete</p>
-
-        <div className="flex gap-3 mt-6">
-          <button className="px-6 py-3 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple text-white font-semibold hover:opacity-90 transition-opacity">
-            {progressPercent > 0 ? 'Continue Learning' : 'Start Learning'}
-          </button>
-          <button className="px-6 py-3 rounded-xl border border-border-subtle text-text-secondary hover:border-neon-blue/30 hover:text-neon-blue transition-all">
-            Roadmap
-          </button>
-        </div>
+  const levels = [...(course.levels || [])].sort((a: any, b: any) => a.orderIndex - b.orderIndex);
+  const completedCount = levels.filter((level: any) => completedLessonIds.includes(`${course.id}:${level.id}`)).length;
+  const percent = levels.length ? Math.round(completedCount * 100 / levels.length) : 0;
+  const nextLevel = levels.find((level: any) => !completedLessonIds.includes(`${course.id}:${level.id}`));
+  const startLevel = nextLevel || levels[0];
+  const startHref = startLevel ? `/learn/${course.slug}/${startLevel.slug || toSlug(startLevel.title)}` : null;
+  return <main className="animate-fade-in">
+    <header className="mb-8 rounded-2xl border border-white/10 bg-white/[0.035] p-6 sm:p-8">
+      <div className="flex items-center gap-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-neon-blue/10 text-xl font-bold uppercase text-neon-cyan">{course.languageCode.slice(0, 2)}</div>
+        <div><h1 className="text-3xl font-bold text-white">{course.title}</h1><p className="mt-1 text-sm text-slate-400">{course.description}</p></div>
       </div>
+      <div className="mt-7 flex items-center justify-between text-sm text-slate-400"><span>{completedCount} / {levels.length} dars yakunlandi</span><span>{percent}%</span></div>
+      <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-neon-cyan to-neon-purple transition-all" style={{ width: `${percent}%` }} /></div>
+      {startHref && <Link href={startHref} className="mt-5 inline-flex rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple px-5 py-3 text-sm font-semibold text-white">{completedCount ? 'Davom etish' : 'Birinchi darsni boshlash'} →</Link>}
+    </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {(course.levels || []).map((level: any, levelIdx: number) => {
-          const isCompleted = progress?.completedLevels?.includes(levelIdx);
-          const isCurrent = selectedLevel === levelIdx;
-
-          return (
-            <div
-              key={level.id}
-              onClick={() => setSelectedLevel(isCurrent ? null : levelIdx)}
-              className={`bg-glass border rounded-xl p-5 cursor-pointer transition-all duration-200 ${
-                isCompleted ? 'border-neon-green/30 bg-neon-green/5' :
-                isCurrent ? 'border-neon-blue/50 bg-neon-blue/5' :
-                'border-border-subtle hover:border-neon-blue/30'
-              }`}
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                  isCompleted ? 'bg-neon-green text-white' : 'bg-bg-secondary text-text-muted border border-border-subtle'
-                }`}>
-                  {isCompleted ? '✓' : levelIdx + 1}
-                </div>
-                <h3 className="font-semibold text-text-primary">{level.title}</h3>
-              </div>
-              <p className="text-sm text-text-secondary">{level.description}</p>
-              {level.lessons && (
-                <div className="mt-3 space-y-1">
-                  {level.lessons.map((lesson: any) => (
-                    <Link
-                      key={lesson.id}
-                      href={`/learn/${course.slug}/${lesson.slug}`}
-                      className="block text-xs text-neon-blue hover:underline pl-11"
-                    >
-                      {lesson.title}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+    <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {levels.map((level: any, index: number) => {
+        const completed = completedLessonIds.includes(`${course.id}:${level.id}`);
+        const unlocked = index === 0 || completedLessonIds.includes(`${course.id}:${levels[index - 1].id}`);
+        const href = `/learn/${course.slug}/${level.slug || toSlug(level.title)}`;
+        return <article key={level.id} className={`rounded-xl border bg-white/[0.035] p-5 ${completed ? 'border-emerald-400/30' : unlocked ? 'border-white/10' : 'border-white/5 opacity-60'}`}>
+          <div className="flex items-center gap-3"><span className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${completed ? 'bg-emerald-500 text-white' : 'bg-white/10 text-slate-300'}`}>{completed ? '✓' : index + 1}</span><h2 className="font-semibold text-white">{level.title}</h2></div>
+          <p className="mt-3 min-h-10 text-sm text-slate-400">{level.description}</p>
+          {unlocked ? <Link href={href} className="mt-4 inline-block text-sm text-neon-cyan hover:underline">Darsni ochish →</Link> : <p className="mt-4 text-xs text-slate-500">Oldingi darsni yakunlang · 🔒</p>}
+        </article>;
+      })}
+      {levels.length === 0 && <p className="rounded-xl border border-white/10 p-5 text-sm text-slate-400">Kursga hali dars qo‘shilmagan.</p>}
+    </section>
+  </main>;
 }
