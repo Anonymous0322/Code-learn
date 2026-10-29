@@ -6,6 +6,7 @@ import { useCourseStore, CourseItem } from '@/store/courseStore';
 
 export default function AdminCoursesPage() {
   const { tr, language } = useI18n();
+  const courseLanguage = language === 'ru' || language === 'uz' ? language : 'en';
   const { courses, addCourse, updateCourse, deleteCourse } = useCourseStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -177,7 +178,7 @@ export default function AdminCoursesPage() {
                     {course.languageCode.slice(0, 2)}
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-white">{course.translations?.[language]?.title || course.title}</h3>
+                    <h3 className="font-bold text-sm text-white">{course.translations?.[courseLanguage]?.title || course.title}</h3>
                     <span className="font-mono text-[10px] text-slate-400">/{course.slug}</span>
                   </div>
                 </div>
@@ -193,7 +194,7 @@ export default function AdminCoursesPage() {
               </div>
 
               <p className="text-xs text-slate-300 line-clamp-3 mb-4 leading-relaxed">
-                {course.translations?.[language]?.description || course.description}
+                {course.translations?.[courseLanguage]?.description || course.description}
               </p>
             </div>
 
