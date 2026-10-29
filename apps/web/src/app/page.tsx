@@ -1,15 +1,66 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { HeroSection } from '@/components/page/HeroSection';
 import { LanguageCards } from '@/components/page/LanguageCards';
 import { StatsSection } from '@/components/page/StatsSection';
 import { FeatureSection } from '@/components/page/FeatureSection';
 import { useI18n } from '@/components/providers';
 import { useCourseStore } from '@/store/courseStore';
+import { getSupabase } from '@/lib/supabase';
 
 export default function HomePage() {
-  const { t, language } = useI18n();
+  const { t, tr, language } = useI18n();
+  const [memberCount, setMemberCount] = useState<number | null>(null);
+  const [membersLive, setMembersLive] = useState(false);
+  const [memberCountError, setMemberCountError] = useState('');
   const courses = useCourseStore(state => state.courses).filter(course => course.isActive);
+
+  useEffect(() => {
+    let cancelled = false;
+    let receivedRealtimeUpdate = false;
+    const supabase = getSupabase();
+    const channel = supabase
+      .channel('public:project-members')
+      .on('broadcast', { event: 'member_count_updated' }, ({ payload }) => {
+        const count = Number(payload?.count);
+        if (!Number.isSafeInteger(count) || count < 0) return;
+        receivedRealtimeUpdate = true;
+        setMemberCount(count);
+        setMemberCountError('');
+      })
+      .subscribe(status => {
+        if (cancelled) return;
+        if (status === 'SUBSCRIBED') {
+          setMembersLive(true);
+          setMemberCountError('');
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          setMembersLive(false);
+          setMemberCountError(tr('Realtime ulanishida xatolik.', 'Ошибка подключения к обновлениям в реальном времени.', 'Realtime connection failed.'));
+          console.error('Loyiha a’zolari soni uchun realtime kanaliga ulanib bo‘lmadi.', status);
+        } else if (status === 'CLOSED') {
+          setMembersLive(false);
+        }
+      });
+
+    void supabase.rpc('get_project_member_count').then(({ data, error }) => {
+      if (error) throw error;
+      const count = Number(data);
+      if (!Number.isSafeInteger(count) || count < 0) {
+        throw new Error('Supabase loyiha a’zolari sonini noto‘g‘ri qaytardi.');
+      }
+      if (!cancelled && !receivedRealtimeUpdate) setMemberCount(count);
+    }).catch(error => {
+      if (cancelled) return;
+      setMemberCountError(tr('A’zolar sonini yuklab bo‘lmadi.', 'Не удалось загрузить число участников.', 'Could not load the member count.'));
+      console.error('Loyiha a’zolari sonini yuklab bo‘lmadi.', error);
+    });
+
+    return () => {
+      cancelled = true;
+      void supabase.removeChannel(channel);
+    };
+  }, [tr]);
 
   const localizedCourses = courses.map((course) => {
     return {
@@ -29,6 +80,13 @@ export default function HomePage() {
   const stats = [
     { label: t('statsCourses'), value: String(courses.length), icon: 'courses' },
     { label: t('statsLessons'), value: String(courses.reduce((count, course) => count + (course.levels?.length || 0), 0)), icon: 'lessons' },
+    {
+      label: t('statsMembers'),
+      value: memberCount === null ? '—' : String(memberCount),
+      icon: 'learners',
+      statusLabel: membersLive ? tr('Jonli', 'В реальном времени', 'Live') : tr('Ulanmoqda…', 'Подключение…', 'Connecting…'),
+      statusError: memberCountError,
+    },
   ];
 
   const steps = [

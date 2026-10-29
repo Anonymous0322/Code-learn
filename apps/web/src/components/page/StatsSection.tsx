@@ -2,6 +2,8 @@ interface StatCardProps {
   label: string;
   value: string;
   icon: string;
+  statusLabel?: string;
+  statusError?: string;
 }
 
 function StatIcon({ name }: { name: string }) {
@@ -14,7 +16,7 @@ function StatIcon({ name }: { name: string }) {
 
 export function StatsSection({ stats }: { stats: StatCardProps[] }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-3">
       {stats.map((stat, i) => (
         <div
           key={stat.label}
@@ -24,6 +26,10 @@ export function StatsSection({ stats }: { stats: StatCardProps[] }) {
           <div className="stats-icon mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-neon-blue/25 bg-neon-blue/10 text-neon-cyan"><StatIcon name={stat.icon} /></div>
           <div className="text-2xl font-bold text-text-primary">{stat.value}</div>
           <div className="text-sm text-text-secondary">{stat.label}</div>
+          {stat.statusLabel && <div className={`mt-2 text-[10px] ${stat.statusError ? 'text-amber-300' : 'text-emerald-300'}`} role={stat.statusError ? 'status' : undefined}>
+            {!stat.statusError && <span aria-hidden="true" className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 align-middle" />}
+            {stat.statusError || stat.statusLabel}
+          </div>}
         </div>
       ))}
     </div>
