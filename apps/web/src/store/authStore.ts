@@ -69,6 +69,17 @@ function authError(error: unknown, fallback: string) {
   if (code === 'email_address_invalid') return 'Email formati noto‘g‘ri.';
   const message = (error as { message?: string })?.message;
   const lowerMessage = message?.toLowerCase() ?? '';
+  if (
+    code === 'over_email_send_rate_limit' ||
+    code === 'email_rate_limit_exceeded' ||
+    lowerMessage.includes('email rate limit exceeded') ||
+    lowerMessage.includes('over_email_send_rate_limit')
+  ) {
+    return 'Tasdiqlash xatlarini yuborish limiti tugadi. Keyinroq qayta urinib ko‘ring yoki Supabase’da SMTP sozlang. Auth → Users’da hisob yaratilgan bo‘lsa, qayta ro‘yxatdan o‘tmang.';
+  }
+  if (code === 'otp_expired' || lowerMessage.includes('email link is invalid or has expired')) {
+    return 'Tasdiqlash havolasi eskirgan yoki oldin ishlatilgan. Yangi tasdiqlash xatini so‘rang.';
+  }
   if (code === 'PGRST205' || (lowerMessage.includes('public.profiles') && lowerMessage.includes('schema cache'))) {
     return 'Supabase’da public.profiles jadvali topilmadi. SQL Editor’da barcha migratsiyalarni ishga tushiring; jadval mavjud bo‘lsa, API sxema keshini yangilang.';
   }

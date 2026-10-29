@@ -6,6 +6,7 @@ import { LessonPlayground } from '@/components/lesson/LessonPlayground';
 import { useAuthStore } from '@/store/authStore';
 import { DailyChallengeResult, useDailyChallengeStore } from '@/store/dailyChallengeStore';
 import { LessonExercise } from '@/store/courseStore';
+import { useI18n } from '@/components/providers';
 
 interface Challenge {
   id: string;
@@ -66,6 +67,7 @@ function challengeForDate(date: string) {
 }
 
 export default function DailyChallengePage() {
+  const { tr } = useI18n();
   const user = useAuthStore(state => state.currentUser);
   const initialize = useDailyChallengeStore(state => state.initialize);
   const load = useDailyChallengeStore(state => state.load);
@@ -76,6 +78,26 @@ export default function DailyChallengePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [savedMessage, setSavedMessage] = useState('');
+  const challengeText = useMemo(() => {
+    if (challenge.id === 'hello-heading') return {
+      title: tr('Salom sarlavhasi', 'Заголовок приветствия', 'Greeting heading'),
+      description: tr('HTML sarlavhasini o‘zgartirib, sahifada kerakli matn paydo qiling.', 'Измените HTML-заголовок, чтобы на странице появился нужный текст.', 'Edit the HTML heading so the required text appears on the page.'),
+      instructions: tr('h1 ichidagi matnni aynan “Salom, CodeLearn!” qilib yozing va #intro identifikatorli paragraf qo‘shing.', 'Укажите в h1 точный текст “Salom, CodeLearn!” и добавьте абзац с идентификатором #intro.', 'Set the h1 text to exactly “Salom, CodeLearn!” and add a paragraph with the #intro identifier.'),
+      labels: [tr('h1 ichida “Salom, CodeLearn!” matni bor', 'В h1 есть текст “Salom, CodeLearn!”', 'h1 contains “Salom, CodeLearn!”'), tr('#intro paragrafi yaratildi', 'Создан абзац #intro', '#intro paragraph created')],
+    };
+    if (challenge.id === 'skill-list') return {
+      title: tr('Ko‘nikmalar ro‘yxati', 'Список навыков', 'Skills list'),
+      description: tr('Tartibli ro‘yxatga HTML va CSS ko‘nikmalarini kiriting.', 'Добавьте навыки HTML и CSS в упорядоченный список.', 'Add HTML and CSS skills to an ordered list.'),
+      instructions: tr('ul elementiga skills identifikatorini bering. Ichida HTML va CSS so‘zlari yozilgan ro‘yxat bandlari bo‘lsin.', 'Добавьте элементу ul идентификатор skills. Внутри должны быть пункты списка со словами HTML и CSS.', 'Give the ul element the id skills. Add list items containing the words HTML and CSS.'),
+      labels: [tr('#skills ro‘yxati mavjud', 'Есть список #skills', '#skills list exists'), tr('Ro‘yxatda HTML bor', 'В списке есть HTML', 'List contains HTML'), tr('Ro‘yxatda CSS bor', 'В списке есть CSS', 'List contains CSS')],
+    };
+    return {
+      title: tr('Profil kartasi', 'Карточка профиля', 'Profile card'),
+      description: tr('Ism va qisqa tanishtiruvdan iborat profil kartasi yarating.', 'Создайте карточку профиля с именем и кратким описанием.', 'Create a profile card with a name and short introduction.'),
+      instructions: tr('profile identifikatorli section yarating. Ichiga h2 sarlavha va “Dasturchi” so‘zi bor paragraf qo‘shing.', 'Создайте section с идентификатором profile. Добавьте заголовок h2 и абзац со словом “Dasturchi”.', 'Create a section with the id profile. Add an h2 heading and a paragraph containing the word “Dasturchi”.'),
+      labels: [tr('#profile bo‘limi mavjud', 'Есть раздел #profile', '#profile section exists'), tr('Bo‘limda h2 sarlavha bor', 'В разделе есть заголовок h2', 'Section contains an h2 heading'), tr('Paragrafda “Dasturchi” so‘zi bor', 'В абзаце есть слово “Dasturchi”', 'Paragraph contains “Dasturchi”')],
+    };
+  }, [challenge.id, tr]);
 
   useEffect(() => { initialize(user?.id || null); }, [initialize, user?.id]);
   useEffect(() => {
@@ -87,10 +109,10 @@ export default function DailyChallengePage() {
     setLoading(true);
     load(date, user.id)
       .then(saved => { if (!cancelled) setResult(saved?.challengeId === challenge.id ? saved : null); })
-      .catch(() => { if (!cancelled) setError('Kunlik mashq natijasini yuklab bo‘lmadi. Internet va Supabase sozlamalarini tekshiring.'); })
+      .catch(() => { if (!cancelled) setError(tr('Kunlik mashq natijasini yuklab bo‘lmadi. Internet va Supabase sozlamalarini tekshiring.', 'Не удалось загрузить результат задания. Проверьте подключение и настройки Supabase.', 'Could not load the daily challenge result. Check your internet connection and Supabase settings.')); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [challenge.id, date, load, user]);
+  }, [challenge.id, date, load, tr, user]);
 
   const handleResult = useCallback(async (answer: { passedCount: number; total: number; completed: boolean }) => {
     setError('');
@@ -100,26 +122,29 @@ export default function DailyChallengePage() {
     if (!user) return;
     try {
       await save(nextResult, user.id);
-      setSavedMessage('Bugungi natija hisobingizga saqlandi.');
+      setSavedMessage(tr('Bugungi natija hisobingizga saqlandi.', 'Результат за сегодня сохранён в аккаунте.', 'Today’s result has been saved to your account.'));
     } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : 'Kunlik natijani saqlab bo‘lmadi.');
+      setError(saveError instanceof Error ? saveError.message : tr('Kunlik natijani saqlab bo‘lmadi.', 'Не удалось сохранить результат.', 'Could not save your result.'));
     }
   }, [challenge.id, date, save, user]);
 
-  const exercise = useMemo(() => ({ instructions: challenge.instructions, checks: challenge.checks }), [challenge]);
+  const exercise = useMemo(() => ({
+    instructions: challengeText.instructions,
+    checks: challenge.checks.map((check, index) => ({ ...check, label: challengeText.labels[index] || check.label })),
+  }), [challenge.checks, challengeText]);
   return <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
     <header className="rounded-3xl border border-white/10 bg-gradient-to-br from-[#142044] via-[#0d1428] to-[#11102a] p-6 sm:p-8">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neon-cyan">Har kuni ozgina amaliyot</p>
-      <h1 className="mt-2 font-[Space_Grotesk] text-3xl font-semibold text-white sm:text-4xl">Kunlik kod mashqi</h1>
-      <p className="mt-3 text-sm text-slate-400">{date} · Bugungi mashq barcha o‘quvchilar uchun bir xil.</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neon-cyan">{tr('Har kuni ozgina amaliyot', 'Немного практики каждый день', 'A little practice every day')}</p>
+      <h1 className="mt-2 font-[Space_Grotesk] text-3xl font-semibold text-white sm:text-4xl">{tr('Kunlik kod mashqi', 'Ежедневное задание по коду', 'Daily coding challenge')}</h1>
+      <p className="mt-3 text-sm text-slate-400">{date} · {tr('Bugungi mashq barcha o‘quvchilar uchun bir xil.', 'Сегодняшнее задание одинаково для всех.', 'Today’s challenge is the same for everyone.')}</p>
       <div className="mt-5 rounded-2xl border border-white/10 bg-black/15 p-4">
-        <h2 className="font-semibold text-white">{challenge.title}</h2>
-        <p className="mt-1 text-sm text-slate-300">{challenge.description}</p>
+        <h2 className="font-semibold text-white">{challengeText.title}</h2>
+        <p className="mt-1 text-sm text-slate-300">{challengeText.description}</p>
       </div>
     </header>
-    {!user && <p className="mt-5 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-100">Mashqni sinab ko‘rishingiz mumkin. Natijani saqlash uchun <Link href="/auth/login?next=/challenge" className="underline">tizimga kiring</Link>.</p>}
-    {loading && <p className="mt-4 text-sm text-slate-400">Natija yuklanmoqda...</p>}
-    {result && <p role="status" className="mt-4 text-sm text-neon-cyan">Natija: {result.passedCount}/{result.total} tekshiruv · {result.completed ? 'mashq bajarildi' : 'yana urinib ko‘ring'}</p>}
+    {!user && <p className="mt-5 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-100">{tr('Mashqni sinab ko‘rishingiz mumkin. Natijani saqlash uchun', 'Задание можно попробовать без входа. Чтобы сохранить результат,', 'You can try the challenge without signing in. To save your result,')} <Link href="/auth/login?next=/challenge" className="underline">{tr('tizimga kiring', 'войдите', 'sign in')}</Link>.</p>}
+    {loading && <p className="mt-4 text-sm text-slate-400">{tr('Natija yuklanmoqda...', 'Загрузка результата...', 'Loading result...')}</p>}
+    {result && <p role="status" className="mt-4 text-sm text-neon-cyan">{tr('Natija:', 'Результат:', 'Result:')} {result.passedCount}/{result.total} {tr('tekshiruv', 'проверок', 'checks')} · {result.completed ? tr('mashq bajarildi', 'задание выполнено', 'challenge completed') : tr('yana urinib ko‘ring', 'попробуйте ещё раз', 'try again')}</p>}
     {savedMessage && <p role="status" className="mt-2 text-sm text-emerald-300">{savedMessage}</p>}
     {error && <p role="alert" className="mt-4 rounded-xl border border-amber-400/20 bg-amber-400/10 p-3 text-sm text-amber-200">{error}</p>}
     <LessonPlayground editorLanguage="html" starterCode={challenge.starterCode} exercise={exercise} onExerciseResult={handleResult} />

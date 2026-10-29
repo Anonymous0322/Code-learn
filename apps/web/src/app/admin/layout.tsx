@@ -4,6 +4,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import clsx from 'clsx';
+import { useI18n } from '@/components/providers';
 import { useAuthStore } from '@/store/authStore';
 import { useCourseStore } from '@/store/courseStore';
 
@@ -11,6 +12,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { currentUser, initialized, logout } = useAuthStore();
+  const { tr } = useI18n();
   const { initialize: initCourses } = useCourseStore();
   const courseSyncError = useCourseStore(state => state.syncError);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -24,7 +26,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <div className="min-h-screen bg-[#060913] flex items-center justify-center text-slate-400">
         <div className="flex items-center gap-3">
           <div className="w-5 h-5 border-2 border-neon-cyan border-t-transparent rounded-full animate-spin" />
-          <span>Tizim yuklanmoqda...</span>
+          <span>{tr('Tizim yuklanmoqda...', 'Система загружается...', 'Loading system...')}</span>
         </div>
       </div>
     );
@@ -38,9 +40,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl">
             🔒
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Admin Panelga Kirish</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">{tr('Admin panelga kirish', 'Вход в панель администратора', 'Admin panel access')}</h2>
           <p className="text-sm text-slate-400 mb-6">
-            Admin panelni boshqarish uchun avval tizimga Administrator yoki Creator hisobi orqali kiring.
+            {tr('Admin panelni boshqarish uchun avval Administrator yoki Creator hisobiga kiring.', 'Чтобы управлять панелью, войдите с учётной записью администратора или создателя.', 'Sign in with an administrator or creator account to manage the admin panel.')}
           </p>
 
           <div className="flex flex-col gap-3">
@@ -48,13 +50,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               href="/auth/login"
               className="w-full py-3 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple text-white text-xs font-bold shadow-lg shadow-neon-blue/20 text-center"
             >
-              Login orqali kirish
+              {tr('Kirish', 'Войти', 'Sign in')}
             </Link>
             <Link
               href="/"
               className="w-full py-2.5 rounded-xl border border-white/10 hover:border-white/20 text-slate-300 text-xs font-medium text-center"
             >
-              Bosh sahifa
+              {tr('Bosh sahifa', 'Главная', 'Home')}
             </Link>
           </div>
         </div>
@@ -71,15 +73,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             🚫
           </div>
           <span className="inline-block px-3 py-1 rounded-full bg-red-500/10 text-red-400 text-xs font-mono font-semibold mb-3">
-            403 - RUXSAT BERILMAGAN
+            {tr('403 — RUXSAT YO‘Q', '403 — ДОСТУП ЗАПРЕЩЁН', '403 — ACCESS DENIED')}
           </span>
-          <h2 className="text-2xl font-bold text-white mb-2">Kirish Cheklangan!</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">{tr('Kirish cheklangan!', 'Доступ ограничен!', 'Access restricted!')}</h2>
           <p className="text-sm text-slate-400 mb-4">
-            Sizning hisobingiz: <strong className="text-white">{currentUser.name}</strong> ({currentUser.email}).
-            Sizning rolingiz oddiy <strong className="text-neon-cyan">Foydalanuvchi (User)</strong> bo'lgani sababli Admin Panelga kirish taqiqlanadi.
+            {tr('Hisobingiz:', 'Ваша учётная запись:', 'Your account:')} <strong className="text-white">{currentUser.name}</strong> ({currentUser.email}).
+            {tr(' Sizda oddiy foydalanuvchi roli bo‘lgani uchun admin paneliga kirish taqiqlangan.', ' Доступ к панели запрещён, поскольку у вас роль пользователя.', ' Admin panel access is denied because your role is User.')}
           </p>
           <p className="text-xs text-slate-400 mb-6">
-            Admin panel faqat <strong className="text-purple-300">Creator (Bosh admin)</strong> va <strong className="text-blue-300">Admin</strong> larga ochiladi.
+            {tr('Admin panel faqat', 'Панель доступна только ролям', 'The admin panel is available only to')} <strong className="text-purple-300">Creator</strong> {tr('va', 'и', 'and')} <strong className="text-blue-300">Admin</strong>.
           </p>
 
           <div className="flex gap-3">
@@ -87,13 +89,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               href="/"
               className="flex-1 py-2.5 rounded-xl bg-neon-blue/20 hover:bg-neon-blue/30 text-neon-cyan text-xs font-bold border border-neon-cyan/30 text-center"
             >
-              Bosh sahifaga qaytish
+              {tr('Bosh sahifaga qaytish', 'Вернуться на главную', 'Back to home')}
             </Link>
             <button
               onClick={() => logout()}
               className="flex-1 py-2.5 rounded-xl border border-white/10 hover:border-white/20 text-slate-300 text-xs font-medium"
             >
-              Chiqish (Logout)
+              {tr('Chiqish', 'Выйти', 'Sign out')}
             </button>
           </div>
         </div>
@@ -105,12 +107,12 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const isCreator = currentUser.role === 'creator';
 
   const navItems = [
-    { label: 'Boshqaruv', href: '/admin', icon: '📊' },
-    { label: 'Kurslar boshqaruvi', href: '/admin/courses', icon: '📚' },
-    { label: 'Darslar va Modullar', href: '/admin/lessons', icon: '📖' },
-    { label: 'Darslar bo‘yicha fikrlar', href: '/admin/feedback', icon: '💬' },
-    { label: 'Foydalanuvchilar & Rollar', href: '/admin/users', icon: '👥' },
-    { label: 'Tizim Sozlamalari', href: '/admin/settings', icon: '⚙️' },
+    { label: tr('Boshqaruv', 'Панель управления', 'Dashboard'), href: '/admin', icon: '📊' },
+    { label: tr('Kurslar boshqaruvi', 'Управление курсами', 'Manage courses'), href: '/admin/courses', icon: '📚' },
+    { label: tr('Darslar va modullar', 'Уроки и модули', 'Lessons and modules'), href: '/admin/lessons', icon: '📖' },
+    { label: tr('Darslar bo‘yicha fikrlar', 'Отзывы об уроках', 'Lesson feedback'), href: '/admin/feedback', icon: '💬' },
+    { label: tr('Foydalanuvchilar va rollar', 'Пользователи и роли', 'Users and roles'), href: '/admin/users', icon: '👥' },
+    { label: tr('Tizim sozlamalari', 'Настройки системы', 'System settings'), href: '/admin/settings', icon: '⚙️' },
   ];
 
   return (
@@ -123,7 +125,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </Link>
         <button
           type="button"
-          aria-label={sidebarOpen ? 'Admin menyusini yopish' : 'Admin menyusini ochish'}
+          aria-label={sidebarOpen ? tr('Admin menyusini yopish', 'Закрыть меню администратора', 'Close admin menu') : tr('Admin menyusini ochish', 'Открыть меню администратора', 'Open admin menu')}
           aria-expanded={sidebarOpen}
           aria-controls="admin-sidebar"
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -136,7 +138,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       {/* Sidebar */}
       <aside
         id="admin-sidebar"
-        aria-label="Admin menyusi"
+        aria-label={tr('Admin menyusi', 'Меню администратора', 'Admin menu')}
         className={clsx(
           'fixed inset-y-0 left-0 z-50 w-64 bg-[#080d1f] border-r border-white/10 flex flex-col justify-between transition-transform duration-200 md:static md:translate-x-0',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
@@ -181,24 +183,24 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                         : 'bg-blue-500/20 text-blue-300 border border-blue-500/40'
                     )}
                   >
-                    {isCreator ? 'CREATOR (BOSH)' : 'ADMIN'}
+                    {isCreator ? 'CREATOR' : 'ADMIN'}
                   </span>
                 </div>
               </div>
             </div>
             {isCreator ? (
               <p className="text-[10px] text-emerald-400 mt-2 flex items-center gap-1">
-                <span>✓</span> Barcha huquqlarga ega boshqaruvchi
+                <span>✓</span> {tr('Barcha huquqlarga ega boshqaruvchi', 'Полный доступ к управлению', 'Full administrative access')}
               </p>
             ) : (
               <p className="text-[10px] text-slate-400 mt-2">
-                Kontent boshqaruvchisi (Creator dan kichik)
+                {tr('Kontent boshqaruvchisi (Creator vakolatidan past)', 'Управление контентом (ниже Creator)', 'Content manager (below Creator)')}
               </p>
             )}
           </div>
 
           {/* Nav links */}
-          <nav aria-label="Admin bo‘limlari" className="px-3 space-y-1">
+          <nav aria-label={tr('Admin bo‘limlari', 'Разделы администратора', 'Admin sections')} className="px-3 space-y-1">
             {navItems.map((item) => {
               const active = pathname === item.href;
               return (
@@ -228,7 +230,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             href="/"
             className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-lg border border-white/10 hover:border-white/20 text-xs text-slate-300 hover:text-white transition-colors"
           >
-            <span>←</span> Saytga qaytish
+            <span>←</span> {tr('Saytga qaytish', 'Вернуться на сайт', 'Back to site')}
           </Link>
 
           <button
@@ -238,7 +240,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             }}
             className="w-full py-2 px-3 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-xs font-semibold text-red-300 border border-red-500/20 transition-colors"
           >
-            Chiqish (Logout)
+            {tr('Chiqish', 'Выйти', 'Sign out')}
           </button>
         </div>
       </aside>

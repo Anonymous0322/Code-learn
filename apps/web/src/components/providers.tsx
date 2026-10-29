@@ -158,21 +158,34 @@ export const ThemeContext = createContext<{
   language: string;
   setLanguage: (lang: Language) => void;
   t: (key: TranslationKey) => string;
+  tr: (uz: string, ru: string, en: string) => string;
 }>({
   theme: 'dark',
   toggleTheme: () => {},
   language: 'en',
   setLanguage: () => {},
   t: (key) => translations.en[key],
+  tr: (_uz, _ru, en) => en,
 });
 
 export function Providers({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState('dark');
   const [language, setLanguage] = useState<Language>('en');
+  const [authLinkError, setAuthLinkError] = useState<string | null>(null);
 
   useEffect(() => {
     useAuthStore.getState().initialize();
     void useCourseStore.getState().initialize();
+  }, []);
+
+  useEffect(() => {
+    const hash = new URLSearchParams(window.location.hash.slice(1));
+    const errorCode = hash.get('error_code');
+    if (errorCode === 'otp_expired') {
+      setAuthLinkError('Tasdiqlash havolasi eskirgan yoki oldin ishlatilgan. Login sahifasidan yangi tasdiqlash xatini so‘rang.');
+    } else if (errorCode) {
+      setAuthLinkError(hash.get('error_description') || 'Emailni tasdiqlashda xatolik yuz berdi.');
+    }
   }, []);
 
   useEffect(() => {
@@ -188,7 +201,15 @@ export function Providers({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme: () => setTheme(t => t === 'dark' ? 'light' : 'dark'), language, setLanguage: changeLanguage, t: (key) => translations[language][key] }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme: () => setTheme(t => t === 'dark' ? 'light' : 'dark'), language, setLanguage: changeLanguage, t: (key) => translations[language][key], tr: (uz, ru, en) => language === 'uz' ? uz : language === 'ru' ? ru : en }}>
+      {authLinkError && (
+        <div role="alert" className="fixed inset-x-4 top-20 z-[100] mx-auto max-w-xl rounded-lg border border-red-500/30 bg-red-950/95 p-4 text-center text-sm text-red-200 shadow-xl">
+          {authLinkError}{' '}
+          <a href="/auth/login" className="font-semibold text-neon-cyan underline">
+            Login sahifasiga o‘tish
+          </a>
+        </div>
+      )}
       {children}
     </ThemeContext.Provider>
   );

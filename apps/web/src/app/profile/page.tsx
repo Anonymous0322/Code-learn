@@ -12,7 +12,7 @@ function dateKey(date: Date) {
 }
 
 export default function ProfilePage() {
-  const { t, language } = useI18n();
+  const { t, tr, language } = useI18n();
   const user = useAuthStore(state => state.currentUser);
   const initialized = useAuthStore(state => state.initialized);
   const courses = useCourseStore(state => state.courses).filter(course => course.isActive);
@@ -57,10 +57,10 @@ export default function ProfilePage() {
   const dateLabel = Number.isNaN(since.getTime()) ? user.createdAt : since.toLocaleDateString(dateLocale, { year: 'numeric', month: 'long', day: 'numeric' });
   const role = user.role === 'creator' ? t('creatorRole') : user.role === 'admin' ? t('adminPanel') : t('learnerRole');
   const stats = [
-    { label: 'Yakunlangan darslar', value: completedCount, note: `/${totalLessons} dars` },
-    { label: 'Faol yo‘nalishlar', value: inProgressCourses, note: 'kurs' },
-    { label: 'Ketma-ket faol kunlar', value: streak, note: 'kun' },
-    { label: 'Jami kirilgan kunlar', value: activeDays.length, note: 'kun' },
+    { label: tr('Yakunlangan darslar', 'Завершённые уроки', 'Completed lessons'), value: completedCount, note: `/${totalLessons} ${tr('dars', 'уроков', 'lessons')}` },
+    { label: tr('Faol yo‘nalishlar', 'Активные направления', 'Courses in progress'), value: inProgressCourses, note: tr('kurs', 'курс', 'courses') },
+    { label: tr('Ketma-ket faol kunlar', 'Дней подряд', 'Current streak'), value: streak, note: tr('kun', 'дней', 'days') },
+    { label: tr('Jami kirilgan kunlar', 'Всего активных дней', 'Total active days'), value: activeDays.length, note: tr('kun', 'дней', 'days') },
   ];
 
   return <main className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
@@ -78,25 +78,25 @@ export default function ProfilePage() {
 
     <section className="mt-6 grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
       <article className="rounded-2xl border border-white/10 bg-white/[0.035] p-5 sm:p-6">
-        <div className="flex flex-wrap items-end justify-between gap-3"><div><h2 className="font-[Space_Grotesk] text-xl font-semibold text-white">O‘quv faolligi</h2><p className="mt-1 text-xs text-slate-400">Oxirgi 12 haftadagi kirish va dars yakunlash kunlari</p></div><span className="rounded-full border border-neon-cyan/20 bg-neon-cyan/10 px-3 py-1 text-xs text-neon-cyan">{activeDays.length} faol kun</span></div>
+        <div className="flex flex-wrap items-end justify-between gap-3"><div><h2 className="font-[Space_Grotesk] text-xl font-semibold text-white">{tr('O‘quv faolligi', 'Учебная активность', 'Learning activity')}</h2><p className="mt-1 text-xs text-slate-400">{tr('Oxirgi 12 haftadagi kirish va dars yakunlash kunlari', 'Дни активности и завершения уроков за последние 12 недель', 'Activity and lesson completion over the last 12 weeks')}</p></div><span className="rounded-full border border-neon-cyan/20 bg-neon-cyan/10 px-3 py-1 text-xs text-neon-cyan">{activeDays.length} {tr('faol kun', 'активных дней', 'active days')}</span></div>
         <div className="mt-6 grid grid-cols-7 gap-2" role="img" aria-label="So‘nggi yetti kunlik faollik grafigi">
-          {week.map(day => <div key={day.key} className="flex flex-col items-center gap-2"><div className="flex h-28 w-full items-end rounded-lg bg-white/[0.035] p-1"><div title={`${day.date.toLocaleDateString(dateLocale)}${day.active ? ' · faol' : ''}`} className={`w-full rounded-md transition-all ${day.active ? 'h-full bg-gradient-to-t from-neon-blue to-neon-cyan shadow-lg shadow-neon-blue/20' : 'h-1/5 bg-white/10'}`} /></div><span className="text-[10px] text-slate-500">{day.date.toLocaleDateString(dateLocale, { weekday: 'short' })}</span></div>)}
+          {week.map(day => <div key={day.key} className="flex flex-col items-center gap-2"><div className="flex h-28 w-full items-end rounded-lg bg-white/[0.035] p-1"><div title={`${day.date.toLocaleDateString(dateLocale)}${day.active ? ` · ${tr('faol', 'активность', 'active')}` : ''}`} className={`w-full rounded-md transition-all ${day.active ? 'h-full bg-gradient-to-t from-neon-blue to-neon-cyan shadow-lg shadow-neon-blue/20' : 'h-1/5 bg-white/10'}`} /></div><span className="text-[10px] text-slate-500">{day.date.toLocaleDateString(dateLocale, { weekday: 'short' })}</span></div>)}
         </div>
-        <div className="mt-7 flex items-center justify-between"><p className="text-xs text-slate-400">Kunlik faollik kalendari</p><div className="flex items-center gap-1 text-[10px] text-slate-500"><span>Kam</span>{[0, 1, 2, 3].map(level => <span key={level} className={`h-3 w-3 rounded-sm ${level === 0 ? 'bg-white/10' : level === 1 ? 'bg-neon-cyan/30' : level === 2 ? 'bg-neon-cyan/60' : 'bg-neon-cyan'}`} />)}<span>Ko‘p</span></div></div>
+        <div className="mt-7 flex items-center justify-between"><p className="text-xs text-slate-400">{tr('Kunlik faollik kalendari', 'Календарь активности', 'Daily activity calendar')}</p><div className="flex items-center gap-1 text-[10px] text-slate-500"><span>{tr('Kam', 'Мало', 'Less')}</span>{[0, 1, 2, 3].map(level => <span key={level} className={`h-3 w-3 rounded-sm ${level === 0 ? 'bg-white/10' : level === 1 ? 'bg-neon-cyan/30' : level === 2 ? 'bg-neon-cyan/60' : 'bg-neon-cyan'}`} />)}<span>{tr('Ko‘p', 'Много', 'More')}</span></div></div>
         <div className="mt-3 grid grid-flow-col grid-rows-7 gap-1" role="img" aria-label="So‘nggi 84 kunlik faollik kalendari">
           {heatmap.map(day => <span key={day.key} title={`${day.date.toLocaleDateString(dateLocale)}${day.active ? ' · faol' : ''}`} className={`aspect-square w-full rounded-[3px] ${day.active ? 'bg-neon-cyan shadow-sm shadow-neon-cyan/30' : 'bg-white/[0.07]'}`} />)}
         </div>
       </article>
 
       <article className="rounded-2xl border border-white/10 bg-white/[0.035] p-5 sm:p-6">
-        <h2 className="font-[Space_Grotesk] text-xl font-semibold text-white">O‘rganayotgan kurslar</h2>
+        <h2 className="font-[Space_Grotesk] text-xl font-semibold text-white">{tr('O‘rganayotgan kurslar', 'Изучаемые курсы', 'Courses in progress')}</h2>
         <div className="mt-5 space-y-3">
           {courses.filter(course => completedLessonIds.some(id => id.startsWith(`${course.id}:`))).map(course => {
             const count = (course.levels || []).filter(level => completedLessonIds.includes(`${course.id}:${level.id}`)).length;
             const percent = course.levels?.length ? Math.round(count * 100 / course.levels.length) : 0;
-            return <Link key={course.id} href={`/courses/${course.slug}`} className="block rounded-xl border border-white/10 p-4 hover:border-neon-cyan/30"><div className="flex justify-between gap-3"><span className="text-sm font-medium text-white">{course.title}</span><span className="text-xs text-slate-400">{percent}%</span></div><div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-neon-blue to-neon-cyan" style={{ width: `${percent}%` }} /></div><p className="mt-2 text-[11px] text-slate-500">{count} / {course.levels?.length || 0} dars</p></Link>;
+            return <Link key={course.id} href={`/courses/${course.slug}`} className="block rounded-xl border border-white/10 p-4 hover:border-neon-cyan/30"><div className="flex justify-between gap-3"><span className="text-sm font-medium text-white">{course.translations?.[language]?.title || course.title}</span><span className="text-xs text-slate-400">{percent}%</span></div><div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-neon-blue to-neon-cyan" style={{ width: `${percent}%` }} /></div><p className="mt-2 text-[11px] text-slate-500">{count} / {course.levels?.length || 0} {tr('dars', 'уроков', 'lessons')}</p></Link>;
           })}
-          {!courses.some(course => completedLessonIds.some(id => id.startsWith(`${course.id}:`))) && <div className="rounded-xl border border-dashed border-white/15 p-5 text-sm text-slate-400">Hali yakunlangan dars yo‘q. Kursni tanlab birinchi videoni boshlang.<Link href="/courses" className="mt-3 block text-neon-cyan">Kurslarni ko‘rish →</Link></div>}
+          {!courses.some(course => completedLessonIds.some(id => id.startsWith(`${course.id}:`))) && <div className="rounded-xl border border-dashed border-white/15 p-5 text-sm text-slate-400">{tr('Hali yakunlangan dars yo‘q. Kursni tanlab birinchi videoni boshlang.', 'Пока нет завершённых уроков. Выберите курс и начните с первого видео.', 'No lessons completed yet. Choose a course and start with the first video.')}<Link href="/courses" className="mt-3 block text-neon-cyan">{tr('Kurslarni ko‘rish', 'Смотреть курсы', 'Browse courses')} →</Link></div>}
         </div>
       </article>
     </section>

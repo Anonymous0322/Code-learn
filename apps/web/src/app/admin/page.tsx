@@ -1,12 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { useI18n } from '@/components/providers';
 import { useAuthStore } from '@/store/authStore';
 import { useCourseStore } from '@/store/courseStore';
 
 export default function AdminDashboardPage() {
   const { currentUser, users } = useAuthStore();
   const { courses } = useCourseStore();
+  const { tr } = useI18n();
 
   const totalLessons = courses.reduce((acc, c) => acc + (c.levels?.length || 0), 0);
   const totalUsers = users.length;
@@ -15,31 +17,31 @@ export default function AdminDashboardPage() {
 
   const stats = [
     {
-      label: 'Jami Kurslar',
+      label: tr('Jami kurslar', 'Всего курсов', 'Total courses'),
       value: courses.length,
       icon: '📚',
-      sub: `${courses.filter((c) => c.isActive).length} ta faol kurs`,
+      sub: `${courses.filter((c) => c.isActive).length} ${tr('ta faol kurs', 'активных курсов', 'active courses')}`,
       color: 'from-blue-500/20 to-cyan-500/20 text-neon-cyan border-cyan-500/30',
     },
     {
-      label: 'Jami Darslar & Modullar',
+      label: tr('Jami darslar va modullar', 'Всего уроков и модулей', 'Total lessons and modules'),
       value: totalLessons,
       icon: '📖',
-      sub: 'Interaktiv darslar',
+      sub: tr('Interaktiv darslar', 'Интерактивные уроки', 'Interactive lessons'),
       color: 'from-purple-500/20 to-pink-500/20 text-purple-300 border-purple-500/30',
     },
     {
-      label: 'Jami Foydalanuvchilar',
+      label: tr('Jami foydalanuvchilar', 'Всего пользователей', 'Total users'),
       value: totalUsers,
       icon: '👥',
-      sub: `${studentUsers.length} o'quvchi ro'yxatda`,
+      sub: `${studentUsers.length} ${tr('o‘quvchi ro‘yxatda', 'учащихся', 'learners')}`,
       color: 'from-emerald-500/20 to-teal-500/20 text-emerald-400 border-emerald-500/30',
     },
     {
-      label: 'Boshqaruvchilar',
+      label: tr('Administratorlar', 'Администраторы', 'Administrators'),
       value: adminUsers.length,
       icon: '👑',
-      sub: 'Creator va Adminlar',
+      sub: tr('Creator va Adminlar', 'Создатели и администраторы', 'Creators and admins'),
       color: 'from-amber-500/20 to-orange-500/20 text-amber-300 border-amber-500/30',
     },
   ];
@@ -51,16 +53,16 @@ export default function AdminDashboardPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs uppercase tracking-widest text-neon-cyan font-mono font-bold">
-              Boshqaruv Paneli
+              {tr('Boshqaruv paneli', 'Панель управления', 'Dashboard')}
             </span>
             <span className="text-slate-500">•</span>
-            <span className="text-xs text-slate-400">Avtomatlashtirilgan tizim</span>
+            <span className="text-xs text-slate-400">{tr('Tizim boshqaruvi', 'Управление системой', 'System management')}</span>
           </div>
           <h1 className="font-[Space_Grotesk] text-3xl sm:text-4xl font-bold text-white">
-            Xush kelibsiz, {currentUser?.name}!
+            {tr('Xush kelibsiz', 'Добро пожаловать', 'Welcome')}, {currentUser?.name}!
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            Ushbu panel orqali saytdagi barcha kurslar, darslar, foydalanuvchilar va rollarni to'liq boshqara olasiz.
+            {tr('Bu panelda kurslar, darslar, foydalanuvchilar va rollarni boshqarishingiz mumkin.', 'Здесь можно управлять курсами, уроками, пользователями и ролями.', 'Manage courses, lessons, users, and roles from this dashboard.')}
           </p>
         </div>
 
@@ -69,13 +71,13 @@ export default function AdminDashboardPage() {
             href="/admin/courses"
             className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple text-white text-xs font-bold shadow-lg shadow-neon-blue/20 hover:opacity-95 transition-all"
           >
-            + Yangi Kurs Qo'shish
+            + {tr('Kurs qo‘shish', 'Добавить курс', 'Add course')}
           </Link>
           <Link
             href="/admin/users"
             className="px-4 py-2.5 rounded-xl bg-white/[0.05] border border-white/15 hover:border-neon-cyan/40 text-slate-200 text-xs font-semibold transition-all"
           >
-            👥 Rollarni Boshqarish
+            👥 {tr('Rollarni boshqarish', 'Управление ролями', 'Manage roles')}
           </Link>
         </div>
       </div>
@@ -102,10 +104,10 @@ export default function AdminDashboardPage() {
       {/* Role Hierarchy Card */}
       <div className="p-6 rounded-2xl border border-white/10 bg-[#0a0f24]/80 backdrop-blur-xl">
         <h2 className="text-lg font-bold text-white flex items-center gap-2 mb-3">
-          <span>🏛️</span> Rollar Tizimi va Vakolatlar Ierarxiyasi
+          <span>🏛️</span> {tr('Rollar va ruxsatlar', 'Роли и права доступа', 'Roles and permissions')}
         </h2>
         <p className="text-xs text-slate-400 mb-4">
-          Tizimda 3 ta asosiy rol mavjud bo'lib, ular vakolat darajasiga ko'ra avtomatik chegaralangan:
+          {tr('Tizimda vakolatlari farq qiluvchi uchta asosiy rol mavjud:', 'В системе есть три основные роли с разными уровнями доступа:', 'The system has three main roles with different access levels:')}
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -113,14 +115,14 @@ export default function AdminDashboardPage() {
           <div className="p-4 rounded-xl border border-purple-500/40 bg-purple-500/10">
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-sm text-purple-200 flex items-center gap-1.5">
-                <span>👑</span> Bosh Admin (Creator)
+                <span>👑</span> {tr('Yaratuvchi (Creator)', 'Создатель (Creator)', 'Creator')}
               </span>
               <span className="text-[10px] bg-purple-500/30 text-purple-300 font-mono font-bold px-2 py-0.5 rounded">
-                ENG YUQORI
+                {tr('ENG YUQORI', 'ВЫСШИЙ', 'HIGHEST')}
               </span>
             </div>
             <p className="text-xs text-slate-300">
-              Mutlaq barcha vakolatlar: kurs va darslarni boshqarish, yangi adminlar tayinlash, boshqa foydalanuvchilarning rolini o'zgartirish, administratorlarni o'chirish.
+              {tr('Barcha ruxsatlar: kurs va darslarni boshqarish hamda istalgan foydalanuvchining rolini o‘zgartirish.', 'Полный доступ: управление курсами и уроками, изменение роли любого пользователя.', 'Full access: manage courses and lessons, and change any user’s role.')}
             </p>
           </div>
 
@@ -128,14 +130,14 @@ export default function AdminDashboardPage() {
           <div className="p-4 rounded-xl border border-blue-500/30 bg-blue-500/10">
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-sm text-blue-200 flex items-center gap-1.5">
-                <span>🛡️</span> Admin (Nazoratchi)
+                <span>🛡️</span> {tr('Administrator', 'Администратор', 'Administrator')}
               </span>
               <span className="text-[10px] bg-blue-500/30 text-blue-300 font-mono font-bold px-2 py-0.5 rounded">
-                ORTA
+                {tr('ORTA', 'СРЕДНИЙ', 'MEDIUM')}
               </span>
             </div>
             <p className="text-xs text-slate-300">
-              Kurslar, modullar va darslarni qo'shish, tahrirlash, o'chirish huquqi. Lekin Bosh Adminni (Creator) o'chira yoki uning rolini o'zgartira olmaydi.
+              {tr('Kurslar, modullar va darslarni boshqaradi. Foydalanuvchilar rollarini o‘zgartira olmaydi.', 'Управляет курсами, модулями и уроками, но не может менять роли пользователей.', 'Manages courses, modules, and lessons, but cannot change user roles.')}
             </p>
           </div>
 
@@ -143,14 +145,14 @@ export default function AdminDashboardPage() {
           <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02]">
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-sm text-slate-300 flex items-center gap-1.5">
-                <span>👤</span> Foydalanuvchi (User)
+                <span>👤</span> {tr('Foydalanuvchi', 'Пользователь', 'User')}
               </span>
               <span className="text-[10px] bg-white/10 text-slate-400 font-mono px-2 py-0.5 rounded">
-                ODDIY
+                {tr('ODDIY', 'ОБЫЧНЫЙ', 'STANDARD')}
               </span>
             </div>
             <p className="text-xs text-slate-400">
-              Saytdan o'rganish, darslarni o'tish va kod mashq qilish. Admin panelga kirishi taqiqlangan (403 Forbidden).
+              {tr('Kurslarni o‘rganadi va kod mashqlarini bajaradi. Admin panelga kira olmaydi.', 'Изучает курсы и практикуется в коде. Нет доступа к панели администратора.', 'Learns courses and practices coding. No access to the admin panel.')}
             </p>
           </div>
         </div>
@@ -162,10 +164,10 @@ export default function AdminDashboardPage() {
         <div className="p-5 rounded-2xl border border-white/10 bg-[#0a0f24]/80">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-sm text-white flex items-center gap-2">
-              <span>📚</span> Mavjud Kurslar ({courses.length})
+              <span>📚</span> {tr('Mavjud kurslar', 'Доступные курсы', 'Available courses')} ({courses.length})
             </h3>
             <Link href="/admin/courses" className="text-xs text-neon-cyan hover:underline">
-              Barchasini boshqarish →
+              {tr('Barchasini boshqarish', 'Управлять всеми', 'Manage all')} →
             </Link>
           </div>
 
@@ -237,4 +239,3 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
-

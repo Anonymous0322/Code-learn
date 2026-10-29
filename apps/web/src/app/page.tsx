@@ -8,13 +8,13 @@ import { useI18n } from '@/components/providers';
 import { useCourseStore } from '@/store/courseStore';
 
 export default function HomePage() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const courses = useCourseStore(state => state.courses).filter(course => course.isActive);
 
   const localizedCourses = courses.map((course) => {
     return {
-      label: course.title,
-      desc: course.description,
+      label: course.translations?.[language]?.title || course.title,
+      desc: course.translations?.[language]?.description || course.description,
       iconPath: course.iconUrl || `/images/logos/${course.languageCode}.svg`,
       slug: course.slug,
     };

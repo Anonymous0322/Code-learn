@@ -193,7 +193,7 @@ function LangPills({ onClose }: { onClose: () => void }) {
 export function Navigation() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { t } = useI18n();
+  const { t, tr } = useI18n();
   const currentUser = useAuthStore(state => state.currentUser);
   const logout = useAuthStore(state => state.logout);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -222,7 +222,7 @@ export function Navigation() {
                   isActive(path) ? 'bg-[#3b82f6]/10 text-[#3b82f6]' : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 )}
               >
-                {path === '/' ? t('home') : path === '/courses' ? t('courses') : path === '/roadmap' ? t('roadmap') : path === '/projects' ? 'Loyihalar' : path === '/challenge' ? 'Kunlik mashq' : path === '/achievements' ? 'Yutuqlar' : t('about')}
+                {path === '/' ? t('home') : path === '/courses' ? t('courses') : path === '/roadmap' ? t('roadmap') : path === '/projects' ? tr('Loyihalar', 'Проекты', 'Projects') : path === '/challenge' ? tr('Kunlik mashq', 'Ежедневное задание', 'Daily challenge') : path === '/achievements' ? tr('Yutuqlar', 'Достижения', 'Achievements') : t('about')}
               </Link>
             ))}
           </div>
@@ -243,8 +243,8 @@ export function Navigation() {
                 {profileOpen && <div className="absolute right-0 top-full z-50 mt-2 w-52 rounded-xl border border-white/10 bg-[#090e1f] p-1.5 shadow-xl">
                   <div className="border-b border-white/10 px-3 py-2"><p className="truncate text-sm font-semibold text-white">{currentUser.name}</p><p className="truncate text-xs text-slate-400">{currentUser.email}</p></div>
                   <Link href="/profile" onClick={() => setProfileOpen(false)} className="mt-1 block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.07]">{t('profile')}</Link>
-                  <Link href="/study-plan" onClick={() => setProfileOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.07]">Haftalik reja</Link>
-                  <Link href="/portfolio" onClick={() => setProfileOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.07]">Mening portfolioim</Link>
+                  <Link href="/study-plan" onClick={() => setProfileOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.07]">{tr('Haftalik reja', 'План на неделю', 'Weekly plan')}</Link>
+                  <Link href="/portfolio" onClick={() => setProfileOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.07]">{tr('Mening portfolioim', 'Моё портфолио', 'My portfolio')}</Link>
                   {(currentUser.role === 'admin' || currentUser.role === 'creator') && <Link href="/admin" onClick={() => setProfileOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.07]">{t('adminPanel')}</Link>}
                   <button onClick={() => { setProfileOpen(false); void logout(); }} className="w-full rounded-lg px-3 py-2 text-left text-sm text-red-300 hover:bg-red-500/10">{t('signOut')}</button>
                 </div>}
@@ -276,7 +276,7 @@ export function Navigation() {
         {mobileOpen && (
           <div className="animate-fade-in border-t border-white/10 py-4 md:hidden">
             <div className="grid gap-1 mb-4">
-              {[[ '/', t('home')], ['/courses', t('courses')], ['/roadmap', t('roadmap')], ['/projects', 'Loyihalar'], ['/challenge', 'Kunlik mashq'], ['/achievements', 'Yutuqlar'], ['/about', t('about')]].map(([href, label]) => (
+              {[[ '/', t('home')], ['/courses', t('courses')], ['/roadmap', t('roadmap')], ['/projects', tr('Loyihalar', 'Проекты', 'Projects')], ['/challenge', tr('Kunlik mashq', 'Ежедневное задание', 'Daily challenge')], ['/achievements', tr('Yutuqlar', 'Достижения', 'Achievements')], ['/about', t('about')]].map(([href, label]) => (
                 <Link
                   key={href}
                   href={href}
@@ -295,8 +295,8 @@ export function Navigation() {
               <LangPills onClose={() => setMobileOpen(false)} />
               {currentUser ? <div className="mt-4 grid gap-2 border-t border-white/10 pt-4">
                 <Link href="/profile" onClick={() => setMobileOpen(false)} className="rounded-lg border border-white/10 px-4 py-3 text-sm font-semibold text-white">{currentUser.name} · {t('profile')}</Link>
-                <Link href="/study-plan" onClick={() => setMobileOpen(false)} className="rounded-lg px-4 py-2 text-sm text-slate-300">Haftalik reja</Link>
-                <Link href="/portfolio" onClick={() => setMobileOpen(false)} className="rounded-lg px-4 py-2 text-sm text-slate-300">Mening portfolioim</Link>
+                <Link href="/study-plan" onClick={() => setMobileOpen(false)} className="rounded-lg px-4 py-2 text-sm text-slate-300">{tr('Haftalik reja', 'План на неделю', 'Weekly plan')}</Link>
+                <Link href="/portfolio" onClick={() => setMobileOpen(false)} className="rounded-lg px-4 py-2 text-sm text-slate-300">{tr('Mening portfolioim', 'Моё портфолио', 'My portfolio')}</Link>
                 {(currentUser.role === 'admin' || currentUser.role === 'creator') && <Link href="/admin" onClick={() => setMobileOpen(false)} className="rounded-lg px-4 py-2 text-sm text-slate-300">{t('adminPanel')}</Link>}
                 <button onClick={() => { setMobileOpen(false); void logout(); }} className="rounded-lg px-4 py-2 text-left text-sm text-red-300">{t('signOut')}</button>
               </div> : <div className="mt-4 grid grid-cols-2 gap-2 border-t border-white/10 pt-4">

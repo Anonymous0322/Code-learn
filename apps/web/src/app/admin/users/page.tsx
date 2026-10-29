@@ -1,31 +1,49 @@
 'use client';
 
 import { useState } from 'react';
+import { useI18n } from '@/components/providers';
 import { useAuthStore, UserRole } from '@/store/authStore';
 
 export default function AdminUsersPage() {
   const { currentUser, users, updateUserRole, toggleUserStatus } = useAuthStore();
+  const { tr, language } = useI18n();
+  const dateLocale = language === 'uz' ? 'uz-UZ' : language === 'ru' ? 'ru-RU' : 'en-US';
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
   const [notice, setNotice] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   const isCurrentCreator = currentUser?.role === 'creator';
   const roleFilters: { id: 'all' | UserRole; label: string }[] = [
-    { id: 'all', label: 'Barchasi' },
-    { id: 'creator', label: 'Bosh administrator' },
-    { id: 'admin', label: 'Administrator' },
-    { id: 'user', label: 'Foydalanuvchi' },
+    { id: 'all', label: tr('Barchasi', 'Все', 'All') },
+    { id: 'creator', label: tr('Yaratuvchi', 'Создатели', 'Creators') },
+    { id: 'admin', label: tr('Administrator', 'Администраторы', 'Admins') },
+    { id: 'user', label: tr('Foydalanuvchi', 'Пользователи', 'Users') },
   ];
 
   const handleRoleChange = async (userId: string, selectedRole: UserRole) => {
     const res = await updateUserRole(userId, selectedRole);
-    setNotice({ text: res.message, type: res.success ? 'success' : 'error' });
+    const roleLabel = selectedRole === 'creator' ? 'Creator' : selectedRole === 'admin' ? 'Admin' : tr('Foydalanuvchi', 'Пользователь', 'User');
+    setNotice({
+      text: res.success
+        ? tr(`Rol muvaffaqiyatli o‘zgartirildi: ${roleLabel}`, `Роль изменена: ${roleLabel}`, `Role updated: ${roleLabel}`)
+        : res.message,
+      type: res.success ? 'success' : 'error',
+    });
     setTimeout(() => setNotice(null), 3500);
   };
 
   const handleStatusToggle = async (userId: string) => {
     const res = await toggleUserStatus(userId);
-    setNotice({ text: res.message, type: res.success ? 'success' : 'error' });
+    setNotice({
+      text: res.success
+        ? tr(
+            `Foydalanuvchi holati yangilandi: ${res.message.endsWith('Faol') ? 'Faol' : 'Bloklangan'}`,
+            `Статус пользователя обновлён: ${res.message.endsWith('Faol') ? 'Активен' : 'Заблокирован'}`,
+            `User status updated: ${res.message.endsWith('Faol') ? 'Active' : 'Banned'}`
+          )
+        : res.message,
+      type: res.success ? 'success' : 'error',
+    });
     setTimeout(() => setNotice(null), 3000);
   };
 
@@ -43,10 +61,10 @@ export default function AdminUsersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
           <h1 className="font-[Space_Grotesk] text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
-            <span>👥</span> Foydalanuvchilar va Rollarni Boshqarish
+            <span>👥</span> {tr('Foydalanuvchilar va rollarni boshqarish', 'Управление пользователями и ролями', 'Manage users and roles')}
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Foydalanuvchilarga rol berish (Creator, Admin, User), holatlarini va hisoblarini boshqarish
+            {tr('Foydalanuvchilarga rol bering, holati va hisoblarini boshqaring.', 'Назначайте роли и управляйте статусами и аккаунтами пользователей.', 'Assign roles and manage user statuses and accounts.')}
           </p>
         </div>
 
@@ -71,12 +89,12 @@ export default function AdminUsersPage() {
           <span className="text-2xl">{isCurrentCreator ? '👑' : '🛡️'}</span>
           <div>
             <p className="text-xs font-bold text-white">
-              Sizning darajangiz: {isCurrentCreator ? 'Bosh Admin (Creator)' : 'Admin'}
+              {tr('Sizning rolingiz:', 'Ваша роль:', 'Your role:')} {isCurrentCreator ? 'Creator' : 'Admin'}
             </p>
             <p className="text-[11px] text-slate-400">
               {isCurrentCreator
-                ? 'Siz Bosh Adminsiz! Foydalanuvchiga Administrator yoki Foydalanuvchi rolini bera olasiz.'
-                : 'Siz Adminsiz. Rol berish vakolati faqat Bosh Admin (Creator) ga tegishli.'}
+                ? tr('Siz istalgan hisobga Creator, Admin yoki User rolini bera olasiz.', 'Вы можете назначить любой учётной записи роль Creator, Admin или User.', 'You can assign Creator, Admin, or User to any account.')
+                : tr('Rollarni faqat Creator o‘zgartira oladi.', 'Изменять роли может только Creator.', 'Only a Creator can change roles.')}
             </p>
           </div>
         </div>
@@ -93,7 +111,7 @@ export default function AdminUsersPage() {
         <div className="relative flex-1 max-w-md">
           <input
             type="text"
-            placeholder="Ism yoki email bo'yicha qidirish..."
+            placeholder={tr('Ism yoki email bo‘yicha qidirish...', 'Поиск по имени или email...', 'Search by name or email...')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#0a0f24] border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-neon-cyan/50"
@@ -123,11 +141,11 @@ export default function AdminUsersPage() {
         <table className="w-full text-left text-xs">
           <thead className="border-b border-white/10 bg-white/[0.02] text-slate-400 font-mono uppercase tracking-wider text-[10px]">
             <tr>
-              <th className="py-3.5 px-4">Foydalanuvchi</th>
+              <th className="py-3.5 px-4">{tr('Foydalanuvchi', 'Пользователь', 'User')}</th>
               <th className="py-3.5 px-4">Email</th>
-              <th className="py-3.5 px-4">Joriy Roli</th>
-              <th className="py-3.5 px-4">Rol Tayinlash</th>
-              <th className="py-3.5 px-4">Holati</th>
+              <th className="py-3.5 px-4">{tr('Joriy roli', 'Текущая роль', 'Current role')}</th>
+              <th className="py-3.5 px-4">{tr('Rol tayinlash', 'Назначить роль', 'Assign role')}</th>
+              <th className="py-3.5 px-4">{tr('Holati', 'Статус', 'Status')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
@@ -156,11 +174,11 @@ export default function AdminUsersPage() {
                           {user.name}
                           {isSelf && (
                             <span className="text-[9px] bg-white/10 text-slate-400 px-1.5 py-0.2 rounded">
-                              Siz
+                              {tr('Siz', 'Вы', 'You')}
                             </span>
                           )}
                         </p>
-                        <p className="text-[10px] text-slate-500">{user.createdAt} da qo'shilgan</p>
+                        <p className="text-[10px] text-slate-500">{tr('Ro‘yxatdan o‘tgan:', 'Дата регистрации:', 'Joined:')} {new Date(user.createdAt).toLocaleDateString(dateLocale)}</p>
                       </div>
                     </div>
                   </td>
@@ -180,7 +198,7 @@ export default function AdminUsersPage() {
                       }`}
                     >
                       <span>{user.role === 'creator' ? '👑' : user.role === 'admin' ? '🛡️' : '👤'}</span>
-                      <span>{user.role === 'creator' ? 'BOSH ADMINISTRATOR' : user.role === 'admin' ? 'ADMINISTRATOR' : 'FOYDALANUVCHI'}</span>
+                      <span>{user.role === 'creator' ? tr('CREATOR', 'СОЗДАТЕЛЬ', 'CREATOR') : user.role === 'admin' ? tr('ADMINISTRATOR', 'АДМИНИСТРАТОР', 'ADMIN') : tr('FOYDALANUVCHI', 'ПОЛЬЗОВАТЕЛЬ', 'USER')}</span>
                     </span>
                   </td>
 
@@ -192,13 +210,13 @@ export default function AdminUsersPage() {
                         onChange={(e) => handleRoleChange(user.id, e.target.value as UserRole)}
                         className="px-2.5 py-1.5 rounded-lg bg-[#060914] border border-white/15 text-white text-xs font-medium focus:outline-none focus:border-neon-cyan cursor-pointer"
                       >
-                        <option value="user">Foydalanuvchi — kurslarni o‘rganadi</option>
-                        <option value="admin">Administrator — kurs va darslarni boshqaradi</option>
-                        <option value="creator">Creator — barcha rollarni boshqaradi</option>
+                        <option value="user">{tr('Foydalanuvchi — kurslarni o‘rganadi', 'Пользователь — изучает курсы', 'User — learns courses')}</option>
+                        <option value="admin">{tr('Administrator — kurs va darslarni boshqaradi', 'Администратор — управляет курсами и уроками', 'Admin — manages courses and lessons')}</option>
+                        <option value="creator">{tr('Creator — barcha rollarni boshqaradi', 'Создатель — управляет всеми ролями', 'Creator — manages all roles')}</option>
                       </select>
                     ) : (
                       <span className="text-[11px] text-slate-500 italic">
-                        Faqat Creator o‘zgartiradi
+                        {tr('Faqat Creator o‘zgartiradi', 'Изменить может только Creator', 'Only a Creator can change roles')}
                       </span>
                     )}
                   </td>
@@ -214,7 +232,7 @@ export default function AdminUsersPage() {
                           : 'bg-red-500/15 text-red-400 border-red-500/30 hover:bg-red-500/25'
                       } ${isTargetCreator ? 'cursor-not-allowed opacity-80' : 'cursor-pointer'}`}
                     >
-                      {user.status === 'active' ? '✓ FAOL' : '× BLOKLANGAN'}
+                      {user.status === 'active' ? `✓ ${tr('FAOL', 'АКТИВЕН', 'ACTIVE')}` : `× ${tr('BLOKLANGAN', 'ЗАБЛОКИРОВАН', 'BANNED')}`}
                     </button>
                   </td>
 
@@ -227,7 +245,7 @@ export default function AdminUsersPage() {
 
         {filteredUsers.length === 0 && (
           <div className="p-8 text-center text-slate-400 text-xs">
-            Qidiruv bo'yicha hech qanday foydalanuvchi topilmadi.
+            {tr('Qidiruv bo‘yicha foydalanuvchi topilmadi.', 'Пользователи не найдены.', 'No users found.')}
           </div>
         )}
       </div>

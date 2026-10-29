@@ -21,8 +21,8 @@ export default function RoadmapPage() {
     <h1 className="font-[Space_Grotesk] text-4xl font-semibold text-white">{labels.title}</h1>
     {!initialized ? <p className="mt-6 text-slate-400">{labels.loading}</p> : courses.length === 0 ? <p className="mt-6 text-slate-400">{labels.empty}</p> :
       <div className="mt-8 grid gap-4 sm:grid-cols-2">{courses.map(course => <article key={course.id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-6">
-        <h2 className="text-xl font-semibold text-white">{course.title}</h2>
-        <p className="mt-2 text-sm text-slate-400">{course.description}</p>
+        <h2 className="text-xl font-semibold text-white">{course.translations?.[language]?.title || course.title}</h2>
+        <p className="mt-2 text-sm text-slate-400">{course.translations?.[language]?.description || course.description}</p>
         <div className="mt-5 flex items-center justify-between text-xs text-slate-400"><span>{course.levels?.length || 0} {labels.lessons}</span><Link href={`/courses/${course.slug}`} className="text-neon-cyan">{labels.open} →</Link></div>
       </article>)}</div>}
   </main>;

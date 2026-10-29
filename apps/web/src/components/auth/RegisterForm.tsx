@@ -58,7 +58,11 @@ export function RegisterForm() {
         setConfirmationEmail(data.email);
       }
     } else {
-      setErrorMsg(res.message || 'Ro\'yxatdan o\'tishda xatolik yuz berdi');
+      const message = res.message || 'Ro\'yxatdan o\'tishda xatolik yuz berdi';
+      setErrorMsg(message);
+      if (message.includes('Tasdiqlash xatlarini yuborish limiti')) {
+        setConfirmationEmail(data.email);
+      }
     }
   };
 

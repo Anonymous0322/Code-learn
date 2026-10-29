@@ -43,7 +43,7 @@ npm ci
 npm run dev
 ```
 
-Keep the development server running while opening a local confirmation link. If a link has expired, return to registration and use **Tasdiqlash xatini qayta yuborish**. If login reports that `public.profiles` is missing from the schema cache, check the table in Supabase SQL Editor:
+Keep the development server running while opening a local confirmation link. If a link has expired, return to registration or login and use **Tasdiqlash xatini qayta yuborish**. If signup reports `email rate limit exceeded`, stop retrying and check **Authentication → Users** first: the account may already exist even though its email was not sent. Use the resend button later, or configure your own SMTP provider under Supabase **Authentication → SMTP Settings** to avoid the low limits of the default test email service. If login reports that `public.profiles` is missing from the schema cache, check the table in Supabase SQL Editor:
 
 ```sql
 select to_regclass('public.profiles') as profiles_table;

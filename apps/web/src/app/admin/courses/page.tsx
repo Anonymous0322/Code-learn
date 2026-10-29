@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useI18n } from '@/components/providers';
 import { useCourseStore, CourseItem } from '@/store/courseStore';
 
 export default function AdminCoursesPage() {
+  const { tr } = useI18n();
   const { courses, addCourse, updateCourse, deleteCourse } = useCourseStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -110,17 +112,17 @@ export default function AdminCoursesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
           <h1 className="font-[Space_Grotesk] text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
-            <span>📚</span> Kurslar Boshqaruvi
+            <span>📚</span> {tr('Kurslar boshqaruvi', 'Управление курсами', 'Manage courses')}
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Saytdagi barcha dasturlash kurslarini yaratish, tahrirlash va o'chirish
+            {tr('Saytdagi dasturlash kurslarini yarating, tahrirlang va o‘chiring.', 'Создавайте, редактируйте и удаляйте курсы программирования.', 'Create, edit, and delete programming courses.')}
           </p>
         </div>
         <button
           onClick={openAddModal}
           className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple text-white text-xs font-bold shadow-lg shadow-neon-blue/20 hover:opacity-95 transition-all flex items-center gap-2 w-fit"
         >
-          <span>+</span> Yangi Kurs Qo'shish
+          <span>+</span> {tr('Yangi kurs qo‘shish', 'Добавить курс', 'Add course')}
         </button>
       </div>
 
@@ -142,14 +144,14 @@ export default function AdminCoursesPage() {
         <div className="relative flex-1 max-w-md">
           <input
             type="text"
-            placeholder="Kurs nomi yoki slug bo'yicha qidirish..."
+            placeholder={tr('Kurs nomi yoki slug bo‘yicha qidirish...', 'Поиск по названию курса или slug...', 'Search by course name or slug...')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#0a0f24] border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-neon-cyan/50"
           />
           <span className="absolute left-3 top-2.5 text-xs text-slate-500">🔍</span>
         </div>
-        <span className="text-xs text-slate-400">Jami: {filteredCourses.length} ta kurs</span>
+        <span className="text-xs text-slate-400">{tr('Jami:', 'Всего:', 'Total:')} {filteredCourses.length} {tr('ta kurs', 'курсов', 'courses')}</span>
       </div>
 
       {/* Courses Grid */}
@@ -177,7 +179,7 @@ export default function AdminCoursesPage() {
                       : 'bg-red-500/15 text-red-400 border border-red-500/30'
                   }`}
                 >
-                  {course.isActive ? 'FAOL' : 'NOFAOL'}
+                  {course.isActive ? tr('FAOL', 'АКТИВЕН', 'ACTIVE') : tr('NOFAOL', 'НЕАКТИВЕН', 'INACTIVE')}
                 </span>
               </div>
 
@@ -192,7 +194,7 @@ export default function AdminCoursesPage() {
                   {course.difficulty}
                 </span>
                 <span className="text-[10px] text-slate-400">
-                  {course.levels?.length || 0} dars
+                  {course.levels?.length || 0} {tr('dars', 'уроков', 'lessons')}
                 </span>
               </div>
 
@@ -201,7 +203,7 @@ export default function AdminCoursesPage() {
                   onClick={() => openEditModal(course)}
                   className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 text-xs font-medium border border-white/10 transition-colors"
                 >
-                  ✏️ Tahrirlash
+                  ✏️ {tr('Tahrirlash', 'Изменить', 'Edit')}
                 </button>
                 <button
                   onClick={() => handleDelete(course.id, course.title)}
@@ -221,18 +223,18 @@ export default function AdminCoursesPage() {
           <div className="my-auto max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-2xl border border-white/15 bg-[#0d132b] p-4 shadow-2xl sm:p-6">
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
               <h2 className="font-bold text-base text-white">
-                {editingCourse ? 'Kursni Tahrirlash' : 'Yangi Kurs Qo\'shish'}
+                {editingCourse ? tr('Kursni tahrirlash', 'Редактировать курс', 'Edit course') : tr('Yangi kurs qo‘shish', 'Добавить курс', 'Add course')}
               </h2>
               <button onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
 
             <form onSubmit={handleSave} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 mb-1 font-medium">Kurs Nomi *</label>
+                <label className="block text-slate-300 mb-1 font-medium">{tr('Kurs nomi', 'Название курса', 'Course name')} *</label>
                 <input
                   type="text"
                   required
-                  placeholder="Masalan: JavaScript Asoslari"
+                  placeholder={tr('Masalan: JavaScript asoslari', 'Например: Основы JavaScript', 'Example: JavaScript basics')}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-[#060914] border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-neon-cyan"
@@ -252,7 +254,7 @@ export default function AdminCoursesPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-300 mb-1 font-medium">Til Kodi (masalan: js, py)</label>
+                  <label className="block text-slate-300 mb-1 font-medium">{tr('Til kodi (masalan: js, py)', 'Код языка (например: js, py)', 'Language code (e.g. js, py)')}</label>
                   <input
                     type="text"
                     placeholder="js"
@@ -264,7 +266,7 @@ export default function AdminCoursesPage() {
               </div>
 
               <div>
-                <label className="block text-slate-300 mb-1 font-medium">Kurs logotipi (rasm manzili)</label>
+                <label className="block text-slate-300 mb-1 font-medium">{tr('Kurs logotipi (rasm manzili)', 'Логотип курса (URL изображения)', 'Course logo (image URL)')}</label>
                 <input
                   type="text"
                   placeholder="/images/logos/react.svg yoki https://..."
@@ -272,14 +274,14 @@ export default function AdminCoursesPage() {
                   onChange={(e) => setIconUrl(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-[#060914] border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-neon-cyan"
                 />
-                <p className="mt-1 text-[10px] text-slate-500">Rasmni public/images/logos papkasiga joylang va shu yerga /images/logos/fayl.svg deb kiriting.</p>
+                <p className="mt-1 text-[10px] text-slate-500">{tr('Rasmni public/images/logos papkasiga joylang va bu yerga uning manzilini kiriting.', 'Поместите изображение в public/images/logos и укажите здесь его путь.', 'Place the image in public/images/logos and enter its path here.')}</p>
               </div>
 
               <div>
-                <label className="block text-slate-300 mb-1 font-medium">Tavsif (Description)</label>
+                <label className="block text-slate-300 mb-1 font-medium">{tr('Tavsif', 'Описание', 'Description')}</label>
                 <textarea
                   rows={3}
-                  placeholder="Ushbu kursda nimalar o'rganiladi..."
+                  placeholder={tr('Ushbu kursda nimalar o‘rganiladi...', 'Чему посвящён этот курс...', 'What this course covers...')}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-[#060914] border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-neon-cyan resize-none"
@@ -288,27 +290,27 @@ export default function AdminCoursesPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 mb-1 font-medium">Murakkablik Darajasi</label>
+                  <label className="block text-slate-300 mb-1 font-medium">{tr('Qiyinlik darajasi', 'Уровень сложности', 'Difficulty')}</label>
                   <select
                     value={difficulty}
                     onChange={(e) => setDifficulty(e.target.value as any)}
                     className="w-full px-3 py-2 rounded-xl bg-[#060914] border border-white/10 text-white focus:outline-none focus:border-neon-cyan"
                   >
-                    <option value="beginner">Boshlang'ich (Beginner)</option>
-                    <option value="intermediate">O'rta (Intermediate)</option>
-                    <option value="advanced">Ilg'or (Advanced)</option>
+                    <option value="beginner">{tr('Boshlang‘ich', 'Начальный', 'Beginner')}</option>
+                    <option value="intermediate">{tr('O‘rta', 'Средний', 'Intermediate')}</option>
+                    <option value="advanced">{tr('Yuqori', 'Продвинутый', 'Advanced')}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 mb-1 font-medium">Holati</label>
+                  <label className="block text-slate-300 mb-1 font-medium">{tr('Holati', 'Статус', 'Status')}</label>
                   <select
                     value={isActive ? 'active' : 'inactive'}
                     onChange={(e) => setIsActive(e.target.value === 'active')}
                     className="w-full px-3 py-2 rounded-xl bg-[#060914] border border-white/10 text-white focus:outline-none focus:border-neon-cyan"
                   >
-                    <option value="active">Faol (Active)</option>
-                    <option value="inactive">Nofaol (Draft/Inactive)</option>
+                    <option value="active">{tr('Faol', 'Активен', 'Active')}</option>
+                    <option value="inactive">{tr('Nofaol (qoralama)', 'Неактивен (черновик)', 'Inactive (draft)')}</option>
                   </select>
                 </div>
               </div>
@@ -319,13 +321,13 @@ export default function AdminCoursesPage() {
                   onClick={() => setModalOpen(false)}
                   className="px-4 py-2 rounded-xl border border-white/10 hover:border-white/20 text-slate-300"
                 >
-                  Bekor qilish
+                  {tr('Bekor qilish', 'Отмена', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple text-white font-bold shadow-md shadow-neon-blue/20"
                 >
-                  Saqlash
+                  {tr('Saqlash', 'Сохранить', 'Save')}
                 </button>
               </div>
             </form>
