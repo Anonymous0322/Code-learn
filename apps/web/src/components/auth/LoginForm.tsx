@@ -18,7 +18,7 @@ type LoginFormValues = z.infer<typeof LoginSchema>;
 
 export function LoginForm() {
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, tr } = useI18n();
   const { login, resendConfirmation } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
@@ -49,7 +49,7 @@ export function LoginForm() {
         router.push('/courses');
       }
     } else {
-      setErrorMsg(res.message || 'Kirishda xatolik yuz berdi');
+      setErrorMsg(res.message || tr('Kirishda xatolik yuz berdi.', 'Не удалось войти.', 'Could not sign in.'));
     }
   };
 
@@ -66,7 +66,7 @@ export function LoginForm() {
     const result = await resendConfirmation(email);
     setResending(false);
     if (result.success) {
-      setConfirmationMsg(result.message);
+      setConfirmationMsg(tr('Tasdiqlash xati emailingizga qayta yuborildi.', 'Письмо с подтверждением отправлено повторно.', 'The confirmation email has been resent.'));
     } else {
       setErrorMsg(result.message);
     }
@@ -95,7 +95,7 @@ export function LoginForm() {
               {...register('email')}
               type="email"
               autoComplete="email"
-              placeholder="emailingizni kiriting"
+              placeholder={tr('emailingizni kiriting', 'Введите email', 'Enter your email')}
               className="w-full px-4 py-3 rounded-lg bg-bg-primary border border-border-subtle text-text-primary focus:border-neon-blue focus:outline-none transition-colors text-sm"
             />
             {errors.email && <p className="text-neon-pink text-xs mt-1">{errors.email.message}</p>}
@@ -123,7 +123,7 @@ export function LoginForm() {
           disabled={resending}
           className="mt-4 w-full text-center text-xs text-neon-cyan hover:text-white disabled:opacity-50"
         >
-          {resending ? 'Xat yuborilmoqda...' : 'Tasdiqlash xatini qayta yuborish'}
+          {resending ? tr('Xat yuborilmoqda...', 'Отправка письма...', 'Sending email...') : tr('Tasdiqlash xatini qayta yuborish', 'Отправить письмо повторно', 'Resend confirmation email')}
         </button>
       </div>
     </div>

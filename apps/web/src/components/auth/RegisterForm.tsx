@@ -19,7 +19,7 @@ type RegisterFormValues = z.infer<typeof RegisterSchema>;
 
 export function RegisterForm() {
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, tr } = useI18n();
   const { register: registerUser, resendConfirmation } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
@@ -54,11 +54,11 @@ export function RegisterForm() {
           router.push('/courses');
         }
       } else {
-        setSuccessMsg(res.message || 'Hisob yaratildi. Emailingizni tasdiqlang.');
+        setSuccessMsg(tr('Hisob yaratildi. Emailingizni tasdiqlang.', 'Аккаунт создан. Подтвердите адрес электронной почты.', 'Account created. Please confirm your email address.'));
         setConfirmationEmail(data.email);
       }
     } else {
-      const message = res.message || 'Ro\'yxatdan o\'tishda xatolik yuz berdi';
+      const message = res.message || tr('Ro‘yxatdan o‘tishda xatolik yuz berdi.', 'Не удалось зарегистрироваться.', 'Registration failed.');
       setErrorMsg(message);
       if (message.includes('Tasdiqlash xatlarini yuborish limiti')) {
         setConfirmationEmail(data.email);
@@ -73,7 +73,7 @@ export function RegisterForm() {
     const result = await resendConfirmation(confirmationEmail);
     setResending(false);
     if (result.success) {
-      setSuccessMsg(result.message);
+      setSuccessMsg(tr('Tasdiqlash xati emailingizga qayta yuborildi.', 'Письмо с подтверждением отправлено повторно.', 'The confirmation email has been resent.'));
     } else {
       setErrorMsg(result.message);
     }
@@ -101,7 +101,7 @@ export function RegisterForm() {
             disabled={resending}
             className="mb-4 w-full text-center text-xs text-neon-cyan hover:text-white disabled:opacity-50"
           >
-            {resending ? 'Xat yuborilmoqda...' : 'Tasdiqlash xatini qayta yuborish'}
+            {resending ? tr('Xat yuborilmoqda...', 'Отправка письма...', 'Sending email...') : tr('Tasdiqlash xatini qayta yuborish', 'Отправить письмо повторно', 'Resend confirmation email')}
           </button>
         )}
 
@@ -112,7 +112,7 @@ export function RegisterForm() {
             <input
               {...register('name')}
               type="text"
-              placeholder="Ismingizni kiriting"
+              placeholder={tr('Ismingizni kiriting', 'Введите имя', 'Enter your name')}
               className="w-full px-4 py-3 rounded-lg bg-bg-primary border border-border-subtle text-text-primary focus:border-neon-blue focus:outline-none transition-colors text-sm"
             />
             {errors.name && <p className="text-neon-pink text-xs mt-1">{errors.name.message}</p>}
@@ -123,7 +123,7 @@ export function RegisterForm() {
             <input
               {...register('email')}
               type="email"
-              placeholder="emailingizni kiriting"
+              placeholder={tr('emailingizni kiriting', 'Введите email', 'Enter your email')}
               className="w-full px-4 py-3 rounded-lg bg-bg-primary border border-border-subtle text-text-primary focus:border-neon-blue focus:outline-none transition-colors text-sm"
             />
             {errors.email && <p className="text-neon-pink text-xs mt-1">{errors.email.message}</p>}
@@ -134,7 +134,7 @@ export function RegisterForm() {
             <input
               {...register('password')}
               type="password"
-              placeholder="Kamida 6 belgi"
+              placeholder={tr('Kamida 6 belgi', 'Не менее 6 символов', 'At least 6 characters')}
               className="w-full px-4 py-3 rounded-lg bg-bg-primary border border-border-subtle text-text-primary focus:border-neon-blue focus:outline-none transition-colors text-sm"
             />
             {errors.password && <p className="text-neon-pink text-xs mt-1">{errors.password.message}</p>}

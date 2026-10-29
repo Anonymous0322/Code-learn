@@ -5,13 +5,14 @@ import { useI18n } from '@/components/providers';
 import { useCourseStore, CourseItem } from '@/store/courseStore';
 
 export default function AdminCoursesPage() {
-  const { tr } = useI18n();
+  const { tr, language } = useI18n();
   const { courses, addCourse, updateCourse, deleteCourse } = useCourseStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<CourseItem | null>(null);
 
   // Form states
+  const [translations, setTranslations] = useState<CourseItem['translations']>({});
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
   const [languageCode, setLanguageCode] = useState('');
@@ -23,6 +24,7 @@ export default function AdminCoursesPage() {
 
   const openAddModal = () => {
     setEditingCourse(null);
+    setTranslations({});
     setTitle('');
     setSlug('');
     setLanguageCode('');
@@ -35,6 +37,7 @@ export default function AdminCoursesPage() {
 
   const openEditModal = (course: CourseItem) => {
     setEditingCourse(course);
+    setTranslations(course.translations || {});
     setTitle(course.title);
     setSlug(course.slug);
     setLanguageCode(course.languageCode);
@@ -50,12 +53,12 @@ export default function AdminCoursesPage() {
     let saveSucceeded = false;
     const normalizedSlug = slug.toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-|-$/g, '');
     if (!title.trim() || !normalizedSlug) {
-      setNotice({ text: 'Iltimos, barcha majburiy maydonlarni to\'ldiring!', type: 'error' });
+      setNotice({ text: tr('Iltimos, barcha majburiy maydonlarni to‘ldiring.', 'Заполните все обязательные поля.', 'Please fill in all required fields.'), type: 'error' });
       return;
     }
 
     if (courses.some(course => course.slug === normalizedSlug && course.id !== editingCourse?.id)) {
-      setNotice({ text: 'Bu URL nomi bilan kurs mavjud. Boshqa slug tanlang.', type: 'error' });
+      setNotice({ text: tr('Bu URL nomi bilan kurs mavjud. Boshqa slug tanlang.', 'Курс с таким URL уже существует. Выберите другой slug.', 'A course with this URL already exists. Choose a different slug.'), type: 'error' });
       return;
     }
 
@@ -65,12 +68,12 @@ export default function AdminCoursesPage() {
         slug: normalizedSlug,
         languageCode: (languageCode || normalizedSlug).toLowerCase().trim(),
         iconUrl: iconUrl.trim() || null,
-        translations: {},
+        translations,
         description,
         difficulty,
         isActive,
       });
-      setNotice({ text: res.message, type: res.success ? 'success' : 'error' });
+      setNotice({ text: res.success ? tr('Kurs yangilandi.', 'Курс обновлён.', 'Course updated.') : res.message, type: res.success ? 'success' : 'error' });
       saveSucceeded = res.success;
     } else {
       const res = await addCourse({
@@ -78,14 +81,14 @@ export default function AdminCoursesPage() {
         slug: normalizedSlug,
         languageCode: (languageCode || normalizedSlug).toLowerCase().trim(),
         iconUrl: iconUrl.trim() || null,
-        translations: {},
+        translations,
         description,
         difficulty,
         orderIndex: courses.length,
         isActive,
         levels: [],
       });
-      setNotice({ text: res.message, type: res.success ? 'success' : 'error' });
+      setNotice({ text: res.success ? tr('Kurs qo‘shildi.', 'Курс добавлен.', 'Course added.') : res.message, type: res.success ? 'success' : 'error' });
       saveSucceeded = res.success;
     }
 
@@ -94,9 +97,9 @@ export default function AdminCoursesPage() {
   };
 
   const handleDelete = async (id: string, courseTitle: string) => {
-    if (confirm(`Haqiqatan ham "${courseTitle}" kursini o'chirmoqchimisiz?`)) {
+    if (confirm(tr(`Haqiqatan ham "${courseTitle}" kursini o‘chirmoqchimisiz?`, `Вы действительно хотите удалить курс «${courseTitle}»?`, `Are you sure you want to delete the course "${courseTitle}"?`))) {
       const res = await deleteCourse(id);
-      setNotice({ text: res.message, type: res.success ? 'success' : 'error' });
+      setNotice({ text: res.success ? tr('Kurs o‘chirildi.', 'Курс удалён.', 'Course deleted.') : res.message, type: res.success ? 'success' : 'error' });
       setTimeout(() => setNotice(null), 3000);
     }
   };
@@ -105,6 +108,12 @@ export default function AdminCoursesPage() {
     c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.slug.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const updateTranslation = (locale: 'uz' | 'ru' | 'en', field: 'title' | 'description', value: string) => {
+    setTranslations(current => ({
+      ...current,
+      [locale]: { ...current?.[locale], [field]: value },
+    }));
+  };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
@@ -168,7 +177,7 @@ export default function AdminCoursesPage() {
                     {course.languageCode.slice(0, 2)}
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-white">{course.title}</h3>
+                    <h3 className="font-bold text-sm text-white">{course.translations?.[language]?.title || course.title}</h3>
                     <span className="font-mono text-[10px] text-slate-400">/{course.slug}</span>
                   </div>
                 </div>
@@ -184,14 +193,14 @@ export default function AdminCoursesPage() {
               </div>
 
               <p className="text-xs text-slate-300 line-clamp-3 mb-4 leading-relaxed">
-                {course.description}
+                {course.translations?.[language]?.description || course.description}
               </p>
             </div>
 
             <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <span className="font-mono text-[10px] uppercase bg-white/5 border border-white/10 text-slate-300 px-2 py-0.5 rounded">
-                  {course.difficulty}
+                  {course.difficulty === 'beginner' ? tr('Boshlang‘ich', 'Начальный', 'Beginner') : course.difficulty === 'intermediate' ? tr('O‘rta', 'Средний', 'Intermediate') : tr('Yuqori', 'Продвинутый', 'Advanced')}
                 </span>
                 <span className="text-[10px] text-slate-400">
                   {course.levels?.length || 0} {tr('dars', 'уроков', 'lessons')}
@@ -206,6 +215,9 @@ export default function AdminCoursesPage() {
                   ✏️ {tr('Tahrirlash', 'Изменить', 'Edit')}
                 </button>
                 <button
+                  type="button"
+                  aria-label={tr('O‘chirish', 'Удалить', 'Delete')}
+                  title={tr('O‘chirish', 'Удалить', 'Delete')}
                   onClick={() => handleDelete(course.id, course.title)}
                   className="px-2.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs font-medium border border-red-500/20 transition-colors"
                 >
@@ -288,12 +300,42 @@ export default function AdminCoursesPage() {
                 />
               </div>
 
+              <details className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                <summary className="cursor-pointer text-xs font-semibold text-slate-200">{tr('Kurs tarjimalari', 'Переводы курса', 'Course translations')}</summary>
+                <p className="mt-2 text-[10px] leading-5 text-slate-400">{tr('Har bir tilda ko‘rinadigan nom va tavsifni kiriting. Bo‘sh maydonlar asosiy matnni ko‘rsatadi.', 'Укажите название и описание для каждого языка. Пустые поля будут показывать основной текст.', 'Add a title and description for each language. Empty fields fall back to the main text.')}</p>
+                {([
+                  ['uz', tr('O‘zbekcha', 'Узбекский', 'Uzbek')],
+                  ['ru', tr('Ruscha', 'Русский', 'Russian')],
+                  ['en', tr('Inglizcha', 'Английский', 'English')],
+                ] as const).map(([locale, localeLabel]) => (
+                  <fieldset key={locale} className="mt-3 space-y-2 border-t border-white/10 pt-3">
+                    <legend className="px-1 text-[11px] font-semibold text-neon-cyan">{localeLabel}</legend>
+                    <input
+                      type="text"
+                      value={translations?.[locale]?.title || ''}
+                      onChange={event => updateTranslation(locale, 'title', event.target.value)}
+                      placeholder={tr('Kurs nomi', 'Название курса', 'Course title')}
+                      aria-label={`${localeLabel} — ${tr('Kurs nomi', 'Название курса', 'Course title')}`}
+                      className="w-full rounded-lg border border-white/10 bg-[#060914] px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:border-neon-cyan focus:outline-none"
+                    />
+                    <textarea
+                      rows={2}
+                      value={translations?.[locale]?.description || ''}
+                      onChange={event => updateTranslation(locale, 'description', event.target.value)}
+                      placeholder={tr('Kurs tavsifi', 'Описание курса', 'Course description')}
+                      aria-label={`${localeLabel} — ${tr('Kurs tavsifi', 'Описание курса', 'Course description')}`}
+                      className="w-full resize-none rounded-lg border border-white/10 bg-[#060914] px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:border-neon-cyan focus:outline-none"
+                    />
+                  </fieldset>
+                ))}
+              </details>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-slate-300 mb-1 font-medium">{tr('Qiyinlik darajasi', 'Уровень сложности', 'Difficulty')}</label>
                   <select
                     value={difficulty}
-                    onChange={(e) => setDifficulty(e.target.value as any)}
+                    onChange={(e) => setDifficulty(e.target.value as CourseItem['difficulty'])}
                     className="w-full px-3 py-2 rounded-xl bg-[#060914] border border-white/10 text-white focus:outline-none focus:border-neon-cyan"
                   >
                     <option value="beginner">{tr('Boshlang‘ich', 'Начальный', 'Beginner')}</option>

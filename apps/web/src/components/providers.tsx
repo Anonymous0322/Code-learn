@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, createContext, ReactNode, useContext } from 'react';
+import { useState, useEffect, createContext, ReactNode, useContext, useCallback, useMemo } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useCourseStore } from '@/store/courseStore';
 
@@ -172,7 +172,11 @@ export function Providers({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState('dark');
   const [language, setLanguage] = useState<Language>('en');
   const [authLinkError, setAuthLinkError] = useState<string | null>(null);
-
+  const translate = useCallback((uz: string, ru: string, en: string) => (
+    language === 'uz' ? uz : language === 'ru' ? ru : en
+  ), [language]);
+  const translateKey = useCallback((key: TranslationKey) => translations[language][key], [language]);
+  const toggleTheme = useCallback(() => setTheme(current => current === 'dark' ? 'light' : 'dark'), []);
   useEffect(() => {
     useAuthStore.getState().initialize();
     void useCourseStore.getState().initialize();
@@ -182,9 +186,9 @@ export function Providers({ children }: { children: ReactNode }) {
     const hash = new URLSearchParams(window.location.hash.slice(1));
     const errorCode = hash.get('error_code');
     if (errorCode === 'otp_expired') {
-      setAuthLinkError('Tasdiqlash havolasi eskirgan yoki oldin ishlatilgan. Login sahifasidan yangi tasdiqlash xatini so‘rang.');
+      setAuthLinkError('otp_expired');
     } else if (errorCode) {
-      setAuthLinkError(hash.get('error_description') || 'Emailni tasdiqlashda xatolik yuz berdi.');
+      setAuthLinkError('confirmation_error');
     }
   }, []);
 
@@ -194,19 +198,29 @@ export function Providers({ children }: { children: ReactNode }) {
     document.documentElement.lang = saved === 'ru' || saved === 'uz' ? saved : 'en';
   }, []);
 
-  const changeLanguage = (nextLanguage: Language) => {
+  const changeLanguage = useCallback((nextLanguage: Language) => {
     setLanguage(nextLanguage);
     window.localStorage.setItem('codelearn-language', nextLanguage);
     document.documentElement.lang = nextLanguage;
-  };
+  }, []);
+  const contextValue = useMemo(() => ({
+    theme,
+    toggleTheme,
+    language,
+    setLanguage: changeLanguage,
+    t: translateKey,
+    tr: translate,
+  }), [theme, toggleTheme, language, changeLanguage, translateKey, translate]);
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme: () => setTheme(t => t === 'dark' ? 'light' : 'dark'), language, setLanguage: changeLanguage, t: (key) => translations[language][key], tr: (uz, ru, en) => language === 'uz' ? uz : language === 'ru' ? ru : en }}>
+    <ThemeContext.Provider value={contextValue}>
       {authLinkError && (
         <div role="alert" className="fixed inset-x-4 top-20 z-[100] mx-auto max-w-xl rounded-lg border border-red-500/30 bg-red-950/95 p-4 text-center text-sm text-red-200 shadow-xl">
-          {authLinkError}{' '}
+          {authLinkError === 'otp_expired'
+            ? translate('Tasdiqlash havolasi eskirgan yoki oldin ishlatilgan. Yangi tasdiqlash xatini so‘rang.', 'Ссылка для подтверждения устарела или уже использована. Запросите новое письмо.', 'The confirmation link has expired or was already used. Request a new email.')
+            : translate('Emailni tasdiqlashda xatolik yuz berdi.', 'Не удалось подтвердить email.', 'Email confirmation failed.')}{' '}
           <a href="/auth/login" className="font-semibold text-neon-cyan underline">
-            Login sahifasiga o‘tish
+            {translate('Login sahifasiga o‘tish', 'Перейти ко входу', 'Go to sign in')}
           </a>
         </div>
       )}

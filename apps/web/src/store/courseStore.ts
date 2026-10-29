@@ -25,6 +25,17 @@ export interface LessonExercise {
   checks: ExerciseCheck[];
 }
 
+export interface LessonTranslation {
+  title?: string;
+  description?: string;
+  theory?: string;
+  exercise?: {
+    instructions?: string;
+    checks?: Record<string, { label?: string; expected?: string }>;
+  };
+  quiz?: Record<string, { question?: string; options?: string[]; explanation?: string }>;
+}
+
 export interface LevelItem {
   id: string;
   slug?: string;
@@ -36,7 +47,7 @@ export interface LevelItem {
   starterCode?: string;
   quiz?: QuizQuestion[];
   exercise?: LessonExercise | null;
-  translations?: Partial<Record<'en' | 'ru' | 'uz', { title?: string; description?: string; theory?: string }>>;
+  translations?: Partial<Record<'en' | 'ru' | 'uz', LessonTranslation>>;
   orderIndex: number;
   lessons?: { id: string; slug: string; title: string; duration?: string }[];
 }

@@ -11,6 +11,18 @@ const labels = {
   uz: { heading: 'Darslar va modullar boshqaruvi', intro: 'Har bir kursdagi interaktiv darslar va amaliy modullarni boshqarish', add: 'Yangi dars qo‘shish', choose: 'Kursni tanlang:', lessons: 'ta dars', edit: 'Tahrirlash', remove: 'O‘chirish', none: 'Bu kursda hali darslar yo‘q.', first: 'Birinchi darsni qo‘shish', missingCourse: 'Kurs tanlanmagan.', courseLessons: 'darslari', total: 'Jami:', cancel: 'Bekor qilish', save: 'Saqlash', course: 'Kurs', title: 'Dars sarlavhasi', description: 'Qisqa tavsif', theory: 'Dars matni', required: 'Dars sarlavhasi majburiy', addTitle: 'Yangi dars qo‘shish', editTitle: 'Darsni tahrirlash', help: 'Dars matnini o‘zbek tilida kiriting va amaliyot uchun boshlang‘ich kodni qo‘shing.', editorLanguage: 'IDE dasturlash tili', starterCode: 'Boshlang‘ich kod', uzbek: 'O‘zbekcha', quiz: 'Dars mini-testi', addQuestion: 'Savol qo‘shish', question: 'Savol', answer: 'Javob varianti', correctAnswer: 'To‘g‘ri javob', removeQuestion: 'O‘chirish', incompleteQuestion: 'Testdagi barcha savol va to‘rtta javob variantini to‘ldiring.', questionLimit: 'Har bir dars uchun eng ko‘pi 10 ta savol.', exercise: 'Kod mashqi', instructions: 'Vazifa yo‘riqnomasi', addCheck: 'Tekshiruv qo‘shish', checkLabel: 'Tekshiruv talabi', selector: 'CSS selektor', checkType: 'Tekshirish turi', expected: 'Kutilgan qiymat', property: 'CSS xususiyati', removeCheck: 'Tekshiruvni o‘chirish', invalidExercise: 'Mashq yo‘riqnomasi va barcha tekshiruv maydonlarini to‘ldiring.', preview: 'Dars matni ko‘rinishi', up: 'Yuqoriga', down: 'Pastga', quizExplanation: 'Javob izohi (testdan keyin ko‘rsatiladi)' },
 } as const;
 
+const translatedLessonFields = {
+  uz: { section: 'Dars tarjimalari', title: 'Sarlavha', description: 'Qisqa tavsif', theory: 'Dars matni', hint: 'Bo‘sh maydonlar o‘zbekcha asosiy matnni ko‘rsatadi.' },
+  ru: { section: 'Переводы урока', title: 'Название', description: 'Краткое описание', theory: 'Материал урока', hint: 'Пустые поля будут показывать основной текст на узбекском.' },
+  en: { section: 'Lesson translations', title: 'Title', description: 'Short description', theory: 'Lesson content', hint: 'Empty fields fall back to the original Uzbek content.' },
+} as const;
+
+const lessonLocales = [
+  { code: 'uz', label: 'O‘zbekcha' },
+  { code: 'ru', label: 'Русский' },
+  { code: 'en', label: 'English' },
+] as const;
+
 const getEditorLanguage = (languageCode: string): NonNullable<LevelItem['editorLanguage']> => {
   const normalized = languageCode.toLowerCase();
   return normalized === 'css' || normalized === 'javascript' ? normalized : 'html';
@@ -29,6 +41,7 @@ export default function AdminLessonsPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [theory, setTheory] = useState('');
+  const [translations, setTranslations] = useState<LevelItem['translations']>({});
   const [editorLanguage, setEditorLanguage] = useState<NonNullable<LevelItem['editorLanguage']>>('html');
   const [starterCode, setStarterCode] = useState('');
   const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
@@ -47,6 +60,7 @@ export default function AdminLessonsPage() {
     setTitle('');
     setDescription('');
     setTheory('');
+    setTranslations({});
     setEditorLanguage(getEditorLanguage(currentCourse?.languageCode || 'html'));
     setStarterCode('');
     setQuiz([]);
@@ -60,6 +74,7 @@ export default function AdminLessonsPage() {
     setTitle(lvl.title);
     setDescription(lvl.description || '');
     setTheory(lvl.theory || '');
+    setTranslations(lvl.translations || {});
     setEditorLanguage(lvl.editorLanguage || getEditorLanguage(currentCourse?.languageCode || 'html'));
     setStarterCode(lvl.starterCode || '');
     setQuiz((lvl.quiz || []).map(question => ({
@@ -92,6 +107,65 @@ export default function AdminLessonsPage() {
   const updateExerciseCheck = (checkId: string, updates: Partial<ExerciseCheck>) => {
     setExerciseChecks(current => current.map(check => check.id === checkId ? { ...check, ...updates } : check));
   };
+  const updateLessonTranslation = (locale: 'uz' | 'ru' | 'en', field: 'title' | 'description' | 'theory', value: string) => {
+    setTranslations(current => ({
+      ...current,
+      [locale]: { ...current?.[locale], [field]: value },
+    }));
+  };
+  const updateExerciseTranslation = (locale: 'uz' | 'ru' | 'en', field: 'instructions', value: string) => {
+    setTranslations(current => ({
+      ...current,
+      [locale]: {
+        ...current?.[locale],
+        exercise: { ...current?.[locale]?.exercise, [field]: value },
+      },
+    }));
+  };
+  const updateExerciseCheckTranslation = (locale: 'uz' | 'ru' | 'en', checkId: string, field: 'label' | 'expected', value: string) => {
+    setTranslations(current => ({
+      ...current,
+      [locale]: {
+        ...current?.[locale],
+        exercise: {
+          ...current?.[locale]?.exercise,
+          checks: {
+            ...current?.[locale]?.exercise?.checks,
+            [checkId]: { ...current?.[locale]?.exercise?.checks?.[checkId], [field]: value },
+          },
+        },
+      },
+    }));
+  };
+  const updateQuizTranslation = (locale: 'uz' | 'ru' | 'en', questionId: string, field: 'question' | 'explanation', value: string) => {
+    setTranslations(current => ({
+      ...current,
+      [locale]: {
+        ...current?.[locale],
+        quiz: {
+          ...current?.[locale]?.quiz,
+          [questionId]: { ...current?.[locale]?.quiz?.[questionId], [field]: value },
+        },
+      },
+    }));
+  };
+  const updateQuizOptionTranslation = (locale: 'uz' | 'ru' | 'en', questionId: string, optionIndex: number, value: string) => {
+    setTranslations(current => {
+      const currentQuestion = current?.[locale]?.quiz?.[questionId];
+      const options = [...(currentQuestion?.options || quiz.find(question => question.id === questionId)?.options || [])];
+      options[optionIndex] = value;
+      return {
+        ...current,
+        [locale]: {
+          ...current?.[locale],
+          quiz: {
+            ...current?.[locale]?.quiz,
+            [questionId]: { ...currentQuestion, options },
+          },
+        },
+      };
+    });
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,7 +193,7 @@ export default function AdminLessonsPage() {
         starterCode,
         quiz,
         exercise,
-        translations: {},
+        translations,
       });
       setNotice({ text: res.message, type: res.success ? 'success' : 'error' });
       saveSucceeded = res.success;
@@ -132,7 +206,7 @@ export default function AdminLessonsPage() {
         starterCode,
         quiz,
         exercise,
-        translations: {},
+        translations,
         levelIndex: currentCourse.levels?.length || 0,
         orderIndex: currentCourse.levels?.length || 0,
       });
@@ -203,7 +277,7 @@ export default function AdminLessonsPage() {
             <span className="w-5 h-5 rounded bg-white/10 flex items-center justify-center text-[10px] uppercase font-mono text-neon-cyan">
               {course.languageCode.slice(0, 2)}
             </span>
-            <span>{course.title}</span>
+            <span>{course.translations?.[language]?.title || course.title}</span>
             <span className="text-[10px] opacity-60">({course.levels?.length || 0})</span>
           </button>
         ))}
@@ -215,9 +289,9 @@ export default function AdminLessonsPage() {
           <div className="p-4 rounded-xl bg-[#0a0f24] border border-white/10 flex items-center justify-between">
             <div>
               <h2 className="font-bold text-sm text-white">
-                {currentCourse.title} {text.courseLessons}
+                {currentCourse.translations?.[language]?.title || currentCourse.title} {text.courseLessons}
               </h2>
-              <p className="text-xs text-slate-400">{currentCourse.description}</p>
+              <p className="text-xs text-slate-400">{currentCourse.translations?.[language]?.description || currentCourse.description}</p>
             </div>
             <span className="text-xs text-neon-cyan font-mono font-bold">
               {text.total} {currentCourse.levels?.length || 0} {text.lessons}
@@ -236,20 +310,20 @@ export default function AdminLessonsPage() {
                   </div>
                   <div className="min-w-0">
                     <h3 className="font-bold text-xs sm:text-sm text-white truncate">
-                      {level.title}
+                      {level.translations?.[language]?.title || level.title}
                     </h3>
                     <p className="text-[11px] text-slate-400 truncate mt-0.5">
-                      {level.description}
+                      {level.translations?.[language]?.description || level.description}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <button type="button" aria-label={`${text.up}: ${level.title}`} disabled={idx === 0} onClick={async () => {
+                  <button type="button" aria-label={`${text.up}: ${level.translations?.[language]?.title || level.title}`} disabled={idx === 0} onClick={async () => {
                     const result = await moveLevel(currentCourse.id, level.id, -1);
                     if (!result.success) setNotice({ text: result.message, type: 'error' });
                   }} className="rounded-lg border border-white/10 px-2 py-1.5 text-xs text-slate-300 disabled:opacity-30">↑</button>
-                  <button type="button" aria-label={`${text.down}: ${level.title}`} disabled={idx === orderedLevels.length - 1} onClick={async () => {
+                  <button type="button" aria-label={`${text.down}: ${level.translations?.[language]?.title || level.title}`} disabled={idx === orderedLevels.length - 1} onClick={async () => {
                     const result = await moveLevel(currentCourse.id, level.id, 1);
                     if (!result.success) setNotice({ text: result.message, type: 'error' });
                   }} className="rounded-lg border border-white/10 px-2 py-1.5 text-xs text-slate-300 disabled:opacity-30">↓</button>
@@ -317,7 +391,7 @@ export default function AdminLessonsPage() {
               <div>
                 <label className="block text-slate-300 mb-1 font-medium">{text.course}</label>
                 <div className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white font-bold">
-                  {currentCourse.title}
+                  {currentCourse.translations?.[language]?.title || currentCourse.title}
                 </div>
               </div>
 
@@ -360,6 +434,105 @@ export default function AdminLessonsPage() {
                   <LessonContent content={theory || 'Dars matni shu yerda ko‘rinadi.'} />
                 </div>
               </div>
+
+              <details className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                <summary className="cursor-pointer text-xs font-semibold text-slate-200">{translatedLessonFields[language as keyof typeof translatedLessonFields]?.section || translatedLessonFields.en.section}</summary>
+                <p className="mt-2 text-[10px] leading-5 text-slate-400">{translatedLessonFields[language as keyof typeof translatedLessonFields]?.hint || translatedLessonFields.en.hint}</p>
+                {lessonLocales.map(locale => (
+                  <fieldset key={locale.code} className="mt-3 space-y-2 border-t border-white/10 pt-3">
+                    <legend className="px-1 text-[11px] font-semibold text-neon-cyan">{locale.label}</legend>
+                    <input
+                      type="text"
+                      value={translations?.[locale.code]?.title || ''}
+                      onChange={event => updateLessonTranslation(locale.code, 'title', event.target.value)}
+                      placeholder={translatedLessonFields[language as keyof typeof translatedLessonFields]?.title || translatedLessonFields.en.title}
+                      aria-label={`${locale.label} — ${translatedLessonFields.en.title}`}
+                      className="w-full rounded-lg border border-white/10 bg-[#060914] px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:border-neon-cyan focus:outline-none"
+                    />
+                    <input
+                      type="text"
+                      value={translations?.[locale.code]?.description || ''}
+                      onChange={event => updateLessonTranslation(locale.code, 'description', event.target.value)}
+                      placeholder={translatedLessonFields[language as keyof typeof translatedLessonFields]?.description || translatedLessonFields.en.description}
+                      aria-label={`${locale.label} — ${translatedLessonFields.en.description}`}
+                      className="w-full rounded-lg border border-white/10 bg-[#060914] px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:border-neon-cyan focus:outline-none"
+                    />
+                    <textarea
+                      rows={5}
+                      value={translations?.[locale.code]?.theory || ''}
+                      onChange={event => updateLessonTranslation(locale.code, 'theory', event.target.value)}
+                      placeholder={translatedLessonFields[language as keyof typeof translatedLessonFields]?.theory || translatedLessonFields.en.theory}
+                      aria-label={`${locale.label} — ${translatedLessonFields.en.theory}`}
+                      className="w-full resize-y rounded-lg border border-white/10 bg-[#060914] px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:border-neon-cyan focus:outline-none"
+                    />
+                    {exerciseInstructions.trim() && <div className="space-y-2 border-t border-white/10 pt-3">
+                      <p className="font-semibold text-slate-300">{text.exercise}</p>
+                      <textarea
+                        rows={3}
+                        value={translations?.[locale.code]?.exercise?.instructions || ''}
+                        onChange={event => updateExerciseTranslation(locale.code, 'instructions', event.target.value)}
+                        placeholder={text.instructions}
+                        aria-label={`${locale.label} — ${text.instructions}`}
+                        className="w-full resize-y rounded-lg border border-white/10 bg-[#060914] px-3 py-2 text-xs text-white focus:border-neon-cyan focus:outline-none"
+                      />
+                      {exerciseChecks.map((check, index) => (
+                        <div key={check.id} className="grid gap-2 sm:grid-cols-2">
+                          <input
+                            value={translations?.[locale.code]?.exercise?.checks?.[check.id]?.label || ''}
+                            onChange={event => updateExerciseCheckTranslation(locale.code, check.id, 'label', event.target.value)}
+                            placeholder={`${text.checkLabel} ${index + 1}`}
+                            aria-label={`${locale.label} — ${text.checkLabel} ${index + 1}`}
+                            className="w-full rounded-lg border border-white/10 bg-[#060914] px-3 py-2 text-xs text-white focus:border-neon-cyan focus:outline-none"
+                          />
+                          {check.type === 'text' && <input
+                            value={translations?.[locale.code]?.exercise?.checks?.[check.id]?.expected || ''}
+                            onChange={event => updateExerciseCheckTranslation(locale.code, check.id, 'expected', event.target.value)}
+                            placeholder={text.expected}
+                            aria-label={`${locale.label} — ${text.expected} ${index + 1}`}
+                            className="w-full rounded-lg border border-white/10 bg-[#060914] px-3 py-2 text-xs text-white focus:border-neon-cyan focus:outline-none"
+                          />}
+                        </div>
+                      ))}
+                    </div>}
+                    {quiz.length > 0 && <div className="space-y-3 border-t border-white/10 pt-3">
+                      <p className="font-semibold text-slate-300">{text.quiz}</p>
+                      {quiz.map((question, questionIndex) => (
+                        <fieldset key={question.id} className="space-y-2 rounded-lg border border-white/10 p-2">
+                          <legend className="px-1 text-[10px] text-slate-400">{text.question} {questionIndex + 1}</legend>
+                          <textarea
+                            rows={2}
+                            value={translations?.[locale.code]?.quiz?.[question.id]?.question || ''}
+                            onChange={event => updateQuizTranslation(locale.code, question.id, 'question', event.target.value)}
+                            placeholder={text.question}
+                            aria-label={`${locale.label} — ${text.question} ${questionIndex + 1}`}
+                            className="w-full resize-y rounded-lg border border-white/10 bg-[#060914] px-3 py-2 text-xs text-white focus:border-neon-cyan focus:outline-none"
+                          />
+                          <div className="grid gap-2 sm:grid-cols-2">
+                            {question.options.map((_, optionIndex) => (
+                              <input
+                                key={`${question.id}-translation-${optionIndex}`}
+                                value={translations?.[locale.code]?.quiz?.[question.id]?.options?.[optionIndex] || ''}
+                                onChange={event => updateQuizOptionTranslation(locale.code, question.id, optionIndex, event.target.value)}
+                                placeholder={`${text.answer} ${optionIndex + 1}`}
+                                aria-label={`${locale.label} — ${text.answer} ${optionIndex + 1}`}
+                                className="w-full rounded-lg border border-white/10 bg-[#060914] px-3 py-2 text-xs text-white focus:border-neon-cyan focus:outline-none"
+                              />
+                            ))}
+                          </div>
+                          <textarea
+                            rows={2}
+                            value={translations?.[locale.code]?.quiz?.[question.id]?.explanation || ''}
+                            onChange={event => updateQuizTranslation(locale.code, question.id, 'explanation', event.target.value)}
+                            placeholder={text.quizExplanation}
+                            aria-label={`${locale.label} — ${text.quizExplanation}`}
+                            className="w-full resize-y rounded-lg border border-white/10 bg-[#060914] px-3 py-2 text-xs text-white focus:border-neon-cyan focus:outline-none"
+                          />
+                        </fieldset>
+                      ))}
+                    </div>}
+                  </fieldset>
+                ))}
+              </details>
 
               <div>
                 <label htmlFor="lesson-editor-language" className="mb-1 block font-medium text-slate-300">{text.editorLanguage}</label>

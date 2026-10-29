@@ -26,7 +26,7 @@ export default function AdminFeedbackPage() {
     } finally {
       setLoading(false);
     }
-  }, [loadFeedback]);
+  }, [loadFeedback, tr]);
 
   useEffect(() => { void refresh(); }, [refresh]);
 

@@ -44,6 +44,24 @@ export default function LessonDetailPage({ params }: { params: { courseSlug: str
     title: course.translations?.[language]?.title || course.title,
     description: course.translations?.[language]?.description || course.description,
   };
+  const localizedExercise = level.exercise ? {
+    ...level.exercise,
+    instructions: localizedLevel?.exercise?.instructions || level.exercise.instructions,
+    checks: level.exercise.checks.map(check => ({
+      ...check,
+      label: localizedLevel?.exercise?.checks?.[check.id]?.label || check.label,
+      expected: localizedLevel?.exercise?.checks?.[check.id]?.expected || check.expected,
+    })),
+  } : level.exercise;
+  const localizedQuiz = level.quiz?.map(question => {
+    const translation = localizedLevel?.quiz?.[question.id];
+    return {
+      ...question,
+      question: translation?.question || question.question,
+      options: question.options.map((option, index) => translation?.options?.[index] || option),
+      explanation: translation?.explanation || question.explanation,
+    };
+  });
   const lesson = {
     ...level,
     title: localizedLevel?.title || level.title,
@@ -56,7 +74,8 @@ export default function LessonDetailPage({ params }: { params: { courseSlug: str
     isLocked: false,
     editorLanguage: level.editorLanguage || (['html', 'css', 'javascript'] as const).find(value => value === course.languageCode.toLowerCase()) || 'html',
     starterCode: level.starterCode,
-    exercise: level.exercise,
+    exercise: localizedExercise,
+    quiz: localizedQuiz,
     theory: localizedLevel?.theory || level.translations?.[language]?.theory || level.theory || localizedLevel?.description || level.description,
   };
 

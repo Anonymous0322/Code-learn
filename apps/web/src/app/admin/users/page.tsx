@@ -22,7 +22,11 @@ export default function AdminUsersPage() {
 
   const handleRoleChange = async (userId: string, selectedRole: UserRole) => {
     const res = await updateUserRole(userId, selectedRole);
-    const roleLabel = selectedRole === 'creator' ? 'Creator' : selectedRole === 'admin' ? 'Admin' : tr('Foydalanuvchi', 'Пользователь', 'User');
+    const roleLabel = selectedRole === 'creator'
+      ? tr('Yaratuvchi', 'Создатель', 'Creator')
+      : selectedRole === 'admin'
+        ? tr('Administrator', 'Администратор', 'Administrator')
+        : tr('Foydalanuvchi', 'Пользователь', 'User');
     setNotice({
       text: res.success
         ? tr(`Rol muvaffaqiyatli o‘zgartirildi: ${roleLabel}`, `Роль изменена: ${roleLabel}`, `Role updated: ${roleLabel}`)
@@ -89,7 +93,7 @@ export default function AdminUsersPage() {
           <span className="text-2xl">{isCurrentCreator ? '👑' : '🛡️'}</span>
           <div>
             <p className="text-xs font-bold text-white">
-              {tr('Sizning rolingiz:', 'Ваша роль:', 'Your role:')} {isCurrentCreator ? 'Creator' : 'Admin'}
+              {tr('Sizning rolingiz:', 'Ваша роль:', 'Your role:')} {isCurrentCreator ? tr('Yaratuvchi', 'Создатель', 'Creator') : tr('Administrator', 'Администратор', 'Administrator')}
             </p>
             <p className="text-[11px] text-slate-400">
               {isCurrentCreator

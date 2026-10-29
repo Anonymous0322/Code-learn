@@ -233,7 +233,7 @@ export function Navigation() {
             <span className="h-4 w-px bg-white/10"/>
             {currentUser ? (
               <div className="relative">
-                <button onClick={() => setProfileOpen(open => !open)} aria-expanded={profileOpen} aria-label="Open profile menu" className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] py-1.5 pl-1.5 pr-3 text-left hover:border-[#19d4ff]/40">
+                <button onClick={() => setProfileOpen(open => !open)} aria-expanded={profileOpen} aria-label={tr('Profil menyusini ochish', 'Открыть меню профиля', 'Open profile menu')} className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] py-1.5 pl-1.5 pr-3 text-left hover:border-[#19d4ff]/40">
                   <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] text-xs font-bold text-white">
                     {currentUser.avatar ? <img src={currentUser.avatar} alt="" className="h-full w-full object-cover" /> : currentUser.name.trim().charAt(0).toUpperCase()}
                   </span>
@@ -259,7 +259,7 @@ export function Navigation() {
           <div className="flex items-center gap-2 sm:hidden">
             <LangDropdown />
             <button
-              aria-label="Toggle menu"
+              aria-label={mobileOpen ? tr('Menyuni yopish', 'Закрыть меню', 'Close menu') : tr('Menyuni ochish', 'Открыть меню', 'Open menu')}
               className="rounded-lg p-2 text-slate-400 hover:text-white"
               onClick={() => setMobileOpen(v => !v)}
             >

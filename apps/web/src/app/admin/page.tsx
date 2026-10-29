@@ -8,7 +8,7 @@ import { useCourseStore } from '@/store/courseStore';
 export default function AdminDashboardPage() {
   const { currentUser, users } = useAuthStore();
   const { courses } = useCourseStore();
-  const { tr } = useI18n();
+  const { tr, language } = useI18n();
 
   const totalLessons = courses.reduce((acc, c) => acc + (c.levels?.length || 0), 0);
   const totalUsers = users.length;
@@ -182,12 +182,12 @@ export default function AdminDashboardPage() {
                     {c.languageCode.slice(0, 2)}
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-white">{c.title}</p>
-                    <p className="text-[10px] text-slate-400">{c.levels?.length || 0} ta dars/modul</p>
+                    <p className="text-xs font-bold text-white">{c.translations?.[language]?.title || c.title}</p>
+                    <p className="text-[10px] text-slate-400">{c.levels?.length || 0} {tr('ta dars/modul', 'уроков/модулей', 'lessons/modules')}</p>
                   </div>
                 </div>
                 <span className="text-[10px] font-mono uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">
-                  {c.difficulty}
+                  {c.difficulty === 'beginner' ? tr('Boshlang‘ich', 'Начальный', 'Beginner') : c.difficulty === 'intermediate' ? tr('O‘rta', 'Средний', 'Intermediate') : tr('Yuqori', 'Продвинутый', 'Advanced')}
                 </span>
               </div>
             ))}
@@ -198,10 +198,10 @@ export default function AdminDashboardPage() {
         <div className="p-5 rounded-2xl border border-white/10 bg-[#0a0f24]/80">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-sm text-white flex items-center gap-2">
-              <span>👥</span> Foydalanuvchilar ({users.length})
+              <span>👥</span> {tr('Foydalanuvchilar', 'Пользователи', 'Users')} ({users.length})
             </h3>
             <Link href="/admin/users" className="text-xs text-neon-cyan hover:underline">
-              Rollarni o'zgartirish →
+              {tr('Rollarni o‘zgartirish', 'Изменить роли', 'Change roles')} →
             </Link>
           </div>
 
@@ -229,7 +229,7 @@ export default function AdminDashboardPage() {
                       : 'bg-white/10 text-slate-400'
                   }`}
                 >
-                  {u.role.toUpperCase()}
+                  {u.role === 'creator' ? tr('YARATUVCHI', 'СОЗДАТЕЛЬ', 'CREATOR') : u.role === 'admin' ? tr('ADMIN', 'АДМИН', 'ADMIN') : tr('FOYDALANUVCHI', 'ПОЛЬЗОВАТЕЛЬ', 'USER')}
                 </span>
               </div>
             ))}
