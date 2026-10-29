@@ -202,7 +202,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (get().currentUser?.role !== 'creator') return { success: false, message: 'Faqat Bosh Admin foydalanuvchi rolini o‘zgartirishi mumkin.' };
     const { error } = await getSupabase().rpc('set_user_role', { target_id: targetUserId, new_role: newRole });
     if (error) return { success: false, message: authError(error, 'Rol Supabase bazasida saqlanmadi.') };
-    set({ users: get().users.map(user => user.id === targetUserId ? { ...user, role: newRole } : user) });
+    set(state => ({
+      users: state.users.map(user => user.id === targetUserId ? { ...user, role: newRole } : user),
+      ...(state.currentUser?.id === targetUserId
+        ? { currentUser: { ...state.currentUser, role: newRole } }
+        : {}),
+    }));
     return { success: true, message: `Rol muvaffaqiyatli o‘zgartirildi: ${newRole.toUpperCase()}` };
   },
 

@@ -186,7 +186,7 @@ export default function AdminUsersPage() {
 
                   {/* Role Assignment Dropdown */}
                   <td className="py-3.5 px-4">
-                    {isCurrentCreator && !isTargetCreator ? (
+                    {isCurrentCreator ? (
                       <select
                         value={user.role}
                         onChange={(e) => handleRoleChange(user.id, e.target.value as UserRole)}
@@ -194,10 +194,11 @@ export default function AdminUsersPage() {
                       >
                         <option value="user">Foydalanuvchi — kurslarni o‘rganadi</option>
                         <option value="admin">Administrator — kurs va darslarni boshqaradi</option>
+                        <option value="creator">Creator — barcha rollarni boshqaradi</option>
                       </select>
                     ) : (
                       <span className="text-[11px] text-slate-500 italic">
-                        {isTargetCreator ? 'Creator (o\'zgarmas)' : 'Faqat Creator o\'zgartiradi'}
+                        Faqat Creator o‘zgartiradi
                       </span>
                     )}
                   </td>

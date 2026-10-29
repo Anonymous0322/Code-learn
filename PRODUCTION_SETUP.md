@@ -5,7 +5,7 @@ The web app is deployed from `apps/web`. Supabase stores authentication, course 
 ## 1. Create and configure Supabase
 
 1. Create a Supabase project and save its database password somewhere secure.
-2. In **SQL Editor**, run the migration files in `supabase/migrations` in chronological order. For an existing database, run only the migrations that have not already been applied; do not rerun the initial schema migration.
+2. In **SQL Editor**, run the migration files in `supabase/migrations` in chronological order. For an existing database, run only migrations that have not already been applied; do not rerun the initial schema migration. If you have already applied earlier migrations, run `20261029000200_allow_creator_demotion.sql` to let a creator assign any role and change existing creators to another role in the app.
 3. In **Project Settings → API**, copy the project URL and the publishable/anon key. The browser uses only these public values; never use a `service_role` key in the app or Vercel client environment.
 4. In **Authentication → URL Configuration**, set the site URL to the Vercel production URL and add the production and local development URLs to the redirect URL allow-list.
 5. Register your account and confirm its email if confirmation is enabled. In **Authentication → Users**, copy your account's UUID (Auth UID). In the SQL Editor, verify it is your account and promote its profile:
@@ -24,7 +24,7 @@ The web app is deployed from `apps/web`. Supabase stores authentication, course 
    where id = 'AUTH_USER_UUID';
    ```
 
-   The result should show `role = 'creator'`. Sign out and sign back in to refresh the role in the app; the admin panel is at `/admin`. The creator can then grant `admin` roles from the admin panel. Creator roles are intentionally assigned only from the Supabase SQL Editor, not through the app. An email address alone never grants admin access.
+   The result should show `role = 'creator'`. Sign out and sign back in to refresh the role in the app; the admin panel is at `/admin`. New registrations receive the `user` role by default. From **Admin → Users**, a creator can assign `creator`, `admin`, or `user` to any account, including changing an existing creator or admin to `user`. If you change your own creator role, you will lose access to the creator panel; if no creator remains, restore one with the SQL Editor. An email address alone never grants admin access.
 
 ## 2. Run locally
 
