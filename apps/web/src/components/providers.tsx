@@ -155,7 +155,7 @@ type TranslationKey = keyof typeof translations.en;
 export const ThemeContext = createContext<{
   theme: string;
   toggleTheme: () => void;
-  language: string;
+  language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: TranslationKey) => string;
   tr: (uz: string, ru: string, en: string) => string;
