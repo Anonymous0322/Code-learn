@@ -68,7 +68,7 @@ export function LoginForm() {
               {...register('email')}
               type="email"
               autoComplete="email"
-              placeholder="ruhiddinov03@gmail.com"
+              placeholder="emailingizni kiriting"
               className="w-full px-4 py-3 rounded-lg bg-bg-primary border border-border-subtle text-text-primary focus:border-neon-blue focus:outline-none transition-colors text-sm"
             />
             {errors.email && <p className="text-neon-pink text-xs mt-1">{errors.email.message}</p>}

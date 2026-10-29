@@ -81,7 +81,7 @@ export function RegisterForm() {
             <input
               {...register('name')}
               type="text"
-              placeholder="Masalan: Behruz"
+              placeholder="Ismingizni kiriting"
               className="w-full px-4 py-3 rounded-lg bg-bg-primary border border-border-subtle text-text-primary focus:border-neon-blue focus:outline-none transition-colors text-sm"
             />
             {errors.name && <p className="text-neon-pink text-xs mt-1">{errors.name.message}</p>}
@@ -92,7 +92,7 @@ export function RegisterForm() {
             <input
               {...register('email')}
               type="email"
-              placeholder="ruhiddinov03@gmail.com"
+              placeholder="emailingizni kiriting"
               className="w-full px-4 py-3 rounded-lg bg-bg-primary border border-border-subtle text-text-primary focus:border-neon-blue focus:outline-none transition-colors text-sm"
             />
             {errors.email && <p className="text-neon-pink text-xs mt-1">{errors.email.message}</p>}
