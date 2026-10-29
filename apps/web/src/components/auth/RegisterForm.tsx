@@ -23,6 +23,7 @@ export function RegisterForm() {
   const { register: registerUser } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const localizedSchema = RegisterSchema.extend({
     name: z.string().min(2, t('nameMin')),
@@ -36,16 +37,21 @@ export function RegisterForm() {
   const onSubmit = async (data: RegisterFormValues) => {
     setLoading(true);
     setErrorMsg(null);
+    setSuccessMsg(null);
 
     const res = await registerUser(data.name, data.email, data.password);
     setLoading(false);
 
     if (res.success) {
       const currentUser = useAuthStore.getState().currentUser;
-      if (currentUser?.role === 'creator' || currentUser?.role === 'admin') {
-        router.push('/admin');
+      if (currentUser?.email.toLowerCase() === data.email.trim().toLowerCase()) {
+        if (currentUser.role === 'creator' || currentUser.role === 'admin') {
+          router.push('/admin');
+        } else {
+          router.push('/courses');
+        }
       } else {
-        router.push('/courses');
+        setSuccessMsg(res.message || 'Hisob yaratildi. Emailingizni tasdiqlang.');
       }
     } else {
       setErrorMsg(res.message || 'Ro\'yxatdan o\'tishda xatolik yuz berdi');
@@ -60,6 +66,11 @@ export function RegisterForm() {
         {errorMsg && (
           <div className="mb-4 p-3 rounded-lg bg-red-500/15 border border-red-500/30 text-red-300 text-xs text-center font-medium">
             {errorMsg}
+          </div>
+        )}
+        {successMsg && (
+          <div className="mb-4 p-3 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs text-center font-medium">
+            {successMsg}
           </div>
         )}
 

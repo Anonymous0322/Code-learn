@@ -5,18 +5,26 @@ The web app is deployed from `apps/web`. Supabase stores authentication, course 
 ## 1. Create and configure Supabase
 
 1. Create a Supabase project and save its database password somewhere secure.
-2. In **SQL Editor**, run the complete migration in `supabase/migrations/20261026000000_initial_schema.sql`.
+2. In **SQL Editor**, run the migration files in `supabase/migrations` in chronological order. For an existing database, run only the migrations that have not already been applied; do not rerun the initial schema migration.
 3. In **Project Settings → API**, copy the project URL and the publishable/anon key. The browser uses only these public values; never use a `service_role` key in the app or Vercel client environment.
 4. In **Authentication → URL Configuration**, set the site URL to the Vercel production URL and add the production and local development URLs to the redirect URL allow-list.
-5. Register the account that will own the project. In the SQL Editor, promote that account to the creator role, replacing the UUID with the account's Auth UID:
+5. Register your account and confirm its email if confirmation is enabled. In **Authentication → Users**, copy your account's UUID (Auth UID). In the SQL Editor, verify it is your account and promote its profile:
 
    ```sql
+   select id, email, role
+   from public.profiles
+   where id = 'AUTH_USER_UUID';
+
    update public.profiles
    set role = 'creator'
    where id = 'AUTH_USER_UUID';
+
+   select id, email, role
+   from public.profiles
+   where id = 'AUTH_USER_UUID';
    ```
 
-   The creator can then grant administrator roles from the admin panel. The email address alone never grants admin access.
+   The result should show `role = 'creator'`. Sign out and sign back in to refresh the role in the app; the admin panel is at `/admin`. The creator can then grant `admin` roles from the admin panel. Creator roles are intentionally assigned only from the Supabase SQL Editor, not through the app. An email address alone never grants admin access.
 
 ## 2. Run locally
 

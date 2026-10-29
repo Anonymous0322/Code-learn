@@ -151,8 +151,8 @@ begin
   if not public.is_creator() then
     raise exception 'Only the creator can change user roles.';
   end if;
-  if new_role not in ('creator', 'admin', 'user') then
-    raise exception 'Invalid user role.';
+  if new_role is null or new_role not in ('admin', 'user') then
+    raise exception 'The creator role can only be assigned from the Supabase SQL Editor.';
   end if;
   if exists (select 1 from public.profiles where id = target_id and role = 'creator')
      and new_role <> 'creator' then

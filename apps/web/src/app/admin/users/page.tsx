@@ -10,6 +10,12 @@ export default function AdminUsersPage() {
   const [notice, setNotice] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   const isCurrentCreator = currentUser?.role === 'creator';
+  const roleFilters: { id: 'all' | UserRole; label: string }[] = [
+    { id: 'all', label: 'Barchasi' },
+    { id: 'creator', label: 'Bosh administrator' },
+    { id: 'admin', label: 'Administrator' },
+    { id: 'user', label: 'Foydalanuvchi' },
+  ];
 
   const handleRoleChange = async (userId: string, selectedRole: UserRole) => {
     const res = await updateUserRole(userId, selectedRole);
@@ -37,7 +43,7 @@ export default function AdminUsersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
           <h1 className="font-[Space_Grotesk] text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
-            <span>рџ‘Ґ</span> Foydalanuvchilar va Rollarni Boshqarish
+            <span>👥</span> Foydalanuvchilar va Rollarni Boshqarish
           </h1>
           <p className="text-xs text-slate-400 mt-1">
             Foydalanuvchilarga rol berish (Creator, Admin, User), holatlarini va hisoblarini boshqarish
@@ -55,14 +61,14 @@ export default function AdminUsersPage() {
           }`}
         >
           <span>{notice.text}</span>
-          <button onClick={() => setNotice(null)} className="text-slate-400 hover:text-white">вњ•</button>
+          <button onClick={() => setNotice(null)} className="text-slate-400 hover:text-white">×</button>
         </div>
       )}
 
       {/* Role permission info banner */}
       <div className="p-4 rounded-xl border border-white/10 bg-[#0a0f24] flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="text-2xl">{isCurrentCreator ? 'рџ‘‘' : 'рџ›ЎпёЏ'}</span>
+          <span className="text-2xl">{isCurrentCreator ? '👑' : '🛡️'}</span>
           <div>
             <p className="text-xs font-bold text-white">
               Sizning darajangiz: {isCurrentCreator ? 'Bosh Admin (Creator)' : 'Admin'}
@@ -92,19 +98,14 @@ export default function AdminUsersPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#0a0f24] border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-neon-cyan/50"
           />
-          <span className="absolute left-3 top-2.5 text-xs text-slate-500">рџ”Ќ</span>
+          <span className="absolute left-3 top-2.5 text-xs text-slate-500">🔍</span>
         </div>
 
         <div className="flex items-center gap-1 bg-[#0a0f24] p-1 rounded-xl border border-white/10 self-start sm:self-auto">
-          {[
-            { id: 'all', label: 'Barchasi' },
-            { id: 'creator', label: 'Bosh administrator' },
-            { id: 'admin', label: 'Administrator' },
-            { id: 'user', label: 'Foydalanuvchi' },
-          ].map((tab) => (
+          {roleFilters.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setRoleFilter(tab.id as any)}
+              onClick={() => setRoleFilter(tab.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 roleFilter === tab.id
                   ? 'bg-neon-blue/20 text-neon-cyan font-bold border border-neon-cyan/30'
@@ -178,7 +179,7 @@ export default function AdminUsersPage() {
                           : 'bg-white/10 text-slate-400 border border-white/10'
                       }`}
                     >
-                      <span>{user.role === 'creator' ? 'рџ‘‘' : user.role === 'admin' ? 'рџ›ЎпёЏ' : 'рџ‘¤'}</span>
+                      <span>{user.role === 'creator' ? '👑' : user.role === 'admin' ? '🛡️' : '👤'}</span>
                       <span>{user.role === 'creator' ? 'BOSH ADMINISTRATOR' : user.role === 'admin' ? 'ADMINISTRATOR' : 'FOYDALANUVCHI'}</span>
                     </span>
                   </td>
@@ -212,7 +213,7 @@ export default function AdminUsersPage() {
                           : 'bg-red-500/15 text-red-400 border-red-500/30 hover:bg-red-500/25'
                       } ${isTargetCreator ? 'cursor-not-allowed opacity-80' : 'cursor-pointer'}`}
                     >
-                      {user.status === 'active' ? 'вњ“ FAOL' : 'вњ• BLOKLANGAN'}
+                      {user.status === 'active' ? '✓ FAOL' : '× BLOKLANGAN'}
                     </button>
                   </td>
 
