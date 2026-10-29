@@ -43,7 +43,7 @@ export default function HomePage() {
         }
       });
 
-    void supabase.rpc('get_project_member_count').then(({ data, error }) => {
+    void Promise.resolve(supabase.rpc('get_project_member_count')).then(({ data, error }) => {
       if (error) throw error;
       const count = Number(data);
       if (!Number.isSafeInteger(count) || count < 0) {
