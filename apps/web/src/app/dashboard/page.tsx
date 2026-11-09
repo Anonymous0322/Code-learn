@@ -36,16 +36,16 @@ export default function DashboardPage() {
     <main className="mx-auto max-w-7xl px-5 py-10 sm:px-8">
       <p className="text-xs uppercase tracking-[0.2em] text-neon-cyan">CodeLearn</p>
       <h1 className="mt-2 font-[Space_Grotesk] text-3xl font-semibold text-white">
-        {user ? `${tr('Xush kelibsiz', 'Добро пожаловать', 'Welcome')}, ${user.name}` : tr('O‘quvchi paneli', 'Панель обучения', 'Learning dashboard')}
+        {user ? `${tr('Xush kelibsiz', 'Добро пожаловать', 'Welcome')}, ${user.name}` : tr('Öquvçi paneli', 'Панель обучения', 'Learning dashboard')}
       </h1>
       <p className="mt-2 text-sm text-slate-400">{tr('Kurslar va darslar bazadan jonli yangilanadi.', 'Курсы и уроки обновляются из базы данных.', 'Courses and lessons update live from the database.')}</p>
       {user && <div className="mt-4 flex flex-wrap gap-2">
-        <Link href="/study-plan" className="rounded-lg border border-neon-cyan/25 px-3 py-2 text-xs font-semibold text-neon-cyan hover:bg-neon-cyan/5">{tr('Haftalik o‘quv reja', 'План обучения на неделю', 'Weekly study plan')} →</Link>
+        <Link href="/study-plan" className="rounded-lg border border-neon-cyan/25 px-3 py-2 text-xs font-semibold text-neon-cyan hover:bg-neon-cyan/5">{tr('Haftalik öquv reja', 'План обучения на неделю', 'Weekly study plan')} →</Link>
         <Link href="/portfolio" className="rounded-lg border border-white/10 px-3 py-2 text-xs font-semibold text-slate-300 hover:border-white/25">{tr('Mening portfolioim', 'Моё портфолио', 'My portfolio')} →</Link>
       </div>}
 
       {nextLesson && <section className="mt-6 rounded-2xl border border-neon-cyan/20 bg-gradient-to-r from-neon-cyan/10 to-neon-blue/10 p-5 sm:p-6">
-        <p className="text-xs font-semibold uppercase tracking-wider text-neon-cyan">{user ? tr('Keyingi qadam', 'Следующий шаг', 'Next step') : tr('Boshlash uchun tavsiya', 'Рекомендация для начала', 'Recommended next step')}</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-neon-cyan">{user ? tr('Keyingi qadam', 'Следующий шаг', 'Next step') : tr('Boşlaş uçun tavsiya', 'Рекомендация для начала', 'Recommended next step')}</p>
         <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold text-white">{nextLesson.level.translations?.[language]?.title || nextLesson.level.title}</h2>
@@ -53,7 +53,7 @@ export default function DashboardPage() {
             <p className="mt-2 text-xs text-slate-400">{nextLesson.done} / {nextLesson.total} {tr('ta dars yakunlangan', 'уроков завершено', 'lessons completed')}</p>
           </div>
           <Link href={`/learn/${nextLesson.course.slug}/${nextLesson.level.slug || nextLesson.level.title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`} className="inline-flex shrink-0 justify-center rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple px-5 py-3 text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan">
-            {tr('O‘qishni davom ettirish', 'Продолжить обучение', 'Continue learning')} →
+            {tr('Öqişni davom ettiriş', 'Продолжить обучение', 'Continue learning')} →
           </Link>
         </div>
       </section>}
@@ -61,7 +61,7 @@ export default function DashboardPage() {
       {savedItems.length > 0 && <section className="mt-6 rounded-2xl border border-white/10 bg-white/[0.025] p-5">
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-[Space_Grotesk] text-lg font-semibold text-white">{tr('Saqlangan darslar', 'Сохранённые уроки', 'Saved lessons')}</h2>
-          <Link href="/courses" className="text-xs text-neon-cyan">{tr('Kurslarga o‘tish', 'К курсам', 'Go to courses')} →</Link>
+          <Link href="/courses" className="text-xs text-neon-cyan">{tr('Kurslarga ötiş', 'К курсам', 'Go to courses')} →</Link>
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
           {savedItems.map(item => {
@@ -77,10 +77,10 @@ export default function DashboardPage() {
       <section className="mt-8">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-[Space_Grotesk] text-xl font-semibold text-white">{tr('Mavjud kurslar', 'Доступные курсы', 'Available courses')}</h2>
-          <Link href="/courses" className="text-sm text-neon-cyan">{tr('Barcha kurslar', 'Все курсы', 'All courses')}</Link>
+          <Link href="/courses" className="text-sm text-neon-cyan">{tr('Barça kurslar', 'Все курсы', 'All courses')}</Link>
         </div>
         {!initialized ? <p className="text-sm text-slate-400">{tr('Kurslar yuklanmoqda...', 'Загрузка курсов...', 'Loading courses...')}</p> : courses.length === 0 ? (
-          <p className="rounded-xl border border-white/10 p-5 text-sm text-slate-400">{tr('Hozircha faol kurs yo‘q.', 'Активных курсов пока нет.', 'No active courses yet.')}</p>
+          <p className="rounded-xl border border-white/10 p-5 text-sm text-slate-400">{tr('Hozirça faol kurs yöq.', 'Активных курсов пока нет.', 'No active courses yet.')}</p>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {courses.map(course => (

@@ -68,7 +68,7 @@ export default function StudyPlanPage() {
           setLessonIds([]);
         }
       })
-      .catch(() => { if (!cancelled) setError(tr('Haftalik rejani yuklab bo‘lmadi. Internet va Supabase sozlamalarini tekshiring.', 'Не удалось загрузить план. Проверьте подключение к интернету и Supabase.', 'Could not load your plan. Check your internet connection and Supabase settings.')); })
+      .catch(() => { if (!cancelled) setError(tr('Haftalik rejani yuklab bölmadi. Internet va Supabase sozlamalarini tekşiring.', 'Не удалось загрузить план. Проверьте подключение к интернету и Supabase.', 'Could not load your plan. Check your internet connection and Supabase settings.')); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [loadPlan, tr, user, weekStart]);
@@ -88,7 +88,7 @@ export default function StudyPlanPage() {
       await savePlan(user.id, plan);
       setMessage(tr('Haftalik rejangiz saqlandi.', 'Ваш план на неделю сохранён.', 'Your weekly plan has been saved.'));
     } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : tr('Rejani saqlab bo‘lmadi. Qayta urinib ko‘ring.', 'Не удалось сохранить план. Попробуйте ещё раз.', 'Could not save your plan. Please try again.'));
+      setError(saveError instanceof Error ? saveError.message : tr('Rejani saqlab bölmadi. Qayta urinib köring.', 'Не удалось сохранить план. Попробуйте ещё раз.', 'Could not save your plan. Please try again.'));
     } finally {
       setSaving(false);
     }
@@ -96,9 +96,9 @@ export default function StudyPlanPage() {
 
   return <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
     <header className="rounded-3xl border border-white/10 bg-gradient-to-br from-[#142044] via-[#0d1428] to-[#11102a] p-6 sm:p-8">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neon-cyan">{tr('O‘quv odatini shakllantiring', 'Формируйте привычку учиться', 'Build a learning habit')}</p>
-      <h1 className="mt-2 font-[Space_Grotesk] text-3xl font-semibold text-white sm:text-4xl">{tr('Haftalik o‘quv reja', 'План обучения на неделю', 'Weekly study plan')}</h1>
-      <p className="mt-3 text-sm text-slate-400">{tr('Hafta dushanbadan boshlanadi', 'Неделя начинается в понедельник', 'The week starts on Monday')} · {weekStart}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neon-cyan">{tr('Öquv odatini şakllantiring', 'Формируйте привычку учиться', 'Build a learning habit')}</p>
+      <h1 className="mt-2 font-[Space_Grotesk] text-3xl font-semibold text-white sm:text-4xl">{tr('Haftalik öquv reja', 'План обучения на неделю', 'Weekly study plan')}</h1>
+      <p className="mt-3 text-sm text-slate-400">{tr('Hafta duşanbadan boşlanadi', 'Неделя начинается в понедельник', 'The week starts on Monday')} · {weekStart}</p>
       <div className="mt-5 flex flex-wrap gap-3">
         <div className="rounded-xl border border-white/10 bg-black/15 px-4 py-3"><p className="text-xs text-slate-400">{tr('Maqsad', 'Цель', 'Goal')}</p><p className="mt-1 text-xl font-semibold text-white">{goal} {tr('dars', 'уроков', 'lessons')}</p></div>
         <div className="rounded-xl border border-white/10 bg-black/15 px-4 py-3"><p className="text-xs text-slate-400">{tr('Bajarildi', 'Выполнено', 'Completed')}</p><p className="mt-1 text-xl font-semibold text-neon-cyan">{doneCount}/{goal}</p></div>
@@ -107,10 +107,10 @@ export default function StudyPlanPage() {
     </header>
 
     {!user ? <section className="mt-6 rounded-2xl border border-white/10 p-6 text-center">
-      <p className="text-slate-300">{tr('Shaxsiy haftalik reja tuzish uchun tizimga kiring.', 'Войдите, чтобы составить личный план на неделю.', 'Sign in to create your personal weekly plan.')}</p><Link href="/auth/login?next=/study-plan" className="mt-4 inline-flex rounded-lg bg-gradient-to-r from-neon-blue to-neon-purple px-4 py-2 text-sm font-semibold text-white">{tr('Kirish', 'Войти', 'Sign in')}</Link>
+      <p className="text-slate-300">{tr('Şaxsiy haftalik reja tuziş uçun tizimga kiring.', 'Войдите, чтобы составить личный план на неделю.', 'Sign in to create your personal weekly plan.')}</p><Link href="/auth/login?next=/study-plan" className="mt-4 inline-flex rounded-lg bg-gradient-to-r from-neon-blue to-neon-purple px-4 py-2 text-sm font-semibold text-white">{tr('Kiriş', 'Войти', 'Sign in')}</Link>
     </section> : <section className="mt-6 rounded-2xl border border-white/10 bg-white/[0.025] p-5 sm:p-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div><h2 className="text-lg font-semibold text-white">{tr('Bu hafta nimani o‘rganasiz?', 'Что вы будете изучать на этой неделе?', 'What will you learn this week?')}</h2><p className="mt-1 text-sm text-slate-400">{tr('Maqsadni tanlang va haftada o‘rganmoqchi bo‘lgan darslarni belgilang.', 'Выберите цель и отметьте уроки, которые планируете пройти.', 'Choose a goal and select the lessons you plan to complete.')}</p></div>
+        <div><h2 className="text-lg font-semibold text-white">{tr('Bu hafta nimani örganasiz?', 'Что вы будете изучать на этой неделе?', 'What will you learn this week?')}</h2><p className="mt-1 text-sm text-slate-400">{tr('Maqsadni tanlang va haftada örganmoqçi bölgan darslarni belgilang.', 'Выберите цель и отметьте уроки, которые планируете пройти.', 'Choose a goal and select the lessons you plan to complete.')}</p></div>
         <label className="text-xs text-slate-400">{tr('Haftalik maqsad', 'Цель на неделю', 'Weekly goal')}
           <select value={goal} onChange={event => { setGoal(Number(event.target.value)); setMessage(''); }} disabled={loading} className="ml-2 rounded-lg border border-white/10 bg-[#0a0f24] px-3 py-2 text-sm text-white">
             {[1, 2, 3, 5, 7, 10, 15, 20, 30].map(value => <option key={value} value={value}>{value} {tr('dars', 'уроков', 'lessons')}</option>)}
@@ -123,11 +123,11 @@ export default function StudyPlanPage() {
           <span className="min-w-0 flex-1"><span className="block text-white">{lesson.title}</span><span className="text-xs text-slate-500">{lesson.courseTitle}</span></span>
           {user?.id === progressUserId && completedIds.includes(lesson.id) && <span className="text-xs text-emerald-300">{tr('Bajarildi', 'Выполнено', 'Completed')}</span>}
         </label>)}
-        {flatLessons.length === 0 && <p className="rounded-xl border border-white/10 p-4 text-sm text-slate-400">{tr('Hozircha tanlash uchun dars yo‘q.', 'Пока нет доступных уроков.', 'No lessons are available to choose yet.')}</p>}
+        {flatLessons.length === 0 && <p className="rounded-xl border border-white/10 p-4 text-sm text-slate-400">{tr('Hozirça tanlaş uçun dars yöq.', 'Пока нет доступных уроков.', 'No lessons are available to choose yet.')}</p>}
       </div>}
       {error && <p role="alert" className="mt-4 text-sm text-amber-200">{error}</p>}
       {message && <p role="status" className="mt-4 text-sm text-emerald-300">{message}</p>}
-      <button type="button" onClick={() => void handleSave()} disabled={saving || loading || lessonIds.length > 30} className="mt-5 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{saving ? tr('Saqlanmoqda…', 'Сохранение…', 'Saving…') : tr('Rejani saqlash', 'Сохранить план', 'Save plan')}</button>
+      <button type="button" onClick={() => void handleSave()} disabled={saving || loading || lessonIds.length > 30} className="mt-5 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{saving ? tr('Saqlanmoqda…', 'Сохранение…', 'Saving…') : tr('Rejani saqlaş', 'Сохранить план', 'Save plan')}</button>
     </section>}
     {storedPlan?.weekStart === weekStart && storedPlan.lessonIds.length > 0 && <section className="mt-6 rounded-2xl border border-white/10 p-5">
       <h2 className="font-semibold text-white">{tr('Rejadagi darslar', 'Уроки по плану', 'Planned lessons')}</h2>

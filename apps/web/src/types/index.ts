@@ -24,6 +24,7 @@ export interface Level {
 
 export interface Lesson {
   id: string;
+  kind?: 'lesson' | 'test';
   levelId: string;
   slug: string;
   orderIndex: number;

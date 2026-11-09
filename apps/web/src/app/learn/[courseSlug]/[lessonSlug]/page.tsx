@@ -21,51 +21,32 @@ export default function LessonDetailPage({ params }: { params: { courseSlug: str
   const orderedLevels = [...(course?.levels || [])].sort((a, b) => a.orderIndex - b.orderIndex);
   const lessonIndex = orderedLevels.findIndex(item => (item.slug || toSlug(item.title)) === params.lessonSlug);
   const level = lessonIndex >= 0 ? orderedLevels[lessonIndex] : undefined;
-
+  const previousLevel = orderedLevels[lessonIndex - 1];
+  const previousCompleted = !previousLevel || completedLessonIds.includes(`${course?.id}:${previousLevel.id}`);
   if (!initialized && (!course || !level)) return <main className="mx-auto max-w-7xl px-4 py-12 text-slate-400">{tr('Dars yuklanmoqda...', 'Загрузка урока...', 'Loading lesson...')}</main>;
   if (!course || !level) return <main className="mx-auto max-w-7xl px-4 py-12 text-slate-400">{tr('Dars topilmadi.', 'Урок не найден.', 'Lesson not found.')}</main>;
 
-  const previousLevel = orderedLevels[lessonIndex - 1];
   const previousLessonHref = previousLevel ? `/learn/${course.slug}/${previousLevel.slug || toSlug(previousLevel.title)}` : undefined;
   const nextLevel = orderedLevels[lessonIndex + 1];
   const nextLessonHref = nextLevel ? `/learn/${course.slug}/${nextLevel.slug || toSlug(nextLevel.title)}` : undefined;
   const isCompleted = completedLessonIds.includes(`${course.id}:${level.id}`);
-  const previousCompleted = !previousLevel || completedLessonIds.includes(`${course.id}:${previousLevel.id}`);
 
   if (!previousCompleted) return <main className="mx-auto max-w-3xl px-4 py-16 text-center">
     <h1 className="text-2xl font-semibold text-white">{tr('Avval oldingi darsni yakunlang', 'Сначала завершите предыдущий урок', 'Complete the previous lesson first')}</h1>
-    <p className="mt-3 text-slate-400">{tr('Darslar oldingi dars yakunlangandan keyin ketma-ket ochiladi.', 'Уроки открываются последовательно после завершения предыдущего урока.', 'Lessons unlock in order after the previous lesson is completed.')}</p>
-    {previousLessonHref && <a href={previousLessonHref} className="mt-6 inline-flex rounded-lg bg-neon-blue/20 px-4 py-2 text-neon-cyan">{tr('Oldingi darsga o‘tish', 'К предыдущему уроку', 'Go to previous lesson')}</a>}
+    <p className="mt-3 text-slate-400">{tr('Darslar oldingi dars yakunlangandan keyin ketma-ket oçiladi.', 'Уроки открываются последовательно после завершения предыдущего урока.', 'Lessons unlock in order after the previous lesson is completed.')}</p>
+    {previousLessonHref && <a href={previousLessonHref} className="mt-6 inline-flex rounded-lg bg-neon-blue/20 px-4 py-2 text-neon-cyan">{tr('Oldingi darsga ötiş', 'К предыдущему уроку', 'Go to previous lesson')}</a>}
   </main>;
 
-  const localizedLevel = level.translations?.[language];
   const localizedCourse = {
     ...course,
     title: course.translations?.[language]?.title || course.title,
     description: course.translations?.[language]?.description || course.description,
   };
-  const localizedExercise = level.exercise ? {
-    ...level.exercise,
-    instructions: localizedLevel?.exercise?.instructions || level.exercise.instructions,
-    checks: level.exercise.checks.map(check => ({
-      ...check,
-      label: localizedLevel?.exercise?.checks?.[check.id]?.label || check.label,
-      expected: localizedLevel?.exercise?.checks?.[check.id]?.expected || check.expected,
-    })),
-  } : level.exercise;
-  const localizedQuiz = level.quiz?.map(question => {
-    const translation = localizedLevel?.quiz?.[question.id];
-    return {
-      ...question,
-      question: translation?.question || question.question,
-      options: question.options.map((option, index) => translation?.options?.[index] || option),
-      explanation: translation?.explanation || question.explanation,
-    };
-  });
   const lesson = {
     ...level,
-    title: localizedLevel?.title || level.title,
-    description: localizedLevel?.description || level.description,
+    kind: level.kind || 'lesson',
+    title: level.title,
+    description: level.description,
     slug: level.slug || toSlug(level.title),
     levelId: level.id,
     orderIndex: level.orderIndex,
@@ -74,9 +55,9 @@ export default function LessonDetailPage({ params }: { params: { courseSlug: str
     isLocked: false,
     editorLanguage: level.editorLanguage || (['html', 'css', 'javascript'] as const).find(value => value === course.languageCode.toLowerCase()) || 'html',
     starterCode: level.starterCode,
-    exercise: localizedExercise,
-    quiz: localizedQuiz,
-    theory: localizedLevel?.theory || level.translations?.[language]?.theory || level.theory || localizedLevel?.description || level.description,
+    exercise: level.exercise,
+    quiz: level.quiz,
+    theory: level.theory || level.description,
   };
 
   return <LessonPage lesson={lesson as any} course={localizedCourse as any} previousLessonHref={previousLessonHref} nextLessonHref={nextLessonHref} isCompleted={isCompleted} />;

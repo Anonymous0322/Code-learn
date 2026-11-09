@@ -39,7 +39,7 @@ const htmlCompletions = [
 const labels = {
   en: { title: 'Try it yourself', run: 'Run code', check: 'Check exercise', language: 'Language', html: 'HTML', css: 'CSS', javascript: 'JavaScript', editor: 'Code editor', preview: 'Preview', empty: 'Run your code to see the result here.', suggestions: 'Suggestions', accept: 'Tab to complete', exercise: 'Coding exercise', passed: 'Passed', failed: 'Not passed' },
   ru: { title: 'Попробуйте сами', run: 'Запустить код', check: 'Проверить задание', language: 'Язык', html: 'HTML', css: 'CSS', javascript: 'JavaScript', editor: 'Редактор кода', preview: 'Результат', empty: 'Запустите код, чтобы увидеть результат.', suggestions: 'Подсказки', accept: 'Tab — принять', exercise: 'Практическое задание', passed: 'Выполнено', failed: 'Не выполнено' },
-  uz: { title: 'O‘zingiz sinab ko‘ring', run: 'Kodni ishga tushirish', check: 'Vazifani tekshirish', language: 'Til', html: 'HTML', css: 'CSS', javascript: 'JavaScript', editor: 'Kod muharriri', preview: 'Natija', empty: 'Natijani ko‘rish uchun kodni ishga tushiring.', suggestions: 'Takliflar', accept: 'Qabul qilish: Tab', exercise: 'Amaliy vazifa', passed: 'Bajarildi', failed: 'Bajarilmadi' },
+  uz: { title: 'Özingiz sinab köring', run: 'Kodni işga tuşiriş', check: 'Vazifani tekşiriş', language: 'Til', html: 'HTML', css: 'CSS', javascript: 'JavaScript', editor: 'Kod muharriri', preview: 'Natija', empty: 'Natijani köriş uçun kodni işga tuşiring.', suggestions: 'Takliflar', accept: 'Qabul qiliş: Tab', exercise: 'Amaliy vazifa', passed: 'Bajarildi', failed: 'Bajarilmadi' },
 } as const;
 
 function createPreview(language: PlaygroundLanguage, code: string) {

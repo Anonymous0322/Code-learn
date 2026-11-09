@@ -43,7 +43,7 @@ async function fetchSavedLessons(userId: string) {
   const savedLessons: Record<string, SavedLesson> = {};
   (data || []).forEach(item => {
     if (typeof item.course_id !== 'string' || typeof item.lesson_id !== 'string' || typeof item.note !== 'string' || typeof item.is_saved !== 'boolean' || typeof item.updated_at !== 'string') {
-      throw new Error(`Saqlangan dars yozuvi noto‘g‘ri: ${item.course_id}/${item.lesson_id}`);
+      throw new Error(`Saqlangan dars yozuvi notöğri: ${item.course_id}/${item.lesson_id}`);
     }
     savedLessons[savedLessonKey(item.course_id, item.lesson_id)] = {
       courseId: item.course_id,
@@ -70,15 +70,15 @@ export const useLearningExtrasStore = create<LearningExtrasState>((set, get) => 
     void fetchSavedLessons(userId).then(savedLessons => {
       if (get().userId === userId) set({ savedLessons, syncError: null });
     }).catch(error => {
-      console.error('Supabase saqlangan darslarni yuklab bo‘lmadi.', error);
-      if (get().userId === userId) set({ syncError: error instanceof Error ? error.message : 'Saqlangan darslarni yuklab bo‘lmadi.' });
+      console.error('Supabase saqlangan darslarni yuklab bölmadi.', error);
+      if (get().userId === userId) set({ syncError: error instanceof Error ? error.message : 'Saqlangan darslarni yuklab bölmadi.' });
     });
     savedLessonsChannel = getSupabase().channel(`saved-lessons-${userId}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'saved_lessons', filter: `user_id=eq.${userId}` }, () => {
         void fetchSavedLessons(userId).then(savedLessons => {
           if (get().userId === userId) set({ savedLessons, syncError: null });
         }).catch(error => {
-          if (get().userId === userId) set({ syncError: error instanceof Error ? error.message : 'Saqlangan darslarni yangilab bo‘lmadi.' });
+          if (get().userId === userId) set({ syncError: error instanceof Error ? error.message : 'Saqlangan darslarni yangilab bölmadi.' });
         });
       })
       .subscribe();
@@ -86,7 +86,7 @@ export const useLearningExtrasStore = create<LearningExtrasState>((set, get) => 
 
   saveLesson: async (courseId, lessonId, saved, note) => {
     const userId = get().userId;
-    if (!userId) throw new Error('Darsni saqlash uchun tizimga kiring.');
+    if (!userId) throw new Error('Darsni saqlaş uçun tizimga kiring.');
     const cleanNote = note.trim();
     if (!saved && !cleanNote) {
       const { error } = await getSupabase().from('saved_lessons').delete()
@@ -115,8 +115,8 @@ export const useLearningExtrasStore = create<LearningExtrasState>((set, get) => 
   submitFeedback: async (courseId, lessonId, lessonTitle, message) => {
     const userId = get().userId;
     const cleanMessage = message.trim();
-    if (!userId) throw new Error('Taklif yuborish uchun tizimga kiring.');
-    if (cleanMessage.length < 8 || cleanMessage.length > 2000) throw new Error('Xabar 8 dan 2000 tagacha belgidan iborat bo‘lishi kerak.');
+    if (!userId) throw new Error('Taklif yuboriş uçun tizimga kiring.');
+    if (cleanMessage.length < 8 || cleanMessage.length > 2000) throw new Error('Xabar 8 dan 2000 tagaça belgidan iborat bölişi kerak.');
     const { error } = await getSupabase().from('lesson_feedback').insert({
       user_id: userId,
       course_id: courseId,
@@ -133,7 +133,7 @@ export const useLearningExtrasStore = create<LearningExtrasState>((set, get) => 
     if (error) throw error;
     return (data || []).map(item => {
       if (typeof item.user_id !== 'string' || typeof item.course_id !== 'string' || typeof item.lesson_id !== 'string' || typeof item.lesson_title !== 'string' || typeof item.message !== 'string' || !['open', 'reviewed'].includes(item.status) || typeof item.created_at !== 'string') {
-        throw new Error(`Dars fikri formati noto‘g‘ri: ${item.id}`);
+        throw new Error(`Dars fikri formati notöğri: ${item.id}`);
       }
       return {
         id: item.id,

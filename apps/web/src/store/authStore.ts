@@ -6,6 +6,7 @@ import { getSupabase } from '@/lib/supabase';
 import { useLearningProgressStore } from '@/store/learningProgressStore';
 
 export type UserRole = 'creator' | 'admin' | 'user';
+export type OAuthProvider = 'google' | 'github';
 
 export interface AuthUser {
   id: string;
@@ -35,9 +36,11 @@ interface AuthState {
   initialize: () => void;
   fetchUsers: () => Promise<void>;
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
+  signInWithOAuth: (provider: OAuthProvider, destination: string) => Promise<{ success: boolean; message?: string }>;
   register: (name: string, email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   resendConfirmation: (email: string) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<void>;
+  updateAvatar: (file: File) => Promise<{ success: boolean; message: string }>;
   updateUserRole: (targetUserId: string, newRole: UserRole) => Promise<{ success: boolean; message: string }>;
   toggleUserStatus: (targetUserId: string) => Promise<{ success: boolean; message: string }>;
 }
@@ -63,10 +66,10 @@ function profileToUser(profile: ProfileRow): AuthUser {
 
 function authError(error: unknown, fallback: string) {
   const code = (error as { code?: string })?.code;
-  if (code === 'Invalid login credentials') return 'Email yoki parol noto‘g‘ri.';
-  if (code === 'User already registered') return 'Ushbu email bilan allaqachon hisob ochilgan. Tizimga kiring.';
+  if (code === 'Invalid login credentials') return 'Email yoki parol notöğri.';
+  if (code === 'User already registered') return 'Uşbu email bilan allaqaçon hisob oçilgan. Tizimga kiring.';
   if (code === 'weak_password') return 'Parol juda oddiy. Kamida 6 ta belgi kiriting.';
-  if (code === 'email_address_invalid') return 'Email formati noto‘g‘ri.';
+  if (code === 'email_address_invalid') return 'Email formati notöğri.';
   const message = (error as { message?: string })?.message;
   const lowerMessage = message?.toLowerCase() ?? '';
   if (
@@ -75,13 +78,13 @@ function authError(error: unknown, fallback: string) {
     lowerMessage.includes('email rate limit exceeded') ||
     lowerMessage.includes('over_email_send_rate_limit')
   ) {
-    return 'Tasdiqlash xatlarini yuborish limiti tugadi. Keyinroq qayta urinib ko‘ring yoki Supabase’da SMTP sozlang. Auth → Users’da hisob yaratilgan bo‘lsa, qayta ro‘yxatdan o‘tmang.';
+    return 'Tasdiqlaş xatlarini yuboriş limiti tugadi. Keyinroq qayta urinib köring yoki Supabase’da SMTP sozlang. Auth → Users’da hisob yaratilgan bölsa, qayta röyxatdan ötmang.';
   }
   if (code === 'otp_expired' || lowerMessage.includes('email link is invalid or has expired')) {
-    return 'Tasdiqlash havolasi eskirgan yoki oldin ishlatilgan. Yangi tasdiqlash xatini so‘rang.';
+    return 'Tasdiqlaş havolasi eskirgan yoki oldin işlatilgan. Yangi tasdiqlaş xatini sörang.';
   }
   if (code === 'PGRST205' || (lowerMessage.includes('public.profiles') && lowerMessage.includes('schema cache'))) {
-    return 'Supabase’da public.profiles jadvali topilmadi. SQL Editor’da barcha migratsiyalarni ishga tushiring; jadval mavjud bo‘lsa, API sxema keshini yangilang.';
+    return 'Supabase’da public.profiles jadvali topilmadi. SQL Editor’da barça migratsiyalarni işga tuşiring; jadval mavjud bölsa, API sxema keşini yangilang.';
   }
   return message ? `${fallback} ${message}` : fallback;
 }
@@ -90,7 +93,7 @@ async function loadCurrentProfile(user: SupabaseUser, generation: number) {
   const supabase = getSupabase();
   const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
   if (error) throw error;
-  if (!data) throw new Error('Foydalanuvchi profili topilmadi. Supabase bazasiga migration SQL qo‘llanganini tekshiring.');
+  if (!data) throw new Error('Foydalanuvçi profili topilmadi. Supabase bazasiga migration SQL qöllanganini tekşiring.');
   if (generation !== authGeneration) return;
   const currentUser = profileToUser(data as ProfileRow);
   if (currentUser.status === 'banned') {
@@ -105,7 +108,7 @@ async function loadCurrentProfile(user: SupabaseUser, generation: number) {
     console.error('Supabase faollik kunini yozolmadi.', error);
   });
   if (currentUser.role === 'creator' || currentUser.role === 'admin') {
-    void useAuthStore.getState().fetchUsers().catch(error => console.error('Admin foydalanuvchilarini yuklab bo‘lmadi.', error));
+    void useAuthStore.getState().fetchUsers().catch(error => console.error('Admin foydalanuvçilarini yuklab bölmadi.', error));
   } else {
     useAuthStore.setState({ users: [] });
   }
@@ -147,13 +150,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         window.setTimeout(() => {
           void loadCurrentProfile(session.user, generation).catch(error => {
             if (generation !== authGeneration) return;
-            console.error('Supabase profilini yuklab bo‘lmadi.', error);
+            console.error('Supabase profilini yuklab bölmadi.', error);
             set({ currentUser: null, users: [], initialized: true, loading: false });
           });
         }, 0);
       }).data.subscription.unsubscribe;
     } catch (error) {
-      console.error('Supabase autentifikatsiyasini boshlashda xatolik.', error);
+      console.error('Supabase autentifikatsiyasini boşlaşda xatolik.', error);
       set({ currentUser: null, users: [], initialized: true, loading: false });
     }
   },
@@ -164,13 +167,32 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const { data, error } = await getSupabase().auth.signInWithPassword({ email, password: passwordInput });
       if (error) throw error;
-      if (!data.user) throw new Error('Supabase foydalanuvchini qaytarmadi.');
+      if (!data.user) throw new Error('Supabase foydalanuvçini qaytarmadi.');
       const generation = ++authGeneration;
       const loaded = await loadCurrentProfile(data.user, generation);
-      return loaded ? { success: true } : { success: false, message: 'Ushbu hisob bloklangan. Bosh administrator bilan bog‘laning.' };
+      return loaded ? { success: true } : { success: false, message: 'Uşbu hisob bloklangan. Boş administrator bilan boğlaning.' };
     } catch (error) {
       set({ loading: false });
-      return { success: false, message: authError(error, 'Tizimga kirishda xatolik yuz berdi.') };
+      return { success: false, message: authError(error, 'Tizimga kirişda xatolik yuz berdi.') };
+    }
+  },
+
+  signInWithOAuth: async (provider, destination) => {
+    set({ loading: true });
+    try {
+      const redirectTo = new URL('/auth/callback', window.location.origin);
+      redirectTo.searchParams.set('next', destination);
+      const { error } = await getSupabase().auth.signInWithOAuth({
+        provider,
+        options: { redirectTo: redirectTo.toString() },
+      });
+      if (error) throw error;
+      return { success: true };
+    } catch (error) {
+      set({ loading: false });
+      const message = error instanceof Error ? error.message : 'OAuth orqali tizimga kirib bo‘lmadi.';
+      console.error(`${provider} OAuth boshlanmadi.`, error);
+      return { success: false, message };
     }
   },
 
@@ -191,14 +213,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (!data.user) throw new Error('Supabase hisob yaratmadi.');
       if (!data.session) {
         set({ loading: false });
-        return { success: true, message: 'Hisob yaratildi. Tizimga kirishdan oldin emailingizdagi tasdiqlash havolasini bosing.' };
+        return { success: true, message: 'Hisob yaratildi. Tizimga kirişdan oldin emailingizdagi tasdiqlaş havolasini bosing.' };
       }
       const generation = ++authGeneration;
       const loaded = await loadCurrentProfile(data.user, generation);
-      return loaded ? { success: true, message: 'Muvaffaqiyatli ro‘yxatdan o‘tdingiz!' } : { success: false, message: 'Ushbu hisob bloklangan. Bosh administrator bilan bog‘laning.' };
+      return loaded ? { success: true, message: 'Muvaffaqiyatli röyxatdan ötdingiz!' } : { success: false, message: 'Uşbu hisob bloklangan. Boş administrator bilan boğlaning.' };
     } catch (error) {
       set({ loading: false });
-      return { success: false, message: authError(error, 'Ro‘yxatdan o‘tishda xatolik yuz berdi.') };
+      return { success: false, message: authError(error, 'Röyxatdan ötişda xatolik yuz berdi.') };
     }
   },
 
@@ -210,29 +232,106 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         options: { emailRedirectTo: window.location.origin },
       });
       if (error) throw error;
-      return { success: true, message: 'Tasdiqlash xati emailingizga qayta yuborildi.' };
+      return { success: true, message: 'Tasdiqlaş xati emailingizga qayta yuborildi.' };
     } catch (error) {
-      return { success: false, message: authError(error, 'Tasdiqlash xatini yuborib bo‘lmadi.') };
+      return { success: false, message: authError(error, 'Tasdiqlaş xatini yuborib bölmadi.') };
     }
   },
 
   logout: async () => {
     const generation = ++authGeneration;
-    try {
-      const { error } = await getSupabase().auth.signOut();
-      if (error) throw error;
-    } catch (error) {
-      console.error('Supabase hisobidan chiqishda xatolik.', error);
-    } finally {
-      if (generation === authGeneration) {
-        useLearningProgressStore.getState().initialize(null);
-        set({ currentUser: null, users: [], loading: false });
-      }
+    const { error } = await getSupabase().auth.signOut();
+    if (error) {
+      console.error('Supabase hisobidan çiqişda xatolik.', error);
+      throw error;
+    }
+
+    if (generation === authGeneration) {
+      useLearningProgressStore.getState().initialize(null);
+      set({ currentUser: null, users: [], loading: false });
     }
   },
 
+  updateAvatar: async file => {
+    const currentUser = get().currentUser;
+    if (!currentUser) return { success: false, message: 'Avatarni özgartiriş uçun tizimga kiring.' };
+
+    const extensionByType: Record<string, string> = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+      'image/avif': 'avif',
+    };
+    const extension = extensionByType[file.type];
+    if (!extension) {
+      return { success: false, message: 'Faqat JPEG, PNG, WebP yoki AVIF rasmlarini tanlang.' };
+    }
+    if (file.size === 0 || file.size > 5 * 1024 * 1024) {
+      return { success: false, message: 'Rasm hajmi 5 MB dan kichik bölişi kerak.' };
+    }
+
+    const supabase = getSupabase();
+    const objectPath = `${currentUser.id}/${crypto.randomUUID()}.${extension}`;
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(objectPath, file, { cacheControl: '3600', contentType: file.type, upsert: false });
+    if (uploadError) {
+      console.error('Avatar Supabase Storage’ga yuklanmadi.', uploadError);
+      if (uploadError.message.toLowerCase().includes('bucket not found')) {
+        return {
+          success: false,
+          message: 'Supabase’da avatars bucket topilmadi. supabase/migrations/20261109000100_profile_avatars.sql faylini Supabase SQL Editor’da ishga tushiring, so‘ng sahifani qayta yuklang.',
+        };
+      }
+      return { success: false, message: `Avatarni yuklab bölmadi: ${uploadError.message}` };
+    }
+
+    const avatarUrl = supabase.storage.from('avatars').getPublicUrl(objectPath).data.publicUrl;
+    const { data, error: profileError } = await supabase
+      .from('profiles')
+      .update({ avatar: avatarUrl })
+      .eq('id', currentUser.id)
+      .select('id')
+      .maybeSingle();
+
+    if (profileError || !data) {
+      const { error: cleanupError } = await supabase.storage.from('avatars').remove([objectPath]);
+      if (cleanupError) console.error('Saqlanmagan avatar faylini öçirib bölmadi.', cleanupError);
+      const error = profileError || new Error('Foydalanuvçi profilini yangilab bölmadi.');
+      console.error('Profil avatar manzili Supabase’da saqlanmadi.', error);
+      return { success: false, message: authError(error, 'Avatar profilga saqlanmadi.') };
+    }
+
+    set(state => ({
+      currentUser: state.currentUser?.id === currentUser.id
+        ? { ...state.currentUser, avatar: avatarUrl }
+        : state.currentUser,
+      users: state.users.map(user => user.id === currentUser.id ? { ...user, avatar: avatarUrl } : user),
+    }));
+
+    if (currentUser.avatar) {
+      try {
+        const oldUrl = new URL(currentUser.avatar);
+        const objectPrefix = '/storage/v1/object/public/avatars/';
+        if (oldUrl.pathname.includes(objectPrefix)) {
+          const oldPath = decodeURIComponent(oldUrl.pathname.split(objectPrefix)[1] || '');
+          if (oldPath.startsWith(`${currentUser.id}/`)) {
+            const { error: removeError } = await supabase.storage.from('avatars').remove([oldPath]);
+            if (removeError) console.error('Oldingi avatar faylini öçirib bölmadi.', removeError);
+          }
+        }
+      } catch (error) {
+        console.error('Oldingi avatar manzilini tekşirib bölmadi.', error);
+      }
+    }
+
+    return { success: true, message: 'Avatar muvaffaqiyatli yangilandi.' };
+  },
+
   updateUserRole: async (targetUserId, newRole) => {
-    if (get().currentUser?.role !== 'creator') return { success: false, message: 'Faqat Bosh Admin foydalanuvchi rolini o‘zgartirishi mumkin.' };
+    const currentUser = get().currentUser;
+    if (currentUser?.role !== 'creator') return { success: false, message: 'Faqat Creator foydalanuvchi rolini o‘zgartirishi mumkin.' };
+    if (currentUser.id === targetUserId) return { success: false, message: 'O‘zingizning rolingizni o‘zgartira olmaysiz.' };
     const { error } = await getSupabase().rpc('set_user_role', { target_id: targetUserId, new_role: newRole });
     if (error) return { success: false, message: authError(error, 'Rol Supabase bazasida saqlanmadi.') };
     set(state => ({
@@ -241,18 +340,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         ? { currentUser: { ...state.currentUser, role: newRole } }
         : {}),
     }));
-    return { success: true, message: `Rol muvaffaqiyatli o‘zgartirildi: ${newRole.toUpperCase()}` };
+    return { success: true, message: `Rol muvaffaqiyatli özgartirildi: ${newRole.toUpperCase()}` };
   },
 
   toggleUserStatus: async targetUserId => {
     const currentUser = get().currentUser;
     if (!currentUser || (currentUser.role !== 'creator' && currentUser.role !== 'admin')) return { success: false, message: 'Ruxsat berilmagan.' };
     const target = get().users.find(user => user.id === targetUserId);
-    if (!target) return { success: false, message: 'Foydalanuvchi topilmadi.' };
-    if (target.role === 'creator') return { success: false, message: 'Bosh Adminni bloklab bo‘lmaydi.' };
+    if (!target) return { success: false, message: 'Foydalanuvçi topilmadi.' };
+    if (target.role === 'creator') return { success: false, message: 'Boş Adminni bloklab bölmaydi.' };
     const newStatus = target.status === 'active' ? 'banned' : 'active';
     const { error } = await getSupabase().rpc('set_user_status', { target_id: targetUserId, new_status: newStatus });
-    if (error) return { success: false, message: authError(error, 'Foydalanuvchi holati Supabase bazasida yangilanmadi.') };
+    if (error) return { success: false, message: authError(error, 'Foydalanuvçi holati Supabase bazasida yangilanmadi.') };
     set({ users: get().users.map(user => user.id === targetUserId ? { ...user, status: newStatus } : user) });
     return { success: true, message: `Holat yangilandi: ${newStatus === 'active' ? 'Faol' : 'Bloklangan'}` };
   },

@@ -21,6 +21,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     if (initialized && currentUser) void initCourses();
   }, [initialized, currentUser, initCourses]);
 
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const handleClose = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setSidebarOpen(false);
+    };
+    document.addEventListener('keydown', handleClose);
+    return () => document.removeEventListener('keydown', handleClose);
+  }, [sidebarOpen]);
+
   if (!initialized) {
     return (
       <div className="min-h-screen bg-[#060913] flex items-center justify-center text-slate-400">
@@ -40,9 +49,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl">
             🔒
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">{tr('Admin panelga kirish', 'Вход в панель администратора', 'Admin panel access')}</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">{tr('Admin panelga kiriş', 'Вход в панель администратора', 'Admin panel access')}</h2>
           <p className="text-sm text-slate-400 mb-6">
-            {tr('Admin panelni boshqarish uchun avval Administrator yoki Creator hisobiga kiring.', 'Чтобы управлять панелью, войдите с учётной записью администратора или создателя.', 'Sign in with an administrator or creator account to manage the admin panel.')}
+            {tr('Admin panelni boşqariş uçun avval Administrator yoki Creator hisobiga kiring.', 'Чтобы управлять панелью, войдите с учётной записью администратора или создателя.', 'Sign in with an administrator or creator account to manage the admin panel.')}
           </p>
 
           <div className="flex flex-col gap-3">
@@ -50,13 +59,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               href="/auth/login"
               className="w-full py-3 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple text-white text-xs font-bold shadow-lg shadow-neon-blue/20 text-center"
             >
-              {tr('Kirish', 'Войти', 'Sign in')}
+              {tr('Kiriş', 'Войти', 'Sign in')}
             </Link>
             <Link
               href="/"
               className="w-full py-2.5 rounded-xl border border-white/10 hover:border-white/20 text-slate-300 text-xs font-medium text-center"
             >
-              {tr('Bosh sahifa', 'Главная', 'Home')}
+              {tr('Boş sahifa', 'Главная', 'Home')}
             </Link>
           </div>
         </div>
@@ -73,12 +82,12 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             🚫
           </div>
           <span className="inline-block px-3 py-1 rounded-full bg-red-500/10 text-red-400 text-xs font-mono font-semibold mb-3">
-            {tr('403 — RUXSAT YO‘Q', '403 — ДОСТУП ЗАПРЕЩЁН', '403 — ACCESS DENIED')}
+            {tr('403 — RUXSAT YÖQ', '403 — ДОСТУП ЗАПРЕЩЁН', '403 — ACCESS DENIED')}
           </span>
-          <h2 className="text-2xl font-bold text-white mb-2">{tr('Kirish cheklangan!', 'Доступ ограничен!', 'Access restricted!')}</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">{tr('Kiriş çeklangan!', 'Доступ ограничен!', 'Access restricted!')}</h2>
           <p className="text-sm text-slate-400 mb-4">
             {tr('Hisobingiz:', 'Ваша учётная запись:', 'Your account:')} <strong className="text-white">{currentUser.name}</strong> ({currentUser.email}).
-            {tr(' Sizda oddiy foydalanuvchi roli bo‘lgani uchun admin paneliga kirish taqiqlangan.', ' Доступ к панели запрещён, поскольку у вас роль пользователя.', ' Admin panel access is denied because your role is User.')}
+            {tr(' Sizda oddiy foydalanuvçi roli bölgani uçun admin paneliga kiriş taqiqlangan.', ' Доступ к панели запрещён, поскольку у вас роль пользователя.', ' Admin panel access is denied because your role is User.')}
           </p>
           <p className="text-xs text-slate-400 mb-6">
             {tr('Admin panel faqat', 'Панель доступна только ролям', 'The admin panel is available only to')} <strong className="text-purple-300">Creator</strong> {tr('va', 'и', 'and')} <strong className="text-blue-300">Admin</strong>.
@@ -89,13 +98,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               href="/"
               className="flex-1 py-2.5 rounded-xl bg-neon-blue/20 hover:bg-neon-blue/30 text-neon-cyan text-xs font-bold border border-neon-cyan/30 text-center"
             >
-              {tr('Bosh sahifaga qaytish', 'Вернуться на главную', 'Back to home')}
+              {tr('Boş sahifaga qaytiş', 'Вернуться на главную', 'Back to home')}
             </Link>
             <button
               onClick={() => logout()}
               className="flex-1 py-2.5 rounded-xl border border-white/10 hover:border-white/20 text-slate-300 text-xs font-medium"
             >
-              {tr('Chiqish', 'Выйти', 'Sign out')}
+              {tr('Çiqiş', 'Выйти', 'Sign out')}
             </button>
           </div>
         </div>
@@ -107,25 +116,26 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const isCreator = currentUser.role === 'creator';
 
   const navItems = [
-    { label: tr('Boshqaruv', 'Панель управления', 'Dashboard'), href: '/admin', icon: '📊' },
-    { label: tr('Kurslar boshqaruvi', 'Управление курсами', 'Manage courses'), href: '/admin/courses', icon: '📚' },
+    { label: tr('Boşqaruv', 'Панель управления', 'Dashboard'), href: '/admin', icon: '📊' },
+    { label: tr('Kurslar boşqaruvi', 'Управление курсами', 'Manage courses'), href: '/admin/courses', icon: '📚' },
     { label: tr('Darslar va modullar', 'Уроки и модули', 'Lessons and modules'), href: '/admin/lessons', icon: '📖' },
-    { label: tr('Darslar bo‘yicha fikrlar', 'Отзывы об уроках', 'Lesson feedback'), href: '/admin/feedback', icon: '💬' },
-    { label: tr('Foydalanuvchilar va rollar', 'Пользователи и роли', 'Users and roles'), href: '/admin/users', icon: '👥' },
+    { label: tr('Bildirishnomalar', 'Уведомления', 'Notifications'), href: '/admin/notifications', icon: '🔔' },
+    { label: tr('Darslar böyiça fikrlar', 'Отзывы об уроках', 'Lesson feedback'), href: '/admin/feedback', icon: '💬' },
+    { label: tr('Foydalanuvçilar va rollar', 'Пользователи и роли', 'Users and roles'), href: '/admin/users', icon: '👥' },
     { label: tr('Tizim sozlamalari', 'Настройки системы', 'System settings'), href: '/admin/settings', icon: '⚙️' },
   ];
 
   return (
     <div className="min-h-screen bg-[#060913] text-slate-100 flex flex-col md:flex-row">
       {/* Mobile Header Bar */}
-      <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#0a0f24] border-b border-white/10">
+      <div className="sticky top-0 z-40 md:hidden flex items-center justify-between px-4 py-3 bg-[#0a0f24]/95 border-b border-white/10 backdrop-blur">
         <Link href="/admin" className="flex items-center gap-2">
           <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-xs font-bold text-white">CL</span>
           <span className="font-bold text-white text-sm">Admin Panel</span>
         </Link>
         <button
           type="button"
-          aria-label={sidebarOpen ? tr('Admin menyusini yopish', 'Закрыть меню администратора', 'Close admin menu') : tr('Admin menyusini ochish', 'Открыть меню администратора', 'Open admin menu')}
+          aria-label={sidebarOpen ? tr('Admin menyusini yopiş', 'Закрыть меню администратора', 'Close admin menu') : tr('Admin menyusini oçiş', 'Открыть меню администратора', 'Open admin menu')}
           aria-expanded={sidebarOpen}
           aria-controls="admin-sidebar"
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -136,17 +146,18 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       </div>
 
       {/* Sidebar */}
+      {sidebarOpen && <button type="button" aria-label={tr('Menyuni yopiş', 'Закрыть меню', 'Close menu')} onClick={() => setSidebarOpen(false)} className="fixed inset-0 z-40 bg-black/60 backdrop-blur-[2px] md:hidden" />}
       <aside
         id="admin-sidebar"
         aria-label={tr('Admin menyusi', 'Меню администратора', 'Admin menu')}
         className={clsx(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-[#080d1f] border-r border-white/10 flex flex-col justify-between transition-transform duration-200 md:static md:translate-x-0',
+          'fixed inset-y-0 left-0 z-50 flex w-[min(18rem,calc(100vw-2.5rem))] flex-col justify-between overflow-y-auto overscroll-contain border-r border-white/10 bg-[#080d1f] transition-transform duration-200 md:sticky md:top-0 md:h-screen md:w-64 md:shrink-0 md:translate-x-0',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         )}
       >
         <div>
           {/* Brand header */}
-          <div className="h-[68px] flex items-center justify-between px-5 border-b border-white/10">
+          <div className="flex h-[68px] shrink-0 items-center justify-between border-b border-white/10 px-4 sm:px-5">
             <Link href="/" className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-neon-cyan/40 bg-neon-blue/15 font-mono text-xs font-bold text-neon-cyan shadow-[0_0_18px_rgba(25,212,255,0.16)]">
                 &lt;/&gt;
@@ -190,17 +201,17 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             </div>
             {isCreator ? (
               <p className="text-[10px] text-emerald-400 mt-2 flex items-center gap-1">
-                <span>✓</span> {tr('Barcha huquqlarga ega boshqaruvchi', 'Полный доступ к управлению', 'Full administrative access')}
+                <span>✓</span> {tr('Barça huquqlarga ega boşqaruvçi', 'Полный доступ к управлению', 'Full administrative access')}
               </p>
             ) : (
               <p className="text-[10px] text-slate-400 mt-2">
-                {tr('Kontent boshqaruvchisi (Creator vakolatidan past)', 'Управление контентом (ниже Creator)', 'Content manager (below Creator)')}
+                {tr('Kontent boşqaruvçisi (Creator vakolatidan past)', 'Управление контентом (ниже Creator)', 'Content manager (below Creator)')}
               </p>
             )}
           </div>
 
           {/* Nav links */}
-          <nav aria-label={tr('Admin bo‘limlari', 'Разделы администратора', 'Admin sections')} className="px-3 space-y-1">
+          <nav aria-label={tr('Admin bölimlari', 'Разделы администратора', 'Admin sections')} className="max-h-[calc(100dvh-250px)] overflow-y-auto px-3 pb-3 [scrollbar-width:thin]">
             {navItems.map((item) => {
               const active = pathname === item.href;
               return (
@@ -230,7 +241,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             href="/"
             className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-lg border border-white/10 hover:border-white/20 text-xs text-slate-300 hover:text-white transition-colors"
           >
-            <span>←</span> {tr('Saytga qaytish', 'Вернуться на сайт', 'Back to site')}
+            <span>←</span> {tr('Saytga qaytiş', 'Вернуться на сайт', 'Back to site')}
           </Link>
 
           <button
@@ -240,13 +251,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             }}
             className="w-full py-2 px-3 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-xs font-semibold text-red-300 border border-red-500/20 transition-colors"
           >
-            {tr('Chiqish', 'Выйти', 'Sign out')}
+            {tr('Çiqiş', 'Выйти', 'Sign out')}
           </button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 bg-[#060913] p-4 sm:p-6 lg:p-8 overflow-y-auto">
+      <main className="min-h-[calc(100dvh-60px)] min-w-0 flex-1 overflow-x-hidden bg-[#060913] p-3 sm:p-5 lg:min-h-screen lg:p-8">
         {courseSyncError && <div role="alert" className="mb-5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">{courseSyncError}</div>}
         {children}
       </main>

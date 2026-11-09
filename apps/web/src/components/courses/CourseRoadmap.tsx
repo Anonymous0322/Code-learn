@@ -32,9 +32,9 @@ export function CourseRoadmap({ course }: CourseRoadmapProps) {
         <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-neon-blue/10 text-xl font-bold uppercase text-neon-cyan">{course.languageCode.slice(0, 2)}</div>
         <div><h1 className="text-3xl font-bold text-white">{courseTitle}</h1><p className="mt-1 text-sm text-slate-400">{courseDescription}</p></div>
       </div>
-      <div className="mt-7 flex items-center justify-between text-sm text-slate-400"><span>{completedCount} / {levels.length} {tr('dars yakunlandi', 'уроков завершено', 'lessons completed')}</span><span>{percent}%</span></div>
+      <div className="mt-7 flex items-center justify-between text-sm text-slate-400"><span>{completedCount} / {levels.length} {tr('bo‘lim yakunlandi', 'материалов завершено', 'items completed')}</span><span>{percent}%</span></div>
       <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-neon-cyan to-neon-purple transition-all" style={{ width: `${percent}%` }} /></div>
-      {startHref && <Link href={startHref} className="mt-5 inline-flex rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple px-5 py-3 text-sm font-semibold text-white">{completedCount ? tr('Davom etish', 'Продолжить', 'Continue learning') : tr('Birinchi darsni boshlash', 'Начать первый урок', 'Start the first lesson')} →</Link>}
+      {startHref && <Link href={startHref} className="mt-5 inline-flex rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple px-5 py-3 text-sm font-semibold text-white">{completedCount ? tr('Davom etiş', 'Продолжить', 'Continue learning') : tr('Birinçi darsni boşlaş', 'Начать первый урок', 'Start the first lesson')} →</Link>}
     </header>
 
     <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -43,12 +43,12 @@ export function CourseRoadmap({ course }: CourseRoadmapProps) {
         const unlocked = index === 0 || completedLessonIds.includes(`${course.id}:${levels[index - 1].id}`);
         const href = `/learn/${course.slug}/${level.slug || toSlug(level.title)}`;
         return <article key={level.id} className={`rounded-xl border bg-white/[0.035] p-5 ${completed ? 'border-emerald-400/30' : unlocked ? 'border-white/10' : 'border-white/5 opacity-60'}`}>
-          <div className="flex items-center gap-3"><span className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${completed ? 'bg-emerald-500 text-white' : 'bg-white/10 text-slate-300'}`}>{completed ? '✓' : index + 1}</span><h2 className="font-semibold text-white">{level.translations?.[language]?.title || level.title}</h2></div>
-          <p className="mt-3 min-h-10 text-sm text-slate-400">{level.translations?.[language]?.description || level.description}</p>
-          {unlocked ? <Link href={href} className="mt-4 inline-block text-sm text-neon-cyan hover:underline">{tr('Darsni ochish', 'Открыть урок', 'Open lesson')} →</Link> : <p className="mt-4 text-xs text-slate-500">{tr('Oldingi darsni yakunlang', 'Завершите предыдущий урок', 'Complete the previous lesson')} · 🔒</p>}
+          <div className="flex items-center gap-3"><span className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${completed ? 'bg-emerald-500 text-white' : 'bg-white/10 text-slate-300'}`}>{completed ? '✓' : index + 1}</span><div><h2 className="font-semibold text-white">{level.title}</h2><span className="text-[10px] uppercase tracking-wide text-neon-cyan">{level.kind === 'test' ? tr('Test', 'Тест', 'Test') : tr('Dars', 'Урок', 'Lesson')}</span></div></div>
+          <p className="mt-3 min-h-10 text-sm text-slate-400">{level.description}</p>
+          {unlocked ? <Link href={href} className="mt-4 inline-block text-sm text-neon-cyan hover:underline">{tr('Bo‘limni ochish', 'Открыть материал', 'Open item')} →</Link> : <p className="mt-4 text-xs text-slate-500">{tr('Oldingi bo‘limni yakunlang', 'Завершите предыдущий материал', 'Complete the previous item')} · 🔒</p>}
         </article>;
       })}
-      {levels.length === 0 && <p className="rounded-xl border border-white/10 p-5 text-sm text-slate-400">{tr('Kursga hali dars qo‘shilmagan.', 'В курс ещё не добавлены уроки.', 'No lessons have been added to this course yet.')}</p>}
+      {levels.length === 0 && <p className="rounded-xl border border-white/10 p-5 text-sm text-slate-400">{tr('Kursga hali dars qöşilmagan.', 'В курс ещё не добавлены уроки.', 'No lessons have been added to this course yet.')}</p>}
     </section>
   </main>;
 }

@@ -3,7 +3,7 @@
 import { useI18n } from '@/components/providers';
 
 const choices = [
-  { code: 'uz', label: 'O‘zbekcha' },
+  { code: 'uz', label: 'Özbekça' },
   { code: 'ru', label: 'Русский' },
   { code: 'en', label: 'English' },
 ] as const;

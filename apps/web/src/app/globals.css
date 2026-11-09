@@ -83,6 +83,93 @@ button, a {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes analyticsBarRise {
+  from { transform: scaleY(0); opacity: 0.35; }
+  to { transform: scaleY(1); opacity: 1; }
+}
+
+@keyframes analyticsCardEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes analyticsProgressFill {
+  from { width: 0; }
+}
+
+@keyframes languageDropdownEnter {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes languageOptionEnter {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes notificationPanelEnter {
+  from { opacity: 0; transform: translateY(-7px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes notificationItemEnter {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes notificationBadgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.3); }
+  50% { box-shadow: 0 0 0 4px rgba(244, 63, 94, 0); }
+}
+
+.language-dropdown-enter {
+  transform-origin: top right;
+  animation: languageDropdownEnter 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.language-option-enter {
+  animation: languageOptionEnter 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.notification-panel-enter {
+  transform-origin: top right;
+  animation: notificationPanelEnter 190ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.notification-item-enter {
+  animation: notificationItemEnter 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.notification-badge {
+  animation: notificationBadgePulse 2s ease-out infinite;
+}
+
+.analytics-bar-rise {
+  transform-origin: bottom;
+  animation: analyticsBarRise 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.analytics-card-enter {
+  animation: analyticsCardEnter 550ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.analytics-progress-fill {
+  animation: analyticsProgressFill 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .analytics-bar-rise,
+  .analytics-card-enter,
+  .analytics-progress-fill,
+  .language-dropdown-enter,
+  .language-option-enter,
+  .notification-panel-enter,
+  .notification-item-enter,
+  .notification-badge {
+    animation: none;
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 400ms ease-out;
 }

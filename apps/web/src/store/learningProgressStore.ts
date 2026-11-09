@@ -26,7 +26,7 @@ interface LearningProgressState {
 
 function parseQuizResult(data: Record<string, unknown>, id: string): QuizResult {
   if (typeof data.score !== 'number' || typeof data.total !== 'number' || typeof data.percentage !== 'number' || typeof data.submitted_at !== 'string') {
-    throw new Error(`Saqlangan test natijasi formati noto‘g‘ri: ${id}`);
+    throw new Error(`Saqlangan test natijasi formati notöğri: ${id}`);
   }
   return { score: data.score, total: data.total, percentage: data.percentage, submittedAt: data.submitted_at };
 }
@@ -53,7 +53,7 @@ export const useLearningProgressStore = create<LearningProgressState>((set, get)
           loading: false,
         });
       } catch (error) {
-        console.error('Supabase o‘quv jarayonini yuklab bo‘lmadi.', error);
+        console.error('Supabase öquv jarayonini yuklab bölmadi.', error);
         if (get().userId === userId) set({ loading: false });
       }
     })();
@@ -68,7 +68,7 @@ export const useLearningProgressStore = create<LearningProgressState>((set, get)
   },
 
   completeLesson: async lessonId => {
-    if (!get().userId) throw new Error('Dars jarayonini saqlash uchun tizimga kiring.');
+    if (!get().userId) throw new Error('Dars jarayonini saqlaş uçun tizimga kiring.');
     const { error } = await getSupabase().rpc('mark_lesson_complete', { lesson_key: lessonId });
     if (error) throw error;
     const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tashkent' });
@@ -99,7 +99,7 @@ export const useLearningProgressStore = create<LearningProgressState>((set, get)
 
   saveQuizResult: async (lessonId, userId, score, total) => {
     if (!Number.isInteger(score) || !Number.isInteger(total) || total < 1 || score < 0 || score > total) {
-      throw new Error('Test natijasi qiymatlari noto‘g‘ri.');
+      throw new Error('Test natijasi qiymatlari notöğri.');
     }
     const result: QuizResult = { score, total, percentage: Math.round(score * 100 / total), submittedAt: new Date().toISOString() };
     const { error } = await getSupabase().from('quiz_results').upsert({

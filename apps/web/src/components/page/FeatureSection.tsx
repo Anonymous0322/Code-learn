@@ -8,7 +8,7 @@ function FeatureIcon({ name }: { name: string }) {
   const common = 'h-6 w-6';
   if (name === 'practice') return <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="m8 8 3-3 3 3-3 3zM5 16h14M7 20h10M5 12h14" /><path d="M17 5h2v4h-2z" /></svg>;
   if (name === 'progress') return <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M4 19V5M4 19h16" /><path d="m7 15 3-4 3 2 5-7" /><circle cx="18" cy="6" r="1.5" /></svg>;
-  if (name === 'language') return <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><circle cx="12" cy="12" r="8.5" /><path d="M3.8 9h16.4M3.8 15h16.4M12 3.5c2.2 2.4 3.3 5.2 3.3 8.5S14.2 18.1 12 20.5c-2.2-2.4-3.3-5.2-3.3-8.5S9.8 5.9 12 3.5Z" /></svg>;
+  if (name === 'community') return <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 2v-5.2A7.5 7.5 0 1 1 20 11.5Z" /><path d="M8 11h.01M12 11h.01M16 11h.01" strokeWidth="2.5" strokeLinecap="round" /></svg>;
   return <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M6 4.5h9.5a2 2 0 0 1 2 2V19H7.5A1.5 1.5 0 0 0 6 20.5z" /><path d="M6 4.5v16M6 20.5h11.5M10 8h5M10 11h5" /><path d="m18 9 1.3 1.3L22 7.6" /></svg>;
 }
 

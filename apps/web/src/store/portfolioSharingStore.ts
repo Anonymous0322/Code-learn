@@ -34,7 +34,7 @@ function parsePublicPortfolio(data: unknown): PublicPortfolio | null {
       const item = project as Record<string, unknown>;
       return typeof item.id === 'string' && typeof item.title === 'string' && typeof item.code === 'string' && item.code.length <= 20000;
     })) {
-    throw new Error('Ommaviy portfolio ma’lumotlari noto‘g‘ri.');
+    throw new Error('Ommaviy portfolio ma’lumotlari notöğri.');
   }
   return {
     shareId: row.shareId,
@@ -54,14 +54,14 @@ export const usePortfolioSharingStore = create<PortfolioSharingState>((set, get)
       .eq('user_id', userId).maybeSingle();
     if (error) throw error;
     if (!data || !data.is_public) return null;
-    if (typeof data.share_id !== 'string') throw new Error('Portfolio ulashish sozlamasi noto‘g‘ri.');
+    if (typeof data.share_id !== 'string') throw new Error('Portfolio ulaşiş sozlamasi notöğri.');
     if (get().userId === userId) set({ shareId: data.share_id });
     return data.share_id;
   },
   publish: async (userId, displayName, projects) => {
-    if (get().userId !== userId) throw new Error('Hisob o‘zgargani sababli portfolio ulashilmadi.');
+    if (get().userId !== userId) throw new Error('Hisob özgargani sababli portfolio ulaşilmadi.');
     const normalizedName = displayName.trim();
-    if (!normalizedName || normalizedName.length > 80) throw new Error('Portfolio uchun 1–80 belgili ko‘rinadigan ism kiriting.');
+    if (!normalizedName || normalizedName.length > 80) throw new Error('Portfolio uçun 1–80 belgili körinadigan ism kiriting.');
     if (projects.length > 3 || projects.some(project => project.code.length > 20000)) throw new Error('Portfolio loyihalari ruxsat etilgan hajmdan oshdi.');
     const previous = await getSupabase().from('user_portfolios').select('share_id').eq('user_id', userId).maybeSingle();
     if (previous.error) throw previous.error;
@@ -79,7 +79,7 @@ export const usePortfolioSharingStore = create<PortfolioSharingState>((set, get)
     return shareId;
   },
   unpublish: async (userId, shareId) => {
-    if (get().userId !== userId) throw new Error('Hisob o‘zgargani sababli portfolio yashirilmadi.');
+    if (get().userId !== userId) throw new Error('Hisob özgargani sababli portfolio yaşirilmadi.');
     const { error } = await getSupabase().from('user_portfolios')
       .update({ is_public: false, updated_at: new Date().toISOString() }).eq('user_id', userId).eq('share_id', shareId);
     if (error) throw error;

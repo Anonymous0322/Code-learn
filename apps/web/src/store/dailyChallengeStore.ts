@@ -32,7 +32,7 @@ export const useDailyChallengeStore = create<DailyChallengeState>((set, get) => 
     if (error) throw error;
     if (!data) return null;
     if (data.challenge_date !== date || typeof data.challenge_id !== 'string' || !Number.isInteger(data.passed_count) || !Number.isInteger(data.total) || data.total < 1 || data.passed_count < 0 || data.passed_count > data.total || typeof data.completed !== 'boolean' || data.completed !== (data.passed_count === data.total)) {
-      throw new Error('Kunlik mashq natijasi formati noto‘g‘ri.');
+      throw new Error('Kunlik maşq natijasi formati notöğri.');
     }
     const result: DailyChallengeResult = {
       date: data.challenge_date,
@@ -45,9 +45,9 @@ export const useDailyChallengeStore = create<DailyChallengeState>((set, get) => 
     return result;
   },
   save: async (result, userId) => {
-    if (get().userId !== userId) throw new Error('Hisob o‘zgargani sababli natijani saqlab bo‘lmadi.');
+    if (get().userId !== userId) throw new Error('Hisob özgargani sababli natijani saqlab bölmadi.');
     if (!Number.isInteger(result.passedCount) || !Number.isInteger(result.total) || result.total < 1 || result.passedCount < 0 || result.passedCount > result.total || result.completed !== (result.passedCount === result.total)) {
-      throw new Error('Kunlik mashq natijasi yaroqsiz.');
+      throw new Error('Kunlik maşq natijasi yaroqsiz.');
     }
     const { error } = await getSupabase().from('daily_challenges').upsert({
       user_id: userId,

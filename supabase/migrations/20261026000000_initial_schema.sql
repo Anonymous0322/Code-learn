@@ -104,7 +104,7 @@ create index lesson_feedback_created_idx on public.lesson_feedback (created_at d
 create table public.user_portfolios (
   user_id uuid primary key references public.profiles(id) on delete cascade,
   share_id uuid not null unique default gen_random_uuid(),
-  display_name text not null default 'CodeLearn o‘quvchisi' check (char_length(display_name) between 1 and 80),
+  display_name text not null default 'CodeLearn öquvçisi' check (char_length(display_name) between 1 and 80),
   projects jsonb not null default '[]'::jsonb check (jsonb_typeof(projects) = 'array' and jsonb_array_length(projects) <= 3),
   is_public boolean not null default false,
   updated_at timestamptz not null default now()

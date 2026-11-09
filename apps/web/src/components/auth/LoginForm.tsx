@@ -8,6 +8,8 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/authStore';
 import { useI18n } from '@/components/providers';
+import { getPostAuthDestination } from '@/lib/postAuthDestination';
+import { OAuthButtons } from '@/components/auth/OAuthButtons';
 
 const LoginSchema = z.object({
   email: z.string().email('Noto\'g\'ri email formati'),
@@ -43,13 +45,12 @@ export function LoginForm() {
 
     if (res.success) {
       const currentUser = useAuthStore.getState().currentUser;
-      if (currentUser?.role === 'creator' || currentUser?.role === 'admin') {
-        router.push('/admin');
-      } else {
-        router.push('/courses');
-      }
+      const defaultDestination = currentUser?.role === 'creator' || currentUser?.role === 'admin'
+        ? '/admin'
+        : '/courses';
+      router.push(getPostAuthDestination(defaultDestination));
     } else {
-      setErrorMsg(res.message || tr('Kirishda xatolik yuz berdi.', 'Не удалось войти.', 'Could not sign in.'));
+      setErrorMsg(res.message || tr('Kirişda xatolik yuz berdi.', 'Не удалось войти.', 'Could not sign in.'));
     }
   };
 
@@ -66,7 +67,7 @@ export function LoginForm() {
     const result = await resendConfirmation(email);
     setResending(false);
     if (result.success) {
-      setConfirmationMsg(tr('Tasdiqlash xati emailingizga qayta yuborildi.', 'Письмо с подтверждением отправлено повторно.', 'The confirmation email has been resent.'));
+      setConfirmationMsg(tr('Tasdiqlaş xati emailingizga qayta yuborildi.', 'Письмо с подтверждением отправлено повторно.', 'The confirmation email has been resent.'));
     } else {
       setErrorMsg(result.message);
     }
@@ -123,8 +124,9 @@ export function LoginForm() {
           disabled={resending}
           className="mt-4 w-full text-center text-xs text-neon-cyan hover:text-white disabled:opacity-50"
         >
-          {resending ? tr('Xat yuborilmoqda...', 'Отправка письма...', 'Sending email...') : tr('Tasdiqlash xatini qayta yuborish', 'Отправить письмо повторно', 'Resend confirmation email')}
+          {resending ? tr('Xat yuborilmoqda...', 'Отправка письма...', 'Sending email...') : tr('Tasdiqlaş xatini qayta yuboriş', 'Отправить письмо повторно', 'Resend confirmation email')}
         </button>
+        <OAuthButtons />
       </div>
     </div>
   );

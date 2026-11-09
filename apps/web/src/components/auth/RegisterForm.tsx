@@ -8,6 +8,8 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/authStore';
 import { useI18n } from '@/components/providers';
+import { getPostAuthDestination } from '@/lib/postAuthDestination';
+import { OAuthButtons } from '@/components/auth/OAuthButtons';
 
 const RegisterSchema = z.object({
   name: z.string().min(2, 'Ism kamida 2 belgidan iborat bo\'lishi kerak'),
@@ -48,17 +50,16 @@ export function RegisterForm() {
     if (res.success) {
       const currentUser = useAuthStore.getState().currentUser;
       if (currentUser?.email.toLowerCase() === data.email.trim().toLowerCase()) {
-        if (currentUser.role === 'creator' || currentUser.role === 'admin') {
-          router.push('/admin');
-        } else {
-          router.push('/courses');
-        }
+        const defaultDestination = currentUser.role === 'creator' || currentUser.role === 'admin'
+          ? '/admin'
+          : '/courses';
+        router.push(getPostAuthDestination(defaultDestination));
       } else {
         setSuccessMsg(tr('Hisob yaratildi. Emailingizni tasdiqlang.', 'Аккаунт создан. Подтвердите адрес электронной почты.', 'Account created. Please confirm your email address.'));
         setConfirmationEmail(data.email);
       }
     } else {
-      const message = res.message || tr('Ro‘yxatdan o‘tishda xatolik yuz berdi.', 'Не удалось зарегистрироваться.', 'Registration failed.');
+      const message = res.message || tr('Röyxatdan ötişda xatolik yuz berdi.', 'Не удалось зарегистрироваться.', 'Registration failed.');
       setErrorMsg(message);
       if (message.includes('Tasdiqlash xatlarini yuborish limiti')) {
         setConfirmationEmail(data.email);
@@ -73,7 +74,7 @@ export function RegisterForm() {
     const result = await resendConfirmation(confirmationEmail);
     setResending(false);
     if (result.success) {
-      setSuccessMsg(tr('Tasdiqlash xati emailingizga qayta yuborildi.', 'Письмо с подтверждением отправлено повторно.', 'The confirmation email has been resent.'));
+      setSuccessMsg(tr('Tasdiqlaş xati emailingizga qayta yuborildi.', 'Письмо с подтверждением отправлено повторно.', 'The confirmation email has been resent.'));
     } else {
       setErrorMsg(result.message);
     }
@@ -101,10 +102,9 @@ export function RegisterForm() {
             disabled={resending}
             className="mb-4 w-full text-center text-xs text-neon-cyan hover:text-white disabled:opacity-50"
           >
-            {resending ? tr('Xat yuborilmoqda...', 'Отправка письма...', 'Sending email...') : tr('Tasdiqlash xatini qayta yuborish', 'Отправить письмо повторно', 'Resend confirmation email')}
+            {resending ? tr('Xat yuborilmoqda...', 'Отправка письма...', 'Sending email...') : tr('Tasdiqlaş xatini qayta yuboriş', 'Отправить письмо повторно', 'Resend confirmation email')}
           </button>
         )}
-
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
@@ -144,6 +144,7 @@ export function RegisterForm() {
             {loading ? t('submittingRegister') : t('submitRegister')}
           </Button>
         </form>
+        <OAuthButtons />
       </div>
     </div>
   );

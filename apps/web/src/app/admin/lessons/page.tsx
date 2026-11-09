@@ -4,21 +4,24 @@ import { useEffect, useRef, useState } from 'react';
 import { useCourseStore, LevelItem, QuizQuestion, ExerciseCheck } from '@/store/courseStore';
 import { useI18n } from '@/components/providers';
 import { LessonContent } from '@/components/lesson/LessonContent';
+import { useAuthStore } from '@/store/authStore';
+import { useNotificationStore } from '@/store/notificationStore';
+import { toModernUzbek } from '@/lib/utils';
 
 const labels = {
-  en: { heading: 'Lessons and Modules', intro: 'Manage interactive lessons and practical modules for each course', add: 'Add lesson', choose: 'Choose a course:', lessons: 'lessons', edit: 'Edit', remove: 'Delete', none: 'No lessons in this course yet.', first: 'Add the first lesson', missingCourse: 'No course selected.', courseLessons: 'lessons', total: 'Total:', cancel: 'Cancel', save: 'Save', course: 'Course', title: 'Lesson title', description: 'Short description', theory: 'Lesson text', required: 'Lesson title is required', addTitle: 'Add lesson', editTitle: 'Edit lesson', help: 'Add the lesson content in Uzbek, then provide starter code for the playground.', editorLanguage: 'Playground language', starterCode: 'Starter code', uzbek: 'Uzbek', quiz: 'Lesson quiz', addQuestion: 'Add question', question: 'Question', answer: 'Answer', correctAnswer: 'Correct answer', removeQuestion: 'Remove', incompleteQuestion: 'Complete every quiz question and all four answer options.', questionLimit: 'Maximum 10 questions per lesson.', exercise: 'Coding exercise', instructions: 'Exercise instructions', addCheck: 'Add check', checkLabel: 'Requirement', selector: 'CSS selector', checkType: 'Check type', expected: 'Expected value', property: 'CSS property', removeCheck: 'Remove check', invalidExercise: 'Complete the instructions and every check field.', preview: 'Lesson text preview', up: 'Move up', down: 'Move down', quizExplanation: 'Answer explanation (shown after submission)' },
-  ru: { heading: 'Уроки и модули', intro: 'Управление интерактивными уроками и практическими модулями курса', add: 'Добавить урок', choose: 'Выберите курс:', lessons: 'уроков', edit: 'Изменить', remove: 'Удалить', none: 'В этом курсе пока нет уроков.', first: 'Добавить первый урок', missingCourse: 'Курс не выбран.', courseLessons: 'уроки', total: 'Всего:', cancel: 'Отмена', save: 'Сохранить', course: 'Курс', title: 'Название урока', description: 'Краткое описание', theory: 'Материал урока', required: 'Введите название урока', addTitle: 'Добавить урок', editTitle: 'Изменить урок', help: 'Добавьте материал урока на узбекском языке и начальный код для практики.', editorLanguage: 'Язык редактора', starterCode: 'Начальный код', uzbek: 'Узбекский', quiz: 'Тест к уроку', addQuestion: 'Добавить вопрос', question: 'Вопрос', answer: 'Ответ', correctAnswer: 'Правильный ответ', removeQuestion: 'Удалить', incompleteQuestion: 'Заполните все вопросы теста и все четыре варианта ответа.', questionLimit: 'Максимум 10 вопросов на урок.', exercise: 'Практическое задание', instructions: 'Инструкция', addCheck: 'Добавить проверку', checkLabel: 'Требование', selector: 'CSS-селектор', checkType: 'Тип проверки', expected: 'Ожидаемое значение', property: 'CSS-свойство', removeCheck: 'Удалить проверку', invalidExercise: 'Заполните инструкцию и все поля проверок.', preview: 'Предпросмотр текста урока', up: 'Вверх', down: 'Вниз', quizExplanation: 'Пояснение к ответу (после теста)' },
-  uz: { heading: 'Darslar va modullar boshqaruvi', intro: 'Har bir kursdagi interaktiv darslar va amaliy modullarni boshqarish', add: 'Yangi dars qo‘shish', choose: 'Kursni tanlang:', lessons: 'ta dars', edit: 'Tahrirlash', remove: 'O‘chirish', none: 'Bu kursda hali darslar yo‘q.', first: 'Birinchi darsni qo‘shish', missingCourse: 'Kurs tanlanmagan.', courseLessons: 'darslari', total: 'Jami:', cancel: 'Bekor qilish', save: 'Saqlash', course: 'Kurs', title: 'Dars sarlavhasi', description: 'Qisqa tavsif', theory: 'Dars matni', required: 'Dars sarlavhasi majburiy', addTitle: 'Yangi dars qo‘shish', editTitle: 'Darsni tahrirlash', help: 'Dars matnini o‘zbek tilida kiriting va amaliyot uchun boshlang‘ich kodni qo‘shing.', editorLanguage: 'IDE dasturlash tili', starterCode: 'Boshlang‘ich kod', uzbek: 'O‘zbekcha', quiz: 'Dars mini-testi', addQuestion: 'Savol qo‘shish', question: 'Savol', answer: 'Javob varianti', correctAnswer: 'To‘g‘ri javob', removeQuestion: 'O‘chirish', incompleteQuestion: 'Testdagi barcha savol va to‘rtta javob variantini to‘ldiring.', questionLimit: 'Har bir dars uchun eng ko‘pi 10 ta savol.', exercise: 'Kod mashqi', instructions: 'Vazifa yo‘riqnomasi', addCheck: 'Tekshiruv qo‘shish', checkLabel: 'Tekshiruv talabi', selector: 'CSS selektor', checkType: 'Tekshirish turi', expected: 'Kutilgan qiymat', property: 'CSS xususiyati', removeCheck: 'Tekshiruvni o‘chirish', invalidExercise: 'Mashq yo‘riqnomasi va barcha tekshiruv maydonlarini to‘ldiring.', preview: 'Dars matni ko‘rinishi', up: 'Yuqoriga', down: 'Pastga', quizExplanation: 'Javob izohi (testdan keyin ko‘rsatiladi)' },
+  en: { heading: 'Lessons and Modules', intro: 'Manage interactive lessons and practical modules for each course', add: 'Add lesson', choose: 'Choose a course:', lessons: 'lessons', edit: 'Edit', remove: 'Delete', none: 'No lessons in this course yet.', first: 'Add the first lesson', missingCourse: 'No course selected.', courseLessons: 'lessons', total: 'Total:', cancel: 'Cancel', save: 'Save', course: 'Course', title: 'Lesson title', description: 'Short description', theory: 'Lesson text', required: 'Lesson title is required', addTitle: 'Add lesson', editTitle: 'Edit lesson', help: 'Add the lesson content in Uzbek, then provide starter code for the playground.', editorLanguage: 'Playground language', starterCode: 'Starter code', uzbek: 'Uzbek', quiz: 'Test questions', addQuestion: 'Add question', question: 'Question', answer: 'Answer', correctAnswer: 'Correct answer', removeQuestion: 'Remove', incompleteQuestion: 'Add at least one test question and complete all four answer options.', questionLimit: 'Maximum 10 questions per test.', exercise: 'Coding exercise', instructions: 'Exercise instructions', addCheck: 'Add check', checkLabel: 'Requirement', selector: 'CSS selector', checkType: 'Check type', expected: 'Expected value', property: 'CSS property', removeCheck: 'Remove check', invalidExercise: 'Complete the instructions and every check field.', preview: 'Lesson text preview', up: 'Move up', down: 'Move down', quizExplanation: 'Answer explanation (shown after submission)' },
+  ru: { heading: 'Уроки и модули', intro: 'Управление интерактивными уроками и практическими модулями курса', add: 'Добавить урок', choose: 'Выберите курс:', lessons: 'уроков', edit: 'Изменить', remove: 'Удалить', none: 'В этом курсе пока нет уроков.', first: 'Добавить первый урок', missingCourse: 'Курс не выбран.', courseLessons: 'уроки', total: 'Всего:', cancel: 'Отмена', save: 'Сохранить', course: 'Курс', title: 'Название урока', description: 'Краткое описание', theory: 'Материал урока', required: 'Введите название урока', addTitle: 'Добавить урок', editTitle: 'Изменить урок', help: 'Добавьте материал урока на узбекском языке и начальный код для практики.', editorLanguage: 'Язык редактора', starterCode: 'Начальный код', uzbek: 'Узбекский', quiz: 'Вопросы теста', addQuestion: 'Добавить вопрос', question: 'Вопрос', answer: 'Ответ', correctAnswer: 'Правильный ответ', removeQuestion: 'Удалить', incompleteQuestion: 'Добавьте хотя бы один вопрос и заполните все четыре варианта ответа.', questionLimit: 'Максимум 10 вопросов в тесте.', exercise: 'Практическое задание', instructions: 'Инструкция', addCheck: 'Добавить проверку', checkLabel: 'Требование', selector: 'CSS-селектор', checkType: 'Тип проверки', expected: 'Ожидаемое значение', property: 'CSS-свойство', removeCheck: 'Удалить проверку', invalidExercise: 'Заполните инструкцию и все поля проверок.', preview: 'Предпросмотр текста урока', up: 'Вверх', down: 'Вниз', quizExplanation: 'Пояснение к ответу (после теста)' },
+  uz: { heading: 'Darslar va modullar boşqaruvi', intro: 'Har bir kursdagi interaktiv darslar va amaliy modullarni boşqariş', add: 'Yangi dars qöşiş', choose: 'Kursni tanlang:', lessons: 'ta dars', edit: 'Tahrirlaş', remove: 'Öçiriş', none: 'Bu kursda hali darslar yöq.', first: 'Birinçi darsni qöşiş', missingCourse: 'Kurs tanlanmagan.', courseLessons: 'darslari', total: 'Jami:', cancel: 'Bekor qiliş', save: 'Saqlaş', course: 'Kurs', title: 'Dars sarlavhasi', description: 'Qisqa tavsif', theory: 'Dars matni', required: 'Dars sarlavhasi majburiy', addTitle: 'Yangi dars qöşiş', editTitle: 'Darsni tahrirlaş', help: 'Dars matnini özbek tilida kiriting va amaliyot uçun boşlanğiç kodni qöşing.', editorLanguage: 'IDE dasturlaş tili', starterCode: 'Boşlanğiç kod', uzbek: 'Özbekça', quiz: 'Test savollari', addQuestion: 'Savol qöşiş', question: 'Savol', answer: 'Javob varianti', correctAnswer: 'Töğri javob', removeQuestion: 'Öçiriş', incompleteQuestion: 'Kamida bitta test savolini qöşib, törtta javob variantini töldiring.', questionLimit: 'Har bir testda eng köpi 10 ta savol.', exercise: 'Kod maşqi', instructions: 'Vazifa yöriqnomasi', addCheck: 'Tekşiruv qöşiş', checkLabel: 'Tekşiruv talabi', selector: 'CSS selektor', checkType: 'Tekşiriş turi', expected: 'Kutilgan qiymat', property: 'CSS xususiyati', removeCheck: 'Tekşiruvni öçiriş', invalidExercise: 'Maşq yöriqnomasi va barça tekşiruv maydonlarini töldiring.', preview: 'Dars matni körinişi', up: 'Yuqoriga', down: 'Pastga', quizExplanation: 'Javob izohi (testdan keyin körsatiladi)' },
 } as const;
 
 const translatedLessonFields = {
-  uz: { section: 'Dars tarjimalari', title: 'Sarlavha', description: 'Qisqa tavsif', theory: 'Dars matni', hint: 'Bo‘sh maydonlar o‘zbekcha asosiy matnni ko‘rsatadi.' },
+  uz: { section: 'Dars tarjimalari', title: 'Sarlavha', description: 'Qisqa tavsif', theory: 'Dars matni', hint: 'Böş maydonlar özbekça asosiy matnni körsatadi.' },
   ru: { section: 'Переводы урока', title: 'Название', description: 'Краткое описание', theory: 'Материал урока', hint: 'Пустые поля будут показывать основной текст на узбекском.' },
   en: { section: 'Lesson translations', title: 'Title', description: 'Short description', theory: 'Lesson content', hint: 'Empty fields fall back to the original Uzbek content.' },
 } as const;
 
 const lessonLocales = [
-  { code: 'uz', label: 'O‘zbekcha' },
+  { code: 'uz', label: 'Özbekça' },
   { code: 'ru', label: 'Русский' },
   { code: 'en', label: 'English' },
 ] as const;
@@ -29,9 +32,11 @@ const getEditorLanguage = (languageCode: string): NonNullable<LevelItem['editorL
 };
 
 export default function AdminLessonsPage() {
-  const { language } = useI18n();
+  const { language, tr } = useI18n();
   const text = labels[language as keyof typeof labels] || labels.en;
   const { courses, addLevel, updateLevel, deleteLevel, moveLevel } = useCourseStore();
+  const currentUser = useAuthStore(state => state.currentUser);
+  const createNotification = useNotificationStore(state => state.createNotification);
   const [selectedCourseId, setSelectedCourseId] = useState<string>(courses[0]?.id || '');
   const [modalOpen, setModalOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -39,6 +44,7 @@ export default function AdminLessonsPage() {
 
   // Form states
   const [title, setTitle] = useState('');
+  const [kind, setKind] = useState<'lesson' | 'test'>('lesson');
   const [description, setDescription] = useState('');
   const [theory, setTheory] = useState('');
   const [translations, setTranslations] = useState<LevelItem['translations']>({});
@@ -58,6 +64,7 @@ export default function AdminLessonsPage() {
   const openAddModal = () => {
     setEditingLevel(null);
     setTitle('');
+    setKind('lesson');
     setDescription('');
     setTheory('');
     setTranslations({});
@@ -72,6 +79,7 @@ export default function AdminLessonsPage() {
   const openEditModal = (lvl: LevelItem) => {
     setEditingLevel(lvl);
     setTitle(lvl.title);
+    setKind(lvl.kind || 'lesson');
     setDescription(lvl.description || '');
     setTheory(lvl.theory || '');
     setTranslations(lvl.translations || {});
@@ -174,7 +182,7 @@ export default function AdminLessonsPage() {
       setNotice({ text: text.required, type: 'error' });
       return;
     }
-    if (quiz.length > 10 || quiz.some(question => !question.question.trim() || question.options.length !== 4 || question.options.some(option => !option.trim()) || !Number.isInteger(question.correctIndex) || question.correctIndex < 0 || question.correctIndex > 3)) {
+    if (kind === 'test' && (quiz.length === 0 || quiz.length > 10 || quiz.some(question => !question.question.trim() || question.options.length !== 4 || question.options.some(option => !option.trim()) || !Number.isInteger(question.correctIndex) || question.correctIndex < 0 || question.correctIndex > 3))) {
       setNotice({ text: text.incompleteQuestion, type: 'error' });
       return;
     }
@@ -186,32 +194,58 @@ export default function AdminLessonsPage() {
 
     if (editingLevel) {
       const res = await updateLevel(currentCourse.id, editingLevel.id, {
+        kind,
         title,
-        description,
-        theory,
-        editorLanguage,
-        starterCode,
-        quiz,
-        exercise,
-        translations,
+        description: kind === 'lesson' ? description : '',
+        theory: kind === 'lesson' ? theory : '',
+        editorLanguage: kind === 'lesson' ? editorLanguage : undefined,
+        starterCode: kind === 'lesson' ? starterCode : undefined,
+        quiz: kind === 'test' ? quiz : undefined,
+        exercise: kind === 'lesson' ? exercise : null,
+        translations: undefined,
       });
       setNotice({ text: res.message, type: res.success ? 'success' : 'error' });
       saveSucceeded = res.success;
     } else {
       const res = await addLevel(currentCourse.id, {
+        kind,
         title,
-        description,
-        theory,
-        editorLanguage,
-        starterCode,
-        quiz,
-        exercise,
-        translations,
+        description: kind === 'lesson' ? description : '',
+        theory: kind === 'lesson' ? theory : '',
+        editorLanguage: kind === 'lesson' ? editorLanguage : undefined,
+        starterCode: kind === 'lesson' ? starterCode : undefined,
+        quiz: kind === 'test' ? quiz : undefined,
+        exercise: kind === 'lesson' ? exercise : null,
         levelIndex: currentCourse.levels?.length || 0,
         orderIndex: currentCourse.levels?.length || 0,
       });
       setNotice({ text: res.message, type: res.success ? 'success' : 'error' });
       saveSucceeded = res.success;
+      if (res.success && kind === 'lesson' && currentUser) {
+        try {
+          await createNotification({
+            category: 'lesson',
+            title: tr(toModernUzbek(`Yangi dars: ${title.trim()}`), `Новый урок: ${title.trim()}`, `New lesson: ${title.trim()}`),
+            body: tr(
+              toModernUzbek(`${currentCourse.title} kursiga yangi dars qo‘shildi.${description.trim() ? ` ${description.trim()}` : ''}`),
+              `В курс «${currentCourse.title}» добавлен новый урок.${description.trim() ? ` ${description.trim()}` : ''}`,
+              `A new lesson was added to ${currentCourse.title}.${description.trim() ? ` ${description.trim()}` : ''}`,
+            ),
+            url: `/courses/${currentCourse.slug}`,
+          }, currentUser.id);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : tr('Bildirishnoma yubörilmadi.', 'Не удалось отправить уведомление.', 'Could not send the notification.');
+          console.error('Yangi dars bildirishnomasi yuborilmadi.', error);
+          setNotice({
+            text: tr(
+              `Dars saqlandi, lekin bildirishnoma yuborilmadi: ${message}`,
+              `Урок сохранён, но уведомление не отправлено: ${message}`,
+              `The lesson was saved, but its notification could not be sent: ${message}`,
+            ),
+            type: 'error',
+          });
+        }
+      }
     }
 
     if (saveSucceeded) setModalOpen(false);
@@ -226,12 +260,23 @@ export default function AdminLessonsPage() {
     }
   };
 
+  const handleDuplicate = async (level: LevelItem) => {
+    const { id: _id, slug: _slug, ...lesson } = level;
+    const result = await addLevel(currentCourse.id, {
+      ...lesson,
+      title: `${level.title} — ${tr('nusxa', 'копия', 'copy')}`,
+      orderIndex: currentCourse.levels.length,
+      levelIndex: currentCourse.levels.length,
+    });
+    setNotice({ text: result.message, type: result.success ? 'success' : 'error' });
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
-        <div>
-          <h1 className="font-[Space_Grotesk] text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
+        <div className="min-w-0">
+          <h1 className="flex items-center gap-2 break-words font-[Space_Grotesk] text-2xl font-bold text-white sm:text-3xl">
             <span>📖</span> {text.heading}
           </h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -239,13 +284,15 @@ export default function AdminLessonsPage() {
           </p>
         </div>
 
-        <button
-          onClick={openAddModal}
-          disabled={!currentCourse}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple text-white text-xs font-bold shadow-lg shadow-neon-blue/20 hover:opacity-95 transition-all flex items-center gap-2 w-fit"
-        >
-          <span>+</span> {text.add}
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={openAddModal}
+            disabled={!currentCourse}
+            className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-neon-blue/20 transition-all hover:opacity-95 disabled:opacity-40 sm:w-fit"
+          >
+            <span>+</span> {text.add}
+          </button>
+        </div>
       </div>
 
       {notice && (
@@ -286,14 +333,14 @@ export default function AdminLessonsPage() {
       {/* Current Course Info & Lessons List */}
       {currentCourse ? (
         <div className="space-y-4">
-          <div className="p-4 rounded-xl bg-[#0a0f24] border border-white/10 flex items-center justify-between">
-            <div>
+          <div className="flex flex-col gap-3 rounded-xl border border-white/10 bg-[#0a0f24] p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
               <h2 className="font-bold text-sm text-white">
                 {currentCourse.translations?.[language]?.title || currentCourse.title} {text.courseLessons}
               </h2>
               <p className="text-xs text-slate-400">{currentCourse.translations?.[language]?.description || currentCourse.description}</p>
             </div>
-            <span className="text-xs text-neon-cyan font-mono font-bold">
+            <span className="shrink-0 text-xs font-mono font-bold text-neon-cyan">
               {text.total} {currentCourse.levels?.length || 0} {text.lessons}
             </span>
           </div>
@@ -309,21 +356,24 @@ export default function AdminLessonsPage() {
                     {idx + 1}
                   </div>
                   <div className="min-w-0">
-                    <h3 className="font-bold text-xs sm:text-sm text-white truncate">
-                      {level.translations?.[language]?.title || level.title}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-xs sm:text-sm text-white truncate">
+                        {level.title}
+                      </h3>
+                      <span className="shrink-0 rounded-full bg-neon-cyan/10 px-2 py-0.5 text-[9px] uppercase text-neon-cyan">{level.kind === 'test' ? tr('Test', 'Тест', 'Test') : tr('Dars', 'Урок', 'Lesson')}</span>
+                    </div>
                     <p className="text-[11px] text-slate-400 truncate mt-0.5">
-                      {level.translations?.[language]?.description || level.description}
+                      {level.description}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <button type="button" aria-label={`${text.up}: ${level.translations?.[language]?.title || level.title}`} disabled={idx === 0} onClick={async () => {
+                  <button type="button" aria-label={`${text.up}: ${level.title}`} disabled={idx === 0} onClick={async () => {
                     const result = await moveLevel(currentCourse.id, level.id, -1);
                     if (!result.success) setNotice({ text: result.message, type: 'error' });
                   }} className="rounded-lg border border-white/10 px-2 py-1.5 text-xs text-slate-300 disabled:opacity-30">↑</button>
-                  <button type="button" aria-label={`${text.down}: ${level.translations?.[language]?.title || level.title}`} disabled={idx === orderedLevels.length - 1} onClick={async () => {
+                  <button type="button" aria-label={`${text.down}: ${level.title}`} disabled={idx === orderedLevels.length - 1} onClick={async () => {
                     const result = await moveLevel(currentCourse.id, level.id, 1);
                     if (!result.success) setNotice({ text: result.message, type: 'error' });
                   }} className="rounded-lg border border-white/10 px-2 py-1.5 text-xs text-slate-300 disabled:opacity-30">↓</button>
@@ -332,6 +382,14 @@ export default function AdminLessonsPage() {
                     className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 text-xs font-medium border border-white/10 transition-colors"
                   >
                     ✏️ {text.edit}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void handleDuplicate(level)}
+                    aria-label={`${tr('Darsdan nusxa olish', 'Дублировать урок', 'Duplicate lesson')}: ${level.title}`}
+                    className="rounded-lg border border-neon-cyan/20 bg-neon-cyan/5 px-2.5 py-1.5 text-xs font-medium text-neon-cyan transition-colors hover:bg-neon-cyan/10"
+                  >
+                    {tr('Nusxalash', 'Дублировать', 'Duplicate')}
                   </button>
                   <button
                     onClick={() => handleDelete(level.id, level.title)}
@@ -382,7 +440,7 @@ export default function AdminLessonsPage() {
           <div className="my-auto max-h-[calc(100dvh-2rem)] w-full max-w-xl overflow-y-auto overscroll-contain rounded-2xl border border-white/15 bg-[#0d132b] p-4 shadow-2xl sm:p-6">
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
               <h2 id="lesson-modal-title" className="font-bold text-base text-white">
-                {editingLevel ? text.editTitle : text.addTitle}
+                {editingLevel ? text.editTitle : kind === 'test' ? tr('Test qo‘shish', 'Добавить тест', 'Add test') : text.addTitle}
               </h2>
               <button type="button" aria-label={text.cancel} onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
@@ -396,7 +454,15 @@ export default function AdminLessonsPage() {
               </div>
 
               <div>
-                <label className="block text-slate-300 mb-1 font-medium">{text.title} ({text.uzbek}) *</label>
+                <label htmlFor="lesson-kind" className="mb-1 block font-medium text-slate-300">{tr('Tarkib turi', 'Тип материала', 'Content type')}</label>
+                <select id="lesson-kind" value={kind} onChange={event => setKind(event.target.value as 'lesson' | 'test')} className="w-full rounded-xl border border-white/10 bg-[#060914] px-3 py-2 text-white focus:border-neon-cyan focus:outline-none">
+                  <option value="lesson">{tr('Oddiy dars', 'Обычный урок', 'Lesson')}</option>
+                  <option value="test">{tr('Alohida test', 'Отдельный тест', 'Standalone test')}</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-slate-300 mb-1 font-medium">{kind === 'test' ? tr('Test sarlavhasi', 'Название теста', 'Test title') : text.title} ({text.uzbek}) *</label>
                 <input
                   type="text"
                   required
@@ -407,6 +473,7 @@ export default function AdminLessonsPage() {
                 />
               </div>
 
+              {kind === 'lesson' && <>
               <div>
                 <label className="block text-slate-300 mb-1 font-medium">{text.description} ({text.uzbek})</label>
                 <textarea
@@ -434,8 +501,9 @@ export default function AdminLessonsPage() {
                   <LessonContent content={theory || 'Dars matni shu yerda ko‘rinadi.'} />
                 </div>
               </div>
+              </>}
 
-              <details className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+              {false && <details className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
                 <summary className="cursor-pointer text-xs font-semibold text-slate-200">{translatedLessonFields[language as keyof typeof translatedLessonFields]?.section || translatedLessonFields.en.section}</summary>
                 <p className="mt-2 text-[10px] leading-5 text-slate-400">{translatedLessonFields[language as keyof typeof translatedLessonFields]?.hint || translatedLessonFields.en.hint}</p>
                 {lessonLocales.map(locale => (
@@ -532,8 +600,9 @@ export default function AdminLessonsPage() {
                     </div>}
                   </fieldset>
                 ))}
-              </details>
+              </details>}
 
+              {kind === 'lesson' && <>
               <div>
                 <label htmlFor="lesson-editor-language" className="mb-1 block font-medium text-slate-300">{text.editorLanguage}</label>
                 <select
@@ -587,7 +656,9 @@ export default function AdminLessonsPage() {
                 </fieldset>)}
                 <button type="button" onClick={addExerciseCheck} className="rounded-lg border border-neon-cyan/30 px-3 py-2 text-xs font-semibold text-neon-cyan">+ {text.addCheck}</button>
               </section>
+              </>}
 
+              {kind === 'test' && <>
               <section className="space-y-3 rounded-xl border border-white/10 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
@@ -665,8 +736,9 @@ export default function AdminLessonsPage() {
                   </fieldset>
                 ))}
               </section>
+              </>}
 
-              <p className="text-[10px] leading-4 text-slate-400">{text.help}</p>
+              <p className="text-[10px] leading-4 text-slate-400">{kind === 'test' ? tr('Test savollari kurs tartibidagi bitta alohida bo‘lim hisoblanadi.', 'Тест — отдельный материал в последовательности курса.', 'The test is a standalone item in the course sequence.') : text.help}</p>
               <div className="flex justify-end gap-2 pt-4 border-t border-white/10">
                 <button
                   type="button"

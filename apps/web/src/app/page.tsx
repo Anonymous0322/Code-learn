@@ -36,7 +36,7 @@ export default function HomePage() {
           setMemberCountError('');
         } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
           setMembersLive(false);
-          setMemberCountError(tr('Realtime ulanishida xatolik.', 'Ошибка подключения к обновлениям в реальном времени.', 'Realtime connection failed.'));
+          setMemberCountError(tr('Realtime ulanişida xatolik.', 'Ошибка подключения к обновлениям в реальном времени.', 'Realtime connection failed.'));
           console.error('Loyiha a’zolari soni uchun realtime kanaliga ulanib bo‘lmadi.', status);
         } else if (status === 'CLOSED') {
           setMembersLive(false);
@@ -52,7 +52,7 @@ export default function HomePage() {
       if (!cancelled && !receivedRealtimeUpdate) setMemberCount(count);
     }).catch(error => {
       if (cancelled) return;
-      setMemberCountError(tr('A’zolar sonini yuklab bo‘lmadi.', 'Не удалось загрузить число участников.', 'Could not load the member count.'));
+      setMemberCountError(tr('A’zolar sonini yuklab bölmadi.', 'Не удалось загрузить число участников.', 'Could not load the member count.'));
       console.error('Loyiha a’zolari sonini yuklab bo‘lmadi.', error);
     });
 
@@ -74,7 +74,8 @@ export default function HomePage() {
   const features = [
     { icon: 'lesson', title: t('featureLessonTitle'), description: t('featureLessonText') },
     { icon: 'practice', title: t('featurePracticeTitle'), description: t('featurePracticeText') },
-    { icon: 'language', title: t('featureLanguageTitle'), description: t('featureLanguageText') },
+    { icon: 'progress', title: t('featureProgressTitle'), description: t('featureProgressText') },
+    { icon: 'community', title: t('featureCommunityTitle'), description: t('featureCommunityText') },
   ];
 
   const stats = [
@@ -138,11 +139,16 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold text-text-primary mb-12 text-center gradient-text">{t('howItWorks')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {steps.map((step, i) => (
-              <div key={step.number} className="text-center animate-fade-in" style={{ animationDelay: `${i * 150}ms` }}>
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">
+              <div
+                key={step.number}
+                className="group relative rounded-2xl border border-white/5 bg-white/[0.02] px-4 py-6 text-center transition-all duration-300 hover:-translate-y-2 hover:border-neon-blue/30 hover:bg-white/[0.05] hover:shadow-[0_16px_40px_rgba(59,130,246,0.12)] animate-fade-in motion-reduce:transform-none motion-reduce:transition-none"
+                style={{ animationDelay: `${i * 150}ms` }}
+              >
+                <div className="relative mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-neon-blue to-neon-purple text-2xl font-bold text-white shadow-[0_8px_24px_rgba(99,102,241,0.35)] ring-4 ring-indigo-400/10 transition duration-300 group-hover:rotate-6 group-hover:scale-110 group-hover:ring-indigo-400/25 motion-reduce:transition-none">
+                  <span className="absolute inset-[-5px] rounded-full border border-indigo-300/20 transition duration-300 group-hover:inset-[-8px] group-hover:border-indigo-300/45 motion-reduce:transition-none" />
                   {step.number}
                 </div>
-                <h3 className="text-lg font-bold text-text-primary mb-2">{step.title}</h3>
+                <h3 className="mb-2 text-lg font-bold text-text-primary transition-colors group-hover:text-white">{step.title}</h3>
                 <p className="text-sm text-text-secondary">{step.description}</p>
               </div>
             ))}

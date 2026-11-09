@@ -12,7 +12,7 @@ export default function RoadmapPage() {
   const labels = ({
     en: { title: 'Learning paths', loading: 'Loading courses...', empty: 'No active learning paths yet.', lessons: 'lessons', open: 'Open course' },
     ru: { title: 'Маршруты обучения', loading: 'Загрузка курсов...', empty: 'Активных маршрутов пока нет.', lessons: 'уроков', open: 'Открыть курс' },
-    uz: { title: 'O‘quv yo‘nalishlari', loading: 'Kurslar yuklanmoqda...', empty: 'Hozircha faol yo‘nalish yo‘q.', lessons: 'ta dars', open: 'Kursni ochish' },
+    uz: { title: 'Öquv yönalişlari', loading: 'Kurslar yuklanmoqda...', empty: 'Hozirça faol yönaliş yöq.', lessons: 'ta dars', open: 'Kursni oçiş' },
   }[locale] || {
     title: 'Learning paths', loading: 'Loading courses...', empty: 'No active learning paths yet.', lessons: 'lessons', open: 'Open course',
   });

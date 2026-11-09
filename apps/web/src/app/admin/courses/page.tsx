@@ -54,12 +54,12 @@ export default function AdminCoursesPage() {
     let saveSucceeded = false;
     const normalizedSlug = slug.toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-|-$/g, '');
     if (!title.trim() || !normalizedSlug) {
-      setNotice({ text: tr('Iltimos, barcha majburiy maydonlarni to‘ldiring.', 'Заполните все обязательные поля.', 'Please fill in all required fields.'), type: 'error' });
+      setNotice({ text: tr('Iltimos, barça majburiy maydonlarni töldiring.', 'Заполните все обязательные поля.', 'Please fill in all required fields.'), type: 'error' });
       return;
     }
 
     if (courses.some(course => course.slug === normalizedSlug && course.id !== editingCourse?.id)) {
-      setNotice({ text: tr('Bu URL nomi bilan kurs mavjud. Boshqa slug tanlang.', 'Курс с таким URL уже существует. Выберите другой slug.', 'A course with this URL already exists. Choose a different slug.'), type: 'error' });
+      setNotice({ text: tr('Bu URL nomi bilan kurs mavjud. Boşqa slug tanlang.', 'Курс с таким URL уже существует. Выберите другой slug.', 'A course with this URL already exists. Choose a different slug.'), type: 'error' });
       return;
     }
 
@@ -89,7 +89,7 @@ export default function AdminCoursesPage() {
         isActive,
         levels: [],
       });
-      setNotice({ text: res.success ? tr('Kurs qo‘shildi.', 'Курс добавлен.', 'Course added.') : res.message, type: res.success ? 'success' : 'error' });
+      setNotice({ text: res.success ? tr('Kurs qöşildi.', 'Курс добавлен.', 'Course added.') : res.message, type: res.success ? 'success' : 'error' });
       saveSucceeded = res.success;
     }
 
@@ -98,9 +98,9 @@ export default function AdminCoursesPage() {
   };
 
   const handleDelete = async (id: string, courseTitle: string) => {
-    if (confirm(tr(`Haqiqatan ham "${courseTitle}" kursini o‘chirmoqchimisiz?`, `Вы действительно хотите удалить курс «${courseTitle}»?`, `Are you sure you want to delete the course "${courseTitle}"?`))) {
+    if (confirm(tr(`Haqiqatan ham "${courseTitle}" kursini öçirmoqçimisiz?`, `Вы действительно хотите удалить курс «${courseTitle}»?`, `Are you sure you want to delete the course "${courseTitle}"?`))) {
       const res = await deleteCourse(id);
-      setNotice({ text: res.success ? tr('Kurs o‘chirildi.', 'Курс удалён.', 'Course deleted.') : res.message, type: res.success ? 'success' : 'error' });
+      setNotice({ text: res.success ? tr('Kurs öçirildi.', 'Курс удалён.', 'Course deleted.') : res.message, type: res.success ? 'success' : 'error' });
       setTimeout(() => setNotice(null), 3000);
     }
   };
@@ -122,17 +122,17 @@ export default function AdminCoursesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
           <h1 className="font-[Space_Grotesk] text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
-            <span>📚</span> {tr('Kurslar boshqaruvi', 'Управление курсами', 'Manage courses')}
+            <span>📚</span> {tr('Kurslar boşqaruvi', 'Управление курсами', 'Manage courses')}
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            {tr('Saytdagi dasturlash kurslarini yarating, tahrirlang va o‘chiring.', 'Создавайте, редактируйте и удаляйте курсы программирования.', 'Create, edit, and delete programming courses.')}
+            {tr('Saytdagi dasturlaş kurslarini yarating, tahrirlang va öçiring.', 'Создавайте, редактируйте и удаляйте курсы программирования.', 'Create, edit, and delete programming courses.')}
           </p>
         </div>
         <button
           onClick={openAddModal}
           className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple text-white text-xs font-bold shadow-lg shadow-neon-blue/20 hover:opacity-95 transition-all flex items-center gap-2 w-fit"
         >
-          <span>+</span> {tr('Yangi kurs qo‘shish', 'Добавить курс', 'Add course')}
+          <span>+</span> {tr('Yangi kurs qöşiş', 'Добавить курс', 'Add course')}
         </button>
       </div>
 
@@ -150,18 +150,18 @@ export default function AdminCoursesPage() {
       )}
 
       {/* Search and filters */}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
         <div className="relative flex-1 max-w-md">
           <input
             type="text"
-            placeholder={tr('Kurs nomi yoki slug bo‘yicha qidirish...', 'Поиск по названию курса или slug...', 'Search by course name or slug...')}
+            placeholder={tr('Kurs nomi yoki slug böyiça qidiriş...', 'Поиск по названию курса или slug...', 'Search by course name or slug...')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#0a0f24] border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-neon-cyan/50"
           />
           <span className="absolute left-3 top-2.5 text-xs text-slate-500">🔍</span>
         </div>
-        <span className="text-xs text-slate-400">{tr('Jami:', 'Всего:', 'Total:')} {filteredCourses.length} {tr('ta kurs', 'курсов', 'courses')}</span>
+        <span className="shrink-0 text-[11px] text-slate-400 sm:text-xs">{tr('Jami:', 'Всего:', 'Total:')} {filteredCourses.length} {tr('ta kurs', 'курсов', 'courses')}</span>
       </div>
 
       {/* Courses Grid */}
@@ -177,9 +177,9 @@ export default function AdminCoursesPage() {
                   <div className="w-9 h-9 rounded-xl bg-neon-blue/15 border border-neon-cyan/30 flex items-center justify-center font-mono font-bold text-xs text-neon-cyan uppercase">
                     {course.languageCode.slice(0, 2)}
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <h3 className="font-bold text-sm text-white">{course.translations?.[courseLanguage]?.title || course.title}</h3>
-                    <span className="font-mono text-[10px] text-slate-400">/{course.slug}</span>
+                    <span className="block truncate font-mono text-[10px] text-slate-400">/{course.slug}</span>
                   </div>
                 </div>
                 <span
@@ -201,7 +201,7 @@ export default function AdminCoursesPage() {
             <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <span className="font-mono text-[10px] uppercase bg-white/5 border border-white/10 text-slate-300 px-2 py-0.5 rounded">
-                  {course.difficulty === 'beginner' ? tr('Boshlang‘ich', 'Начальный', 'Beginner') : course.difficulty === 'intermediate' ? tr('O‘rta', 'Средний', 'Intermediate') : tr('Yuqori', 'Продвинутый', 'Advanced')}
+                  {course.difficulty === 'beginner' ? tr('Boşlanğiç', 'Начальный', 'Beginner') : course.difficulty === 'intermediate' ? tr('Örta', 'Средний', 'Intermediate') : tr('Yuqori', 'Продвинутый', 'Advanced')}
                 </span>
                 <span className="text-[10px] text-slate-400">
                   {course.levels?.length || 0} {tr('dars', 'уроков', 'lessons')}
@@ -213,12 +213,12 @@ export default function AdminCoursesPage() {
                   onClick={() => openEditModal(course)}
                   className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 text-xs font-medium border border-white/10 transition-colors"
                 >
-                  ✏️ {tr('Tahrirlash', 'Изменить', 'Edit')}
+                  ✏️ {tr('Tahrirlaş', 'Изменить', 'Edit')}
                 </button>
                 <button
                   type="button"
-                  aria-label={tr('O‘chirish', 'Удалить', 'Delete')}
-                  title={tr('O‘chirish', 'Удалить', 'Delete')}
+                  aria-label={tr('Öçiriş', 'Удалить', 'Delete')}
+                  title={tr('Öçiriş', 'Удалить', 'Delete')}
                   onClick={() => handleDelete(course.id, course.title)}
                   className="px-2.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs font-medium border border-red-500/20 transition-colors"
                 >
@@ -236,7 +236,7 @@ export default function AdminCoursesPage() {
           <div className="my-auto max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-2xl border border-white/15 bg-[#0d132b] p-4 shadow-2xl sm:p-6">
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
               <h2 className="font-bold text-base text-white">
-                {editingCourse ? tr('Kursni tahrirlash', 'Редактировать курс', 'Edit course') : tr('Yangi kurs qo‘shish', 'Добавить курс', 'Add course')}
+                {editingCourse ? tr('Kursni tahrirlaş', 'Редактировать курс', 'Edit course') : tr('Yangi kurs qöşiş', 'Добавить курс', 'Add course')}
               </h2>
               <button onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
@@ -254,7 +254,7 @@ export default function AdminCoursesPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <label className="block text-slate-300 mb-1 font-medium">Slug (URL) *</label>
                   <input
@@ -294,7 +294,7 @@ export default function AdminCoursesPage() {
                 <label className="block text-slate-300 mb-1 font-medium">{tr('Tavsif', 'Описание', 'Description')}</label>
                 <textarea
                   rows={3}
-                  placeholder={tr('Ushbu kursda nimalar o‘rganiladi...', 'Чему посвящён этот курс...', 'What this course covers...')}
+                  placeholder={tr('Uşbu kursda nimalar örganiladi...', 'Чему посвящён этот курс...', 'What this course covers...')}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-[#060914] border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-neon-cyan resize-none"
@@ -303,11 +303,11 @@ export default function AdminCoursesPage() {
 
               <details className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
                 <summary className="cursor-pointer text-xs font-semibold text-slate-200">{tr('Kurs tarjimalari', 'Переводы курса', 'Course translations')}</summary>
-                <p className="mt-2 text-[10px] leading-5 text-slate-400">{tr('Har bir tilda ko‘rinadigan nom va tavsifni kiriting. Bo‘sh maydonlar asosiy matnni ko‘rsatadi.', 'Укажите название и описание для каждого языка. Пустые поля будут показывать основной текст.', 'Add a title and description for each language. Empty fields fall back to the main text.')}</p>
+                <p className="mt-2 text-[10px] leading-5 text-slate-400">{tr('Har bir tilda körinadigan nom va tavsifni kiriting. Böş maydonlar asosiy matnni körsatadi.', 'Укажите название и описание для каждого языка. Пустые поля будут показывать основной текст.', 'Add a title and description for each language. Empty fields fall back to the main text.')}</p>
                 {([
-                  ['uz', tr('O‘zbekcha', 'Узбекский', 'Uzbek')],
-                  ['ru', tr('Ruscha', 'Русский', 'Russian')],
-                  ['en', tr('Inglizcha', 'Английский', 'English')],
+                  ['uz', tr('Özbekça', 'Узбекский', 'Uzbek')],
+                  ['ru', tr('Rusça', 'Русский', 'Russian')],
+                  ['en', tr('Inglizça', 'Английский', 'English')],
                 ] as const).map(([locale, localeLabel]) => (
                   <fieldset key={locale} className="mt-3 space-y-2 border-t border-white/10 pt-3">
                     <legend className="px-1 text-[11px] font-semibold text-neon-cyan">{localeLabel}</legend>
@@ -331,7 +331,7 @@ export default function AdminCoursesPage() {
                 ))}
               </details>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <label className="block text-slate-300 mb-1 font-medium">{tr('Qiyinlik darajasi', 'Уровень сложности', 'Difficulty')}</label>
                   <select
@@ -339,8 +339,8 @@ export default function AdminCoursesPage() {
                     onChange={(e) => setDifficulty(e.target.value as CourseItem['difficulty'])}
                     className="w-full px-3 py-2 rounded-xl bg-[#060914] border border-white/10 text-white focus:outline-none focus:border-neon-cyan"
                   >
-                    <option value="beginner">{tr('Boshlang‘ich', 'Начальный', 'Beginner')}</option>
-                    <option value="intermediate">{tr('O‘rta', 'Средний', 'Intermediate')}</option>
+                    <option value="beginner">{tr('Boşlanğiç', 'Начальный', 'Beginner')}</option>
+                    <option value="intermediate">{tr('Örta', 'Средний', 'Intermediate')}</option>
                     <option value="advanced">{tr('Yuqori', 'Продвинутый', 'Advanced')}</option>
                   </select>
                 </div>
@@ -364,13 +364,13 @@ export default function AdminCoursesPage() {
                   onClick={() => setModalOpen(false)}
                   className="px-4 py-2 rounded-xl border border-white/10 hover:border-white/20 text-slate-300"
                 >
-                  {tr('Bekor qilish', 'Отмена', 'Cancel')}
+                  {tr('Bekor qiliş', 'Отмена', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple text-white font-bold shadow-md shadow-neon-blue/20"
                 >
-                  {tr('Saqlash', 'Сохранить', 'Save')}
+                  {tr('Saqlaş', 'Сохранить', 'Save')}
                 </button>
               </div>
             </form>

@@ -18,10 +18,10 @@ export default function CoursesPage() {
       return matchesSearch && (difficulty === 'all' || course.difficulty === difficulty);
     });
   }, [courses, difficulty, search]);
-  const searchLabel = language === 'uz' ? 'Kurs nomi yoki tavsifi bo‘yicha qidirish' : language === 'ru' ? 'Поиск по названию или описанию курса' : 'Search courses by title or description';
-  const allLevels = language === 'uz' ? 'Barcha darajalar' : language === 'ru' ? 'Все уровни' : 'All levels';
-  const noMatches = language === 'uz' ? 'Tanlangan qidiruv bo‘yicha kurs topilmadi.' : language === 'ru' ? 'Курсы не найдены.' : 'No courses match your search.';
-  const reset = language === 'uz' ? 'Filtrlarni tozalash' : language === 'ru' ? 'Сбросить фильтры' : 'Reset filters';
+  const searchLabel = language === 'uz' ? 'Kurs nomi yoki tavsifi böyiça qidiriş' : language === 'ru' ? 'Поиск по названию или описанию курса' : 'Search courses by title or description';
+  const allLevels = language === 'uz' ? 'Barça darajalar' : language === 'ru' ? 'Все уровни' : 'All levels';
+  const noMatches = language === 'uz' ? 'Tanlangan qidiruv böyiça kurs topilmadi.' : language === 'ru' ? 'Курсы не найдены.' : 'No courses match your search.';
+  const reset = language === 'uz' ? 'Filtrlarni tozalaş' : language === 'ru' ? 'Сбросить фильтры' : 'Reset filters';
   if (initialized && courses.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">

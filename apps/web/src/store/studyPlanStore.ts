@@ -30,14 +30,14 @@ export const useStudyPlanStore = create<StudyPlanState>((set, get) => ({
     if (error) throw error;
     if (!data) return null;
     if (typeof data.week_start !== 'string' || !Number.isInteger(data.goal) || !Array.isArray(data.lesson_ids) || !data.lesson_ids.every(id => typeof id === 'string') || typeof data.updated_at !== 'string') {
-      throw new Error('Saqlangan haftalik reja formati noto‘g‘ri.');
+      throw new Error('Saqlangan haftalik reja formati notöğri.');
     }
     const plan: StudyPlan = { weekStart: data.week_start, goal: data.goal, lessonIds: data.lesson_ids, updatedAt: data.updated_at };
     if (get().userId === userId) set({ plan });
     return plan;
   },
   save: async (userId, plan) => {
-    if (get().userId !== userId) throw new Error('Hisob o‘zgargani sababli rejani saqlab bo‘lmadi.');
+    if (get().userId !== userId) throw new Error('Hisob özgargani sababli rejani saqlab bölmadi.');
     if (!Number.isInteger(plan.goal) || plan.goal < 1 || plan.goal > 30 || plan.lessonIds.length > 30 || plan.lessonIds.some(id => !id || id.length > 400)) {
       throw new Error('Haftalik maqsad yoki darslar soni yaroqsiz.');
     }

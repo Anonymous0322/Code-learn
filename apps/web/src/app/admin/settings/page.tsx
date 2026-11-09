@@ -33,7 +33,7 @@ export default function AdminSettingsPage() {
             <span className="text-white font-mono font-bold">CodeLearn</span>
           </div>
           <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-            <span className="text-slate-400 block mb-1">{tr('Boshqaruvchi:', 'Администратор:', 'Administrator:')}</span>
+            <span className="text-slate-400 block mb-1">{tr('Boşqaruvçi:', 'Администратор:', 'Administrator:')}</span>
             <span className="text-neon-cyan font-mono font-bold">{currentUser?.name} ({currentUser?.role?.toUpperCase()})</span>
           </div>
           <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
@@ -42,7 +42,7 @@ export default function AdminSettingsPage() {
           </div>
           <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
             <span className="text-slate-400 block mb-1">{tr('Ma’lumotlar bazasi:', 'База данных:', 'Database:')}</span>
-            <span className={`font-mono font-bold ${syncError ? 'text-red-300' : 'text-purple-300'}`}>{syncError ? tr('Ulanish xatosi', 'Ошибка подключения', 'Connection error') : coursesInitialized ? tr('Supabase bilan ulangan', 'Подключено к Supabase', 'Connected to Supabase') : tr('Supabase’ga ulanmoqda...', 'Подключение к Supabase...', 'Connecting to Supabase...')}</span>
+            <span className={`font-mono font-bold ${syncError ? 'text-red-300' : 'text-purple-300'}`}>{syncError ? tr('Ulaniş xatosi', 'Ошибка подключения', 'Connection error') : coursesInitialized ? tr('Supabase bilan ulangan', 'Подключено к Supabase', 'Connected to Supabase') : tr('Supabase’ga ulanmoqda...', 'Подключение к Supabase...', 'Connecting to Supabase...')}</span>
           </div>
         </div>
       </div>

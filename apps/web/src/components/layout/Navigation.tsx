@@ -2,10 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { useI18n, Language } from '@/components/providers';
 import { useAuthStore } from '@/store/authStore';
+import { NotificationCenter } from '@/components/layout/NotificationCenter';
 
 // ===== SVG FLAGS =====
 function FlagEN({ size = 'sm' }: { size?: 'sm'|'md' }) {
@@ -60,7 +61,7 @@ function FlagUZ({ size = 'sm' }: { size?: 'sm'|'md' }) {
 }
 
 const LANGS = [
-  { code: 'uz' as Language, short: 'UZ', label: "O'zbekcha", sub: "O'zbek tili", Flag: FlagUZ },
+  { code: 'uz' as Language, short: 'UZ', label: "Özbekça", sub: "Özbek tili", Flag: FlagUZ },
   { code: 'ru' as Language, short: 'RU', label: 'Русский',   sub: 'Русский язык', Flag: FlagRU },
   { code: 'en' as Language, short: 'EN', label: 'English',   sub: 'English (US)', Flag: FlagEN },
 ];
@@ -92,15 +93,17 @@ function LangDropdown() {
         aria-haspopup="listbox"
         aria-expanded={open}
         className={clsx(
-          'flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all duration-200 outline-none cursor-pointer border',
+          'group flex items-center gap-2 rounded-full px-3 py-2 text-xs font-semibold transition-all duration-300 outline-none cursor-pointer border focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080c17] motion-reduce:transition-none',
           open
-            ? 'border-[#19d4ff]/60 bg-[#3b82f6]/15 text-white shadow-[0_0_14px_rgba(25,212,255,0.28)]'
-            : 'border-white/15 bg-white/[0.06] text-slate-200 hover:border-[#19d4ff]/40 hover:bg-white/10 hover:text-white'
+            ? 'border-[#19d4ff]/60 bg-gradient-to-r from-[#3b82f6]/20 to-[#8b5cf6]/20 text-white shadow-[0_0_18px_rgba(25,212,255,0.2)]'
+            : 'border-white/10 bg-white/[0.045] text-slate-200 hover:-translate-y-0.5 hover:border-[#19d4ff]/40 hover:bg-white/[0.09] hover:text-white hover:shadow-[0_8px_24px_rgba(25,212,255,0.12)] motion-reduce:transform-none'
         )}
       >
-        <cur.Flag size="sm" />
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/[0.08] ring-1 ring-white/10 transition-colors group-hover:bg-white/[0.12]">
+          <cur.Flag size="sm" />
+        </span>
         <span className="font-mono tracking-wide">{cur.short}</span>
-        <svg className={clsx('w-3 h-3 text-slate-400 transition-transform duration-200', open && 'rotate-180 text-[#19d4ff]')} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+        <svg className={clsx('h-3 w-3 text-slate-400 transition-transform duration-300', open && 'rotate-180 text-[#19d4ff]')} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/>
         </svg>
       </button>
@@ -108,17 +111,16 @@ function LangDropdown() {
       {open && (
         <div
           role="listbox"
-          className="absolute right-0 top-full mt-2 w-[220px] rounded-2xl border border-white/15 bg-[#090e1f]/96 p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.9),0_0_20px_rgba(25,212,255,0.14)] backdrop-blur-2xl z-50 animate-fade-in"
+          className="absolute right-0 top-full z-50 mt-2 w-[232px] overflow-hidden rounded-2xl border border-white/15 bg-[#090e1f]/95 p-1.5 shadow-[0_22px_55px_rgba(0,0,0,0.75),0_0_28px_rgba(25,212,255,0.12)] backdrop-blur-2xl language-dropdown-enter"
         >
-            <div className="flex items-center gap-1.5 px-3 py-2 border-b border-white/10 mb-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+            <div className="mb-1 flex items-center gap-2 border-b border-white/10 px-3 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
               <svg className="w-3 h-3 text-[#19d4ff]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
               </svg>
               {hint}
-            
           </div>
 
-          {LANGS.map(({ code, short, label, sub, Flag }) => {
+          {LANGS.map(({ code, short, label, sub, Flag }, index) => {
             const active = code === language;
             return (
               <button
@@ -126,25 +128,28 @@ function LangDropdown() {
                 role="option"
                 aria-selected={active}
                 onClick={() => { setLanguage(code); setOpen(false); }}
+                style={{ animationDelay: `${index * 45}ms` }}
                 className={clsx(
-                  'w-full flex items-center justify-between rounded-xl px-3 py-2 text-left transition-all duration-150 outline-none cursor-pointer',
+                  'language-option-enter group/option flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-cyan-300 motion-reduce:transition-none',
                   active
                     ? 'bg-gradient-to-r from-[#3b82f6]/25 to-[#19d4ff]/15 shadow-[inset_0_0_0_1px_rgba(25,212,255,0.35)]'
-                    : 'hover:bg-white/[0.08]'
+                    : 'hover:translate-x-0.5 hover:bg-white/[0.07] motion-reduce:transform-none'
                 )}
               >
                 <div className="flex items-center gap-2.5">
-                  <Flag size="md" />
+                  <span className={clsx('flex h-9 w-9 items-center justify-center rounded-xl border transition-colors', active ? 'border-cyan-300/20 bg-cyan-300/10' : 'border-white/5 bg-white/[0.04] group-hover/option:border-white/10 group-hover/option:bg-white/[0.07]')}>
+                    <Flag size="md" />
+                  </span>
                   <div>
-                    <div className="text-xs font-semibold text-white leading-none">{label}</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5 leading-none">{sub}</div>
+                    <div className="text-xs font-semibold leading-none text-white">{label}</div>
+                    <div className="mt-1 text-[10px] leading-none text-slate-400">{sub}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] font-mono text-slate-400">{short}</span>
                   {active
-                    ? <span className="flex items-center justify-center w-4 h-4 rounded-full bg-[#19d4ff]/20"><svg className="w-2.5 h-2.5 text-[#19d4ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                    : <span className="w-4 h-4"/>
+                    ? <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#19d4ff]/20"><svg className="h-3 w-3 text-[#19d4ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                    : <span className="h-5 w-5"/>
                   }
                 </div>
               </button>
@@ -156,52 +161,63 @@ function LangDropdown() {
   );
 }
 
-// ===== LANG PILLS (mobile) =====
-function LangPills({ onClose }: { onClose: () => void }) {
-  const { language, setLanguage } = useI18n();
-  const hint = language === 'uz' ? 'Tilni tanlang' : language === 'ru' ? 'Выберите язык' : 'Select language';
-  return (
-    <div className="w-full">
-      <div className="flex items-center justify-between mb-2 text-xs">
-        <span className="text-slate-400 font-medium">{hint}</span>
-        <span className="font-mono text-[11px] font-semibold text-[#19d4ff]">{LANGS.find(l=>l.code===language)?.label}</span>
-      </div>
-      <div className="grid grid-cols-3 gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] p-1">
-        {LANGS.map(({ code, label, Flag }) => {
-          const active = code === language;
-          return (
-            <button
-              key={code}
-              onClick={() => { setLanguage(code); onClose(); }}
-              className={clsx(
-                'flex flex-col items-center gap-1.5 rounded-lg py-2.5 px-2 transition-all duration-200 outline-none cursor-pointer',
-                active ? 'bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white shadow-lg shadow-[#3b82f6]/25 scale-[1.02]'
-                       : 'text-slate-400 hover:bg-white/[0.07] hover:text-slate-200'
-              )}
-            >
-              <Flag size="md" />
-              <span className="text-[11px] font-medium leading-none">{label}</span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 // ===== NAVIGATION =====
 export function Navigation() {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { t, tr } = useI18n();
   const currentUser = useAuthStore(state => state.currentUser);
   const logout = useAuthStore(state => state.logout);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMobileOpen(false);
+    setProfileOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen && !profileOpen) return;
+    const handleDismiss = (event: MouseEvent | KeyboardEvent) => {
+      if (event instanceof KeyboardEvent) {
+        if (event.key === 'Escape') {
+          setMobileOpen(false);
+          setProfileOpen(false);
+        }
+        return;
+      }
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (mobileOpen && navRef.current && !navRef.current.contains(target)) setMobileOpen(false);
+      if (profileOpen && profileMenuRef.current && !profileMenuRef.current.contains(target)) setProfileOpen(false);
+    };
+    document.addEventListener('pointerdown', handleDismiss);
+    document.addEventListener('keydown', handleDismiss);
+    return () => {
+      document.removeEventListener('pointerdown', handleDismiss);
+      document.removeEventListener('keydown', handleDismiss);
+    };
+  }, [mobileOpen, profileOpen]);
 
   const isActive = (p: string) => pathname === p;
 
+  const handleLogout = async () => {
+    setLogoutError(null);
+    try {
+      await logout();
+      router.replace('/auth/login');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : tr('Hisobdan chiqib bo‘lmadi.', 'Не удалось выйти из аккаунта.', 'Could not sign out.');
+      console.error('Hisobdan chiqish amalga oshmadi.', error);
+      setLogoutError(message);
+    }
+  };
+
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#080c17]/85 backdrop-blur-xl">
+    <nav ref={navRef} className="sticky top-0 z-50 border-b border-white/10 bg-[#080c17]/85 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-[68px] items-center justify-between">
 
@@ -212,41 +228,53 @@ export function Navigation() {
           </Link>
 
           {/* Desktop nav links */}
-          <div className="hidden items-center gap-1 md:flex">
-            {['/', '/courses', '/roadmap', '/projects', '/challenge', '/achievements', '/about'].map(path => (
+          <div className="hidden items-center gap-1 lg:flex">
+            {['/', '/courses', '/roadmap', '/projects', '/challenge', '/achievements', '/forum', '/about'].map(path => (
               <Link
                 key={path}
                 href={path}
+                aria-current={isActive(path) ? 'page' : undefined}
                 className={clsx(
-                  'rounded-lg px-3 py-2 text-xs font-medium transition-all duration-200',
+                  'group relative overflow-hidden rounded-lg px-3 py-2 text-xs font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(59,130,246,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 motion-reduce:transform-none motion-reduce:transition-none',
                   isActive(path) ? 'bg-[#3b82f6]/10 text-[#3b82f6]' : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 )}
               >
-                {path === '/' ? t('home') : path === '/courses' ? t('courses') : path === '/roadmap' ? t('roadmap') : path === '/projects' ? tr('Loyihalar', 'Проекты', 'Projects') : path === '/challenge' ? tr('Kunlik mashq', 'Ежедневное задание', 'Daily challenge') : path === '/achievements' ? tr('Yutuqlar', 'Достижения', 'Achievements') : t('about')}
+                <span className="relative z-10">
+                  {path === '/' ? t('home') : path === '/courses' ? t('courses') : path === '/roadmap' ? t('roadmap') : path === '/projects' ? tr('Loyihalar', 'Проекты', 'Projects') : path === '/challenge' ? tr('Kunlik maşq', 'Ежедневное задание', 'Daily challenge') : path === '/achievements' ? tr('Yutuqlar', 'Достижения', 'Achievements') : path === '/forum' ? tr('Forum', 'Форум', 'Forum') : t('about')}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className={clsx(
+                    'absolute inset-x-3 bottom-1 h-px origin-center rounded-full bg-gradient-to-r from-[#3b82f6] to-[#19d4ff] transition-transform duration-300 motion-reduce:transition-none',
+                    isActive(path) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                  )}
+                />
               </Link>
             ))}
           </div>
 
           {/* Desktop right */}
-          <div className="hidden items-center gap-3 sm:flex">
+          <div className="hidden items-center gap-3 lg:flex">
             <LangDropdown />
+            <NotificationCenter />
             <span className="h-4 w-px bg-white/10"/>
             {currentUser ? (
-              <div className="relative">
-                <button onClick={() => setProfileOpen(open => !open)} aria-expanded={profileOpen} aria-label={tr('Profil menyusini ochish', 'Открыть меню профиля', 'Open profile menu')} className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] py-1.5 pl-1.5 pr-3 text-left hover:border-[#19d4ff]/40">
+              <div ref={profileMenuRef} className="relative">
+                <button type="button" onClick={() => setProfileOpen(open => !open)} aria-controls="desktop-profile-menu" aria-expanded={profileOpen} aria-label={profileOpen ? tr('Profil menyusini yopiş', 'Закрыть меню профиля', 'Close profile menu') : tr('Profil menyusini oçiş', 'Открыть меню профиля', 'Open profile menu')} className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] py-1.5 pl-1.5 pr-3 text-left hover:border-[#19d4ff]/40">
                   <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] text-xs font-bold text-white">
                     {currentUser.avatar ? <img src={currentUser.avatar} alt="" className="h-full w-full object-cover" /> : currentUser.name.trim().charAt(0).toUpperCase()}
                   </span>
                   <span className="max-w-28 truncate text-xs font-semibold text-slate-200">{currentUser.name}</span>
                   <svg className={clsx('h-3 w-3 text-slate-400 transition-transform', profileOpen && 'rotate-180')} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
-                {profileOpen && <div className="absolute right-0 top-full z-50 mt-2 w-52 rounded-xl border border-white/10 bg-[#090e1f] p-1.5 shadow-xl">
+                {profileOpen && <div id="desktop-profile-menu" className="absolute right-0 top-full z-50 mt-2 w-52 max-w-[calc(100vw-2rem)] rounded-xl border border-white/10 bg-[#090e1f] p-1.5 shadow-xl animate-fade-in">
                   <div className="border-b border-white/10 px-3 py-2"><p className="truncate text-sm font-semibold text-white">{currentUser.name}</p><p className="truncate text-xs text-slate-400">{currentUser.email}</p></div>
                   <Link href="/profile" onClick={() => setProfileOpen(false)} className="mt-1 block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.07]">{t('profile')}</Link>
                   <Link href="/study-plan" onClick={() => setProfileOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.07]">{tr('Haftalik reja', 'План на неделю', 'Weekly plan')}</Link>
                   <Link href="/portfolio" onClick={() => setProfileOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.07]">{tr('Mening portfolioim', 'Моё портфолио', 'My portfolio')}</Link>
                   {(currentUser.role === 'admin' || currentUser.role === 'creator') && <Link href="/admin" onClick={() => setProfileOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.07]">{t('adminPanel')}</Link>}
-                  <button onClick={() => { setProfileOpen(false); void logout(); }} className="w-full rounded-lg px-3 py-2 text-left text-sm text-red-300 hover:bg-red-500/10">{t('signOut')}</button>
+                  {logoutError && <p role="alert" className="px-3 py-2 text-xs text-rose-300">{logoutError}</p>}
+                  <button onClick={() => void handleLogout()} className="w-full rounded-lg px-3 py-2 text-left text-sm text-red-300 hover:bg-red-500/10">{t('signOut')}</button>
                 </div>}
               </div>
             ) : <>
@@ -256,11 +284,15 @@ export function Navigation() {
           </div>
 
           {/* Mobile: lang + burger */}
-          <div className="flex items-center gap-2 sm:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
             <LangDropdown />
+            <NotificationCenter />
             <button
-              aria-label={mobileOpen ? tr('Menyuni yopish', 'Закрыть меню', 'Close menu') : tr('Menyuni ochish', 'Открыть меню', 'Open menu')}
-              className="rounded-lg p-2 text-slate-400 hover:text-white"
+              type="button"
+              aria-controls="mobile-navigation-menu"
+              aria-expanded={mobileOpen}
+              aria-label={mobileOpen ? tr('Menyuni yopiş', 'Закрыть меню', 'Close menu') : tr('Menyuni oçiş', 'Открыть меню', 'Open menu')}
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-slate-300 transition hover:border-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
               onClick={() => setMobileOpen(v => !v)}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -274,15 +306,15 @@ export function Navigation() {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div className="animate-fade-in border-t border-white/10 py-4 md:hidden">
+          <div id="mobile-navigation-menu" className="max-h-[calc(100dvh-68px)] overflow-y-auto overscroll-contain border-t border-white/10 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] animate-fade-in lg:hidden">
             <div className="grid gap-1 mb-4">
-              {[[ '/', t('home')], ['/courses', t('courses')], ['/roadmap', t('roadmap')], ['/projects', tr('Loyihalar', 'Проекты', 'Projects')], ['/challenge', tr('Kunlik mashq', 'Ежедневное задание', 'Daily challenge')], ['/achievements', tr('Yutuqlar', 'Достижения', 'Achievements')], ['/about', t('about')]].map(([href, label]) => (
+              {[[ '/', t('home')], ['/courses', t('courses')], ['/roadmap', t('roadmap')], ['/projects', tr('Loyihalar', 'Проекты', 'Projects')], ['/challenge', tr('Kunlik maşq', 'Ежедневное задание', 'Daily challenge')], ['/achievements', tr('Yutuqlar', 'Достижения', 'Achievements')], ['/forum', tr('Forum', 'Форум', 'Forum')], ['/about', t('about')]].map(([href, label]) => (
                 <Link
                   key={href}
                   href={href}
                   onClick={() => setMobileOpen(false)}
                   className={clsx(
-                    'rounded-lg px-4 py-3 text-sm font-medium transition-colors',
+                    'rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 hover:translate-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 motion-reduce:transform-none motion-reduce:transition-none',
                     isActive(href) ? 'bg-[#3b82f6]/10 text-[#19d4ff]' : 'text-slate-400 hover:bg-white/[0.04] hover:text-white'
                   )}
                 >
@@ -292,13 +324,13 @@ export function Navigation() {
             </div>
 
             <div className="border-t border-white/10 pt-4 px-1">
-              <LangPills onClose={() => setMobileOpen(false)} />
-              {currentUser ? <div className="mt-4 grid gap-2 border-t border-white/10 pt-4">
+              {currentUser ? <div className="grid gap-2">
                 <Link href="/profile" onClick={() => setMobileOpen(false)} className="rounded-lg border border-white/10 px-4 py-3 text-sm font-semibold text-white">{currentUser.name} · {t('profile')}</Link>
                 <Link href="/study-plan" onClick={() => setMobileOpen(false)} className="rounded-lg px-4 py-2 text-sm text-slate-300">{tr('Haftalik reja', 'План на неделю', 'Weekly plan')}</Link>
                 <Link href="/portfolio" onClick={() => setMobileOpen(false)} className="rounded-lg px-4 py-2 text-sm text-slate-300">{tr('Mening portfolioim', 'Моё портфолио', 'My portfolio')}</Link>
                 {(currentUser.role === 'admin' || currentUser.role === 'creator') && <Link href="/admin" onClick={() => setMobileOpen(false)} className="rounded-lg px-4 py-2 text-sm text-slate-300">{t('adminPanel')}</Link>}
-                <button onClick={() => { setMobileOpen(false); void logout(); }} className="rounded-lg px-4 py-2 text-left text-sm text-red-300">{t('signOut')}</button>
+                {logoutError && <p role="alert" className="px-4 py-2 text-xs text-rose-300">{logoutError}</p>}
+                <button onClick={() => void handleLogout()} className="rounded-lg px-4 py-2 text-left text-sm text-red-300">{t('signOut')}</button>
               </div> : <div className="mt-4 grid grid-cols-2 gap-2 border-t border-white/10 pt-4">
                 <Link href="/auth/login" onClick={() => setMobileOpen(false)} className="flex items-center justify-center rounded-lg border border-white/10 py-2.5 text-xs font-semibold text-slate-300 hover:border-white/30 hover:text-white transition-colors">{t('login')}</Link>
                 <Link href="/auth/register" onClick={() => setMobileOpen(false)} className="flex items-center justify-center rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] py-2.5 text-xs font-bold text-white shadow-md">{t('signup')}</Link>

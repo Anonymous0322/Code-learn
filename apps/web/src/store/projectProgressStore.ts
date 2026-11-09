@@ -19,7 +19,7 @@ interface ProjectProgressState {
 
 function parseProgress(data: { completed_steps: number[]; code: string }, id: string): ProjectProgress {
   if (!Array.isArray(data.completed_steps) || !data.completed_steps.every(Number.isInteger) || typeof data.code !== 'string') {
-    throw new Error(`Saqlangan loyiha holati formati noto‘g‘ri: ${id}`);
+    throw new Error(`Saqlangan loyiha holati formati notöğri: ${id}`);
   }
   return { completedSteps: data.completed_steps, code: data.code };
 }
@@ -53,7 +53,7 @@ export const useProjectProgressStore = create<ProjectProgressState>((set, get) =
 
   save: async (projectId, userId, progress) => {
     if (progress.code.length > 20000 || progress.completedSteps.length > 50 || !progress.completedSteps.every(Number.isInteger)) {
-      throw new Error('Loyiha kodi yoki bajarilgan bosqichlar ruxsat etilgan hajmdan oshdi.');
+      throw new Error('Loyiha kodi yoki bajarilgan bosqiçlar ruxsat etilgan hajmdan oşdi.');
     }
     const { error } = await getSupabase().from('project_progress').upsert({
       user_id: userId,

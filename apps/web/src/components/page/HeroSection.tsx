@@ -32,7 +32,7 @@ export function HeroSection({ ctaLink }: HeroSectionProps) {
             </div>
           </div>
 
-          <div className="relative min-h-[300px] overflow-hidden rounded-2xl border border-indigo-400/20 bg-[#070b19] shadow-[0_20px_70px_rgba(0,0,0,0.45)] sm:min-h-[370px] lg:-mr-8 lg:min-h-[410px]">
+          <div className="relative min-h-[300px] overflow-hidden rounded-2xl bg-[#070b19] shadow-[0_20px_70px_rgba(0,0,0,0.45)] sm:min-h-[370px] lg:-mr-8 lg:min-h-[410px]">
             <video
               className="absolute inset-0 h-full w-full object-cover"
               src="/videos/hero-coding.mp4"
@@ -42,10 +42,13 @@ export function HeroSection({ ctaLink }: HeroSectionProps) {
               playsInline
               aria-label="Developer working at a computer"
             />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,7,20,0.6),transparent_48%,rgba(4,7,20,0.22)),linear-gradient(0deg,rgba(4,6,18,0.72),transparent_42%)]" />
-            <div className="absolute bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-[#050711] via-[#050711]/90 to-[#050711]/45 sm:h-[4.5rem]" />
-            <div className="absolute bottom-3 left-4 rounded-md border border-white/15 bg-[#080b18]/95 px-2.5 py-1.5 text-[8px] font-medium tracking-wide text-slate-300 shadow-lg backdrop-blur sm:bottom-4 sm:left-6 sm:text-[9px]">CodeLearn Studio</div>
-            <div className="absolute bottom-3 right-3 max-w-[170px] rounded-md border border-white/15 bg-[#080b18]/95 px-2.5 py-1.5 text-right text-[8px] font-medium leading-3 tracking-wide text-slate-300 shadow-lg backdrop-blur sm:bottom-4 sm:right-40 sm:max-w-none sm:text-[14px] sm:leading-5">{t('heroFloatingNote')}</div>
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,7,20,0.55),transparent_48%,rgba(4,7,20,0.28))]" />
+            <div className="pointer-events-none absolute inset-x-3 top-3 bottom-[4.75rem] border-x border-white/25 sm:inset-x-5 sm:top-4 sm:bottom-20" />
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-[#050711]/65 to-transparent sm:w-4" />
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-3 bg-gradient-to-l from-[#050711]/65 to-transparent sm:w-4" />
+            <div className="absolute inset-x-0 bottom-0 flex min-h-14 items-center justify-center bg-[#050711]/[0.98] px-4 py-2.5 text-center sm:min-h-16 sm:px-6 sm:py-3">
+              <span className="text-xs font-semibold leading-5 text-slate-100 sm:text-base">{t('heroFloatingNote')}</span>
+            </div>
           </div>
         </div>
 
@@ -55,7 +58,21 @@ export function HeroSection({ ctaLink }: HeroSectionProps) {
             ['✥', t('realProjects'), t('buildPortfolio')],
             ['◎', t('multiLanguage'), 'EN / RU / UZ'],
             ['⌁', t('trackProgress'), t('seeGrowth')],
-          ].map(([icon, label, text]) => <div key={label} className="flex items-center gap-2 border-white/10 px-3 py-3 first:border-0 sm:border-l sm:px-5"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-indigo-500/15 text-sm text-purple-300">{icon}</span><span className="min-w-0"><strong className="block truncate text-[9px] font-medium text-white sm:text-[10px]">{label}</strong><small className="block truncate text-[8px] text-slate-500">{text}</small></span></div>)}
+          ].map(([icon, label, text]) => (
+            <div
+              key={label}
+              className="group relative flex items-center gap-2 border-white/10 px-3 py-3 transition-colors duration-300 hover:bg-indigo-400/[0.08] active:bg-indigo-400/[0.12] first:border-0 sm:border-l sm:px-5 motion-reduce:transition-none"
+            >
+              <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-indigo-500/[0.09] via-purple-500/[0.04] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 motion-reduce:transition-none" />
+              <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-indigo-300/10 bg-indigo-500/15 text-sm text-purple-300 shadow-[0_0_0_rgba(99,102,241,0)] transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 group-hover:border-indigo-300/30 group-hover:bg-indigo-500/25 group-hover:text-white group-hover:shadow-[0_0_18px_rgba(99,102,241,0.3)] motion-reduce:transform-none motion-reduce:transition-none">
+                {icon}
+              </span>
+              <span className="relative min-w-0">
+                <strong className="block truncate text-[9px] font-medium text-white transition-colors duration-300 group-hover:text-indigo-100 sm:text-[10px] motion-reduce:transition-none">{label}</strong>
+                <small className="block truncate text-[8px] text-slate-500 transition-colors duration-300 group-hover:text-slate-300 motion-reduce:transition-none">{text}</small>
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </section>

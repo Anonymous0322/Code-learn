@@ -14,6 +14,10 @@ prisma/dev.db
 .idea
 .DS_Store
 *.png
+!apps/web/public/favicon-96x96.png
+!apps/web/public/apple-touch-icon.png
+!apps/web/public/web-app-manifest-192x192.png
+!apps/web/public/web-app-manifest-512x512.png
 *.jpg
 *.jpeg
 *.gif
