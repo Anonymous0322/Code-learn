@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.code_learn_sooty.twa",
+        "sha256_cert_fingerprints": ["DD:20:C5:F5:A5:E3:DD:25:9F:F1:34:E3:01:FB:0C:22:91:ED:0C:BE:52:3D:E8:76:2C:99:18:F8:42:8A:EE:06"]
+      }
+    }]
