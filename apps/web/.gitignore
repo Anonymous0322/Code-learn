@@ -2,6 +2,9 @@ node_modules/
 .next/
 dist/
 build/
+public/sw.js
+public/workbox-*.js
+public/swe-worker-*.js
 *.log
 .DS_Store
 .env
