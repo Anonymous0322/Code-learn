@@ -48,7 +48,7 @@ export default function SettingsPage() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `codelearn-data-${new Date().toISOString().slice(0, 10)}.json`;
+      link.download = `codehub-data-${new Date().toISOString().slice(0, 10)}.json`;
       link.click();
       URL.revokeObjectURL(url);
       setMessage(tr('Ma’lumotlar JSON faylida yuklab olindi.', 'Данные скачаны в JSON-файле.', 'Your data was downloaded as a JSON file.'));

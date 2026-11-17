@@ -224,7 +224,7 @@ export function Navigation() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#19d4ff]/40 bg-[#3b82f6]/15 font-mono text-xs font-bold text-[#19d4ff] shadow-[0_0_18px_rgba(25,212,255,0.16)]">&lt;/&gt;</div>
-            <span className="font-[Space_Grotesk] text-base font-semibold tracking-tight text-white">CodeLearn</span>
+            <span className="font-[Space_Grotesk] text-base font-semibold tracking-tight text-white">CodeHub</span>
           </Link>
 
           {/* Desktop nav links */}

@@ -6,11 +6,12 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'CodeLearn — Learn Programming',
-    template: '%s — CodeLearn',
+    default: 'CodeHub — Learn Programming',
+    template: '%s — CodeHub',
   },
+  applicationName: 'CodeHub',
   description: 'Master programming from zero to hero. Interactive lessons, real-time code practice, and progress tracking.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://codelearn.uz'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://codehub-uz.vercel.app'),
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },

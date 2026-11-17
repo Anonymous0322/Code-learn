@@ -34,7 +34,7 @@ export default function DashboardPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-5 py-10 sm:px-8">
-      <p className="text-xs uppercase tracking-[0.2em] text-neon-cyan">CodeLearn</p>
+      <p className="text-xs uppercase tracking-[0.2em] text-neon-cyan">CodeHub</p>
       <h1 className="mt-2 font-[Space_Grotesk] text-3xl font-semibold text-white">
         {user ? `${tr('Xush kelibsiz', 'Добро пожаловать', 'Welcome')}, ${user.name}` : tr('Öquvçi paneli', 'Панель обучения', 'Learning dashboard')}
       </h1>

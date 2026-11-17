@@ -22,10 +22,10 @@ const challenges: Challenge[] = [
     id: 'hello-heading',
     title: 'Salom sarlavhasi',
     description: 'HTML sarlavhasini o‘zgartirib, sahifada kerakli matn paydo qiling.',
-    instructions: 'h1 ichidagi matnni “Salom, CodeLearn!” qilib yozing va #intro identifikatorli paragraf qo‘shing.',
+    instructions: 'h1 ichidagi matnni “Salom, CodeHub!” qilib yozing va #intro identifikatorli paragraf qo‘shing.',
     starterCode: '<h1>Bu sarlavhani o‘zgartiring</h1>\n',
     checks: [
-      { id: 'heading', label: 'h1 ichida “Salom, CodeLearn!” matni bor', selector: 'h1', type: 'text', expected: 'Salom, CodeLearn!' },
+      { id: 'heading', label: 'h1 ichida “Salom, CodeHub!” matni bor', selector: 'h1', type: 'text', expected: 'Salom, CodeHub!' },
       { id: 'intro', label: '#intro paragrafi yaratildi', selector: 'p#intro', type: 'element' },
     ],
   },
@@ -82,8 +82,8 @@ export default function DailyChallengePage() {
     if (challenge.id === 'hello-heading') return {
       title: tr('Salom sarlavhasi', 'Заголовок приветствия', 'Greeting heading'),
       description: tr('HTML sarlavhasini özgartirib, sahifada kerakli matn paydo qiling.', 'Измените HTML-заголовок, чтобы на странице появился нужный текст.', 'Edit the HTML heading so the required text appears on the page.'),
-      instructions: tr('h1 içidagi matnni aynan “Salom, CodeLearn!” qilib yozing va #intro identifikatorli paragraf qöşing.', 'Укажите в h1 точный текст “Salom, CodeLearn!” и добавьте абзац с идентификатором #intro.', 'Set the h1 text to exactly “Salom, CodeLearn!” and add a paragraph with the #intro identifier.'),
-      labels: [tr('h1 içida “Salom, CodeLearn!” matni bor', 'В h1 есть текст “Salom, CodeLearn!”', 'h1 contains “Salom, CodeLearn!”'), tr('#intro paragrafi yaratildi', 'Создан абзац #intro', '#intro paragraph created')],
+      instructions: tr('h1 içidagi matnni aynan “Salom, CodeHub!” qilib yozing va #intro identifikatorli paragraf qöşing.', 'Укажите в h1 точный текст “Salom, CodeHub!” и добавьте абзац с идентификатором #intro.', 'Set the h1 text to exactly “Salom, CodeHub!” and add a paragraph with the #intro identifier.'),
+      labels: [tr('h1 içida “Salom, CodeHub!” matni bor', 'В h1 есть текст “Salom, CodeHub!”', 'h1 contains “Salom, CodeHub!”'), tr('#intro paragrafi yaratildi', 'Создан абзац #intro', '#intro paragraph created')],
     };
     if (challenge.id === 'skill-list') return {
       title: tr('Könikmalar röyxati', 'Список навыков', 'Skills list'),

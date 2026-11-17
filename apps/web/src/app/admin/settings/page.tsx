@@ -18,7 +18,7 @@ export default function AdminSettingsPage() {
           <span>⚙️</span> {tr('Tizim sozlamalari', 'Настройки системы', 'System settings')}
         </h1>
         <p className="text-xs text-slate-400 mt-1">
-          {tr('CodeLearn platformasi va ma’lumotlar bazasi holati.', 'Состояние платформы CodeLearn и базы данных.', 'CodeLearn platform and database status.')}
+          {tr('CodeHub platformasi va ma’lumotlar bazasi holati.', 'Состояние платформы CodeHub и базы данных.', 'CodeHub platform and database status.')}
         </p>
       </div>
 
@@ -30,7 +30,7 @@ export default function AdminSettingsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
           <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
             <span className="text-slate-400 block mb-1">{tr('Platforma:', 'Платформа:', 'Platform:')}</span>
-            <span className="text-white font-mono font-bold">CodeLearn</span>
+            <span className="text-white font-mono font-bold">CodeHub</span>
           </div>
           <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
             <span className="text-slate-400 block mb-1">{tr('Boşqaruvçi:', 'Администратор:', 'Administrator:')}</span>

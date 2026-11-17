@@ -26,9 +26,9 @@ export function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white font-bold text-sm">
-                CL
+                CH
               </div>
-              <span className="text-lg font-bold text-text-primary">CodeLearn</span>
+              <span className="text-lg font-bold text-text-primary">CodeHub</span>
             </div>
             <p className="text-sm text-text-secondary">
               {t('heroText')}
@@ -60,7 +60,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="mb-4 font-semibold text-text-primary">{tr('Bizni kuzating', 'Мы в соцсетях', 'Follow CodeLearn')}</h4>
+            <h4 className="mb-4 font-semibold text-text-primary">{tr('Bizni kuzating', 'Мы в соцсетях', 'Follow CodeHub')}</h4>
             <div className="flex flex-wrap gap-3">
               {SOCIAL_LINKS.map((social) => (
                 <a
@@ -68,7 +68,7 @@ export function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={`CodeLearn on ${social.name}`}
+                  aria-label={`CodeHub on ${social.name}`}
                   title={social.name}
                   className="group flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-text-secondary shadow-lg shadow-black/10 transition-all duration-300 hover:-translate-y-1.5 hover:scale-110 hover:border-white/25 hover:text-white hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-blue"
                 >
@@ -110,7 +110,7 @@ export function Footer() {
 
         <div className="border-t border-border-subtle pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-text-muted">
-            © {new Date().getFullYear()} CodeLearn. {t('allRightsReserved')}
+            © {new Date().getFullYear()} CodeHub. {t('allRightsReserved')}
           </p>
         </div>
       </div>

@@ -29,7 +29,7 @@ export default function PortfolioPage() {
   const unpublish = usePortfolioSharingStore(state => state.unpublish);
   const shareId = usePortfolioSharingStore(state => state.shareId);
   const [works, setWorks] = useState<Record<string, ProjectProgress>>({});
-  const [displayName, setDisplayName] = useState('CodeLearn o‘quvchisi');
+  const [displayName, setDisplayName] = useState('CodeHub o‘quvchisi');
   const [sharingBusy, setSharingBusy] = useState(false);
   const [sharingMessage, setSharingMessage] = useState('');
   const [sharingError, setSharingError] = useState('');

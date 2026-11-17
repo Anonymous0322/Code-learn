@@ -132,7 +132,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       {/* Mobile Header Bar */}
       <div className="sticky top-0 z-40 md:hidden flex items-center justify-between px-4 py-3 bg-[#0a0f24]/95 border-b border-white/10 backdrop-blur">
         <Link href="/admin" className="flex items-center gap-2">
-          <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-xs font-bold text-white">CL</span>
+          <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-xs font-bold text-white">CH</span>
           <span className="font-bold text-white text-sm">Admin Panel</span>
         </Link>
         <button
@@ -165,7 +165,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 &lt;/&gt;
               </div>
               <div>
-                <span className="font-[Space_Grotesk] text-base font-semibold tracking-tight text-white block leading-none">CodeLearn</span>
+                <span className="font-[Space_Grotesk] text-base font-semibold tracking-tight text-white block leading-none">CodeHub</span>
                 <span className="text-[10px] text-neon-cyan font-mono leading-none tracking-widest uppercase">Admin Panel</span>
               </div>
             </Link>

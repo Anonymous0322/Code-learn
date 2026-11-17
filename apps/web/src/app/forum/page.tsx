@@ -183,7 +183,7 @@ export default function ForumPage() {
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-200">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-              {tr('CodeLearn hamjamiyati', 'Сообщество CodeLearn', 'CodeLearn community')}
+              {tr('CodeHub hamjamiyati', 'Сообщество CodeHub', 'CodeHub community')}
             </span>
             <h1 className="mt-4 font-[Space_Grotesk] text-3xl font-bold text-white sm:text-4xl">
               {tr('Birga o‘rganamiz, birga o‘samiz.', 'Учимся и растём вместе.', 'Learn together. Grow together.')}
