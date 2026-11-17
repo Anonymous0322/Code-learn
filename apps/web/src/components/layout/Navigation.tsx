@@ -68,7 +68,7 @@ const LANGS = [
 
 // ===== LANGUAGE DROPDOWN =====
 function LangDropdown() {
-  const { language, setLanguage } = useI18n();
+  const { language, setLanguage, tr } = useI18n();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const cur = LANGS.find(l => l.code === language) || LANGS[2];
@@ -84,7 +84,7 @@ function LangDropdown() {
     return () => { document.removeEventListener('mousedown', handler); document.removeEventListener('keydown', handler); };
   }, [open]);
 
-  const hint = language === 'uz' ? 'Tilni tanlang' : language === 'ru' ? 'Выберите язык' : 'Select language';
+  const hint = tr('Tilni tanlang', 'Выберите язык', 'Select language');
 
   return (
     <div ref={ref} className="relative select-none">

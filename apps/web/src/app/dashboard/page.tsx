@@ -9,7 +9,7 @@ import { useLearningExtrasStore } from '@/store/learningExtrasStore';
 import { useI18n } from '@/components/providers';
 
 export default function DashboardPage() {
-  const { tr, language } = useI18n();
+  const { tr, language, formatText } = useI18n();
   const user = useAuthStore(state => state.currentUser);
   const courses = useCourseStore(state => state.courses).filter(course => course.isActive);
   const initialized = useCourseStore(state => state.initialized);
@@ -48,8 +48,8 @@ export default function DashboardPage() {
         <p className="text-xs font-semibold uppercase tracking-wider text-neon-cyan">{user ? tr('Keyingi qadam', 'Следующий шаг', 'Next step') : tr('Boşlaş uçun tavsiya', 'Рекомендация для начала', 'Recommended next step')}</p>
         <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-white">{nextLesson.level.translations?.[language]?.title || nextLesson.level.title}</h2>
-            <p className="mt-1 text-sm text-slate-300">{nextLesson.course.translations?.[language]?.title || nextLesson.course.title} · {nextLesson.level.translations?.[language]?.description || nextLesson.level.description}</p>
+            <h2 className="text-xl font-semibold text-white">{formatText(nextLesson.level.translations?.[language]?.title || nextLesson.level.title)}</h2>
+            <p className="mt-1 text-sm text-slate-300">{formatText(nextLesson.course.translations?.[language]?.title || nextLesson.course.title)} · {formatText(nextLesson.level.translations?.[language]?.description || nextLesson.level.description)}</p>
             <p className="mt-2 text-xs text-slate-400">{nextLesson.done} / {nextLesson.total} {tr('ta dars yakunlangan', 'уроков завершено', 'lessons completed')}</p>
           </div>
           <Link href={`/learn/${nextLesson.course.slug}/${nextLesson.level.slug || nextLesson.level.title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`} className="inline-flex shrink-0 justify-center rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple px-5 py-3 text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan">
@@ -69,7 +69,7 @@ export default function DashboardPage() {
             const level = course?.levels?.find(current => current.id === item.lessonId);
             if (!course || !level) return null;
             const slug = level.slug || level.title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-            return <Link key={`${item.courseId}-${item.lessonId}`} href={`/learn/${course.slug}/${slug}`} className="rounded-lg border border-white/10 px-3 py-2 text-sm text-slate-200 hover:border-neon-cyan/30">{level.translations?.[language]?.title || level.title} <span className="text-xs text-slate-500">· {course.translations?.[language]?.title || course.title}</span></Link>;
+            return <Link key={`${item.courseId}-${item.lessonId}`} href={`/learn/${course.slug}/${slug}`} className="rounded-lg border border-white/10 px-3 py-2 text-sm text-slate-200 hover:border-neon-cyan/30">{formatText(level.translations?.[language]?.title || level.title)} <span className="text-xs text-slate-500">· {formatText(course.translations?.[language]?.title || course.title)}</span></Link>;
           })}
         </div>
       </section>}
@@ -85,7 +85,7 @@ export default function DashboardPage() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {courses.map(course => (
               <Link key={course.id} href={`/courses/${course.slug}`} className="rounded-xl border border-white/10 bg-white/[0.035] p-5 text-white hover:border-neon-cyan/35">
-                <span className="font-semibold">{course.translations?.[language]?.title || course.title}</span>
+                <span className="font-semibold">{formatText(course.translations?.[language]?.title || course.title)}</span>
                 <p className="mt-2 text-sm text-slate-400">{course.levels?.length || 0} {tr('ta dars', 'уроков', 'lessons')}</p>
               </Link>
             ))}

@@ -76,7 +76,7 @@ function createExercisePreview(language: PlaygroundLanguage, code: string, exerc
 }
 
 export function LessonPlayground({ editorLanguage = 'html', starterCode, exercise, onExerciseResult }: LessonPlaygroundProps) {
-  const { language } = useI18n();
+  const { language, formatText } = useI18n();
   const [selectedLanguage, setSelectedLanguage] = useState<PlaygroundLanguage>(editorLanguage);
   const [codes, setCodes] = useState<Record<PlaygroundLanguage, string>>({
     ...starters,
@@ -87,7 +87,10 @@ export function LessonPlayground({ editorLanguage = 'html', starterCode, exercis
   const [completion, setCompletion] = useState<{ start: number; end: number; query: string } | null>(null);
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const text = labels[language as keyof typeof labels] || labels.en;
+  const rawText = labels[language as keyof typeof labels] || labels.en;
+  const text = language === 'uz'
+    ? Object.fromEntries(Object.entries(rawText).map(([key, value]) => [key, formatText(value)])) as typeof labels.uz
+    : rawText;
   const code = codes[selectedLanguage];
   const matches = selectedLanguage === 'html' && completion
     ? htmlCompletions.filter(item => item.label.startsWith(completion.query.toLowerCase()))
@@ -206,7 +209,7 @@ export function LessonPlayground({ editorLanguage = 'html', starterCode, exercis
                   className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left hover:bg-neon-blue/15"
                 >
                   <span className="font-mono text-sm text-neon-cyan">{item.label}</span>
-                  <span className="text-xs text-slate-400">{item.detail}</span>
+                  <span className="text-xs text-slate-400">{formatText(item.detail)}</span>
                 </button>
               ))}
               <p className="px-3 pt-1 text-[10px] text-slate-500">{text.accept}</p>
@@ -252,12 +255,12 @@ export function LessonPlayground({ editorLanguage = 'html', starterCode, exercis
       </div>
       {exercise && <div className="border-t border-white/10 p-4">
         <h3 className="font-semibold text-white">{text.exercise}</h3>
-        <p className="mt-1 text-sm leading-6 text-slate-300">{exercise.instructions}</p>
+        <p className="mt-1 text-sm leading-6 text-slate-300">{formatText(exercise.instructions)}</p>
         <ul className="mt-3 space-y-2">
           {exercise.checks.map(check => (
             <li key={check.id} className="flex items-start gap-2 text-sm">
               <span aria-hidden="true" className={checkResults?.[check.id] ? 'text-emerald-300' : checkResults ? 'text-rose-300' : 'text-slate-500'}>{checkResults?.[check.id] ? '✓' : checkResults ? '✕' : '○'}</span>
-              <span className="text-slate-300">{check.label}</span>
+              <span className="text-slate-300">{formatText(check.label)}</span>
               {checkResults && <span className={`ml-auto text-xs ${checkResults[check.id] ? 'text-emerald-300' : 'text-rose-300'}`}>{checkResults[check.id] ? text.passed : text.failed}</span>}
             </li>
           ))}

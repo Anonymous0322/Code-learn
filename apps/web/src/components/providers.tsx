@@ -3,6 +3,8 @@
 import { useState, useEffect, createContext, ReactNode, useContext, useCallback, useMemo } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useCourseStore } from '@/store/courseStore';
+import { toModernUzbek } from '@/lib/utils';
+import { getSupabase } from '@/lib/supabase';
 
 export type Language = 'en' | 'ru' | 'uz';
 
@@ -157,6 +159,9 @@ export const ThemeContext = createContext<{
   toggleTheme: () => void;
   language: Language;
   setLanguage: (lang: Language) => void;
+  formatText: (text: string | null | undefined) => string;
+  analyticsConsent: boolean | null;
+  setAnalyticsConsent: (enabled: boolean) => Promise<void>;
   t: (key: TranslationKey) => string;
   tr: (uz: string, ru: string, en: string) => string;
 }>({
@@ -164,6 +169,9 @@ export const ThemeContext = createContext<{
   toggleTheme: () => {},
   language: 'en',
   setLanguage: () => {},
+  formatText: text => text ?? '',
+  analyticsConsent: null,
+  setAnalyticsConsent: async () => {},
   t: (key) => translations.en[key],
   tr: (_uz, _ru, en) => en,
 });
@@ -172,10 +180,17 @@ export function Providers({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState('dark');
   const [language, setLanguage] = useState<Language>('en');
   const [authLinkError, setAuthLinkError] = useState<string | null>(null);
-  const translate = useCallback((uz: string, ru: string, en: string) => (
-    language === 'uz' ? uz : language === 'ru' ? ru : en
+  const [analyticsConsent, setAnalyticsConsentState] = useState<boolean | null>(null);
+  const [consentError, setConsentError] = useState<string | null>(null);
+  const currentUser = useAuthStore(state => state.currentUser);
+  const authInitialized = useAuthStore(state => state.initialized);
+  const formatText = useCallback((text: string | null | undefined) => (
+    text == null ? '' : language === 'uz' ? toModernUzbek(text) : text
   ), [language]);
-  const translateKey = useCallback((key: TranslationKey) => translations[language][key], [language]);
+  const translate = useCallback((uz: string, ru: string, en: string) => (
+    language === 'uz' ? formatText(uz) : language === 'ru' ? ru : en
+  ), [formatText, language]);
+  const translateKey = useCallback((key: TranslationKey) => formatText(translations[language][key]), [formatText, language]);
   const toggleTheme = useCallback(() => setTheme(current => current === 'dark' ? 'light' : 'dark'), []);
   useEffect(() => {
     useAuthStore.getState().initialize();
@@ -198,6 +213,61 @@ export function Providers({ children }: { children: ReactNode }) {
     document.documentElement.lang = saved === 'ru' || saved === 'uz' ? saved : 'en';
   }, []);
 
+  useEffect(() => {
+    if (!authInitialized) return;
+    let cancelled = false;
+    const savedConsent = window.localStorage.getItem('codelearn-analytics-consent');
+    const localConsent = savedConsent === 'granted' ? true : savedConsent === 'denied' ? false : null;
+
+    if (!currentUser) {
+      setAnalyticsConsentState(localConsent);
+      return () => { cancelled = true; };
+    }
+
+    void (async () => {
+      try {
+        const { data, error } = await getSupabase().rpc('get_analytics_consent');
+        if (error) throw error;
+        if (cancelled) return;
+        const consent = typeof data === 'boolean' ? data : localConsent;
+        setAnalyticsConsentState(consent);
+        if (consent !== null) {
+          window.localStorage.setItem('codelearn-analytics-consent', consent ? 'granted' : 'denied');
+          if (typeof data !== 'boolean') {
+            const result = await getSupabase().rpc('set_analytics_consent', { consent_enabled: consent });
+            if (result.error) console.error('Analitika roziligini hisobga yozib bo‘lmadi.', result.error);
+          }
+        }
+      } catch (error) {
+        if (cancelled) return;
+        console.error('Analitika roziligi holatini yuklab bo‘lmadi.', error);
+        setAnalyticsConsentState(localConsent);
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [authInitialized, currentUser]);
+
+  const saveAnalyticsConsent = useCallback(async (enabled: boolean) => {
+    setConsentError(null);
+    try {
+      if (currentUser) {
+        const { error } = await getSupabase().rpc('set_analytics_consent', { consent_enabled: enabled });
+        if (error) throw error;
+      }
+      window.localStorage.setItem('codelearn-analytics-consent', enabled ? 'granted' : 'denied');
+      setAnalyticsConsentState(enabled);
+    } catch (error) {
+      console.error('Analitika roziligini saqlab bo‘lmadi.', error);
+      setConsentError(translate(
+        'Tanlov saqlanmadi. Internetni tekshirib qayta urinib ko‘ring.',
+        'Не удалось сохранить выбор. Проверьте подключение и повторите попытку.',
+        'Your choice could not be saved. Check your connection and try again.',
+      ));
+      throw error;
+    }
+  }, [currentUser, translate]);
+
   const changeLanguage = useCallback((nextLanguage: Language) => {
     setLanguage(nextLanguage);
     window.localStorage.setItem('codelearn-language', nextLanguage);
@@ -208,9 +278,12 @@ export function Providers({ children }: { children: ReactNode }) {
     toggleTheme,
     language,
     setLanguage: changeLanguage,
+    formatText,
+    analyticsConsent,
+    setAnalyticsConsent: saveAnalyticsConsent,
     t: translateKey,
     tr: translate,
-  }), [theme, toggleTheme, language, changeLanguage, translateKey, translate]);
+  }), [theme, toggleTheme, language, changeLanguage, formatText, analyticsConsent, saveAnalyticsConsent, translateKey, translate]);
 
   return (
     <ThemeContext.Provider value={contextValue}>
@@ -223,6 +296,18 @@ export function Providers({ children }: { children: ReactNode }) {
             {translate('Login sahifasiga ötiş', 'Перейти ко входу', 'Go to sign in')}
           </a>
         </div>
+      )}
+      {analyticsConsent === null && (
+        <aside role="dialog" aria-label="Analitika roziligi" className="fixed inset-x-3 bottom-3 z-[90] mx-auto max-w-3xl rounded-2xl border border-white/15 bg-[#0b1020]/95 p-4 shadow-2xl backdrop-blur-xl sm:inset-x-6 sm:bottom-6 sm:p-5">
+          <p className="text-sm font-semibold text-white">{translate('Maxfiylik tanlovi', 'Настройки конфиденциальности', 'Privacy choices')}</p>
+          <p className="mt-1 text-xs leading-5 text-slate-300">{translate('Ro‘yxatdan o‘tish va o‘qish faolligi haqidagi hodisalarni yig‘ishga rozimisiz? Ism va email analitikaga yozilmaydi; takrorlarni sanash uchun psevdonim kalit ishlatiladi. Tanlovni Sozlamalar’da o‘zgartirasiz.', 'Разрешаете собирать события регистрации и обучения? Имя и email в аналитику не записываются; для подсчёта повторов используется псевдонимный ключ. Выбор можно изменить в настройках.', 'May we collect signup and learning events? Names and emails are not stored in analytics; a pseudonymous key is used to count repeat activity. Change your choice in Settings.')}</p>
+          {consentError && <p role="alert" className="mt-2 text-xs text-rose-300">{consentError}</p>}
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button type="button" onClick={() => void saveAnalyticsConsent(true).catch(() => {})} className="rounded-lg bg-cyan-400/15 px-3 py-2 text-xs font-semibold text-cyan-100 hover:bg-cyan-400/25">{translate('Roziman', 'Разрешить', 'Allow analytics')}</button>
+            <button type="button" onClick={() => void saveAnalyticsConsent(false).catch(() => {})} className="rounded-lg border border-white/15 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/[0.05]">{translate('Yo‘q, rahmat', 'Нет, спасибо', 'No thanks')}</button>
+            <a href="/privacy" className="self-center text-xs text-slate-400 underline underline-offset-2">{translate('Maxfiylik siyosati', 'Политика конфиденциальности', 'Privacy policy')}</a>
+          </div>
+        </aside>
       )}
       {children}
     </ThemeContext.Provider>

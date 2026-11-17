@@ -16,7 +16,7 @@ function weekStartKey(date: Date) {
 }
 
 export default function StudyPlanPage() {
-  const { tr, language } = useI18n();
+  const { tr, language, formatText } = useI18n();
   const user = useAuthStore(state => state.currentUser);
   const courses = useCourseStore(state => state.courses).filter(course => course.isActive);
   const completedIds = useLearningProgressStore(state => state.completedLessonIds);
@@ -36,10 +36,10 @@ export default function StudyPlanPage() {
   const [message, setMessage] = useState('');
   const flatLessons = useMemo(() => courses.flatMap(course => (course.levels || []).map(level => ({
     id: `${course.id}:${level.id}`,
-    title: level.translations?.[language]?.title || level.title,
-    courseTitle: course.translations?.[language]?.title || course.title,
+    title: formatText(level.translations?.[language]?.title || level.title),
+    courseTitle: formatText(course.translations?.[language]?.title || course.title),
     href: `/learn/${course.slug}/${level.slug || level.title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`,
-  }))), [courses, language]);
+  }))), [courses, formatText, language]);
   const doneCount = user?.id === progressUserId
     ? lessonIds.filter(id => completedIds.includes(id)).length
     : 0;

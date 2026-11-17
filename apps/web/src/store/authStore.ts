@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import { AuthChangeEvent, User as SupabaseUser } from '@supabase/supabase-js';
 import { getSupabase } from '@/lib/supabase';
 import { useLearningProgressStore } from '@/store/learningProgressStore';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 
 export type UserRole = 'creator' | 'admin' | 'user';
 export type OAuthProvider = 'google' | 'github';
@@ -104,6 +105,10 @@ async function loadCurrentProfile(user: SupabaseUser, generation: number) {
   }
   useAuthStore.setState({ currentUser, initialized: true, loading: false });
   useLearningProgressStore.getState().initialize(currentUser.id);
+  const accountAge = Date.now() - Date.parse(user.created_at);
+  if (accountAge >= 0 && accountAge < 7 * 24 * 60 * 60 * 1000) {
+    void trackAnalyticsEvent('signup');
+  }
   void useLearningProgressStore.getState().recordVisit().catch(error => {
     console.error('Supabase faollik kunini yozolmadi.', error);
   });

@@ -5,7 +5,7 @@ interface LanguageCardsProps {
 }
 
 export function LanguageCards({ languages }: LanguageCardsProps) {
-  const { t } = useI18n();
+  const { t, formatText } = useI18n();
 
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4 lg:gap-3">
@@ -17,12 +17,12 @@ export function LanguageCards({ languages }: LanguageCardsProps) {
         >
           <div className="relative mb-5 flex items-center justify-center">
             <div className="language-logo flex h-14 w-14 items-center justify-center rounded-xl border border-white/10 bg-[#111a32] p-2.5 transition-transform group-hover:scale-105">
-              <img src={lang.iconPath} alt={`${lang.label} logo`} className="h-full w-full object-contain" />
+              <img src={lang.iconPath} alt={`${formatText(lang.label)} logo`} className="h-full w-full object-contain" />
             </div>
             <span className="absolute right-0 top-1 font-mono text-[10px] text-slate-600">0{index + 1}</span>
           </div>
-          <h3 className="mb-1 font-[Space_Grotesk] text-sm font-semibold text-white">{lang.label}</h3>
-          <p className="min-h-10 text-[10px] leading-4 text-slate-400">{lang.desc}</p>
+          <h3 className="mb-1 font-[Space_Grotesk] text-sm font-semibold text-white">{formatText(lang.label)}</h3>
+          <p className="min-h-10 text-[10px] leading-4 text-slate-400">{formatText(lang.desc)}</p>
           <div className="mt-3 inline-flex rounded-full border border-white/15 px-2.5 py-1 text-[9px] font-semibold text-slate-300 transition-colors group-hover:border-neon-purple/50 group-hover:text-white">{t('startLearning')} →</div>
         </a>
       ))}

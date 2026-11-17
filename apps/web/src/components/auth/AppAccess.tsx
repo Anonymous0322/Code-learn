@@ -6,8 +6,16 @@ import { Footer } from '@/components/layout/Footer';
 import { Navigation } from '@/components/layout/Navigation';
 import { useAuthStore } from '@/store/authStore';
 
-function isAuthRoute(pathname: string) {
-  return pathname === '/auth' || pathname.startsWith('/auth/');
+function isPublicRoute(pathname: string) {
+  return pathname === '/auth'
+    || pathname.startsWith('/auth/')
+    || pathname === '/'
+    || pathname === '/about'
+    || pathname === '/faq'
+    || pathname === '/privacy'
+    || pathname === '/terms'
+    || pathname === '/courses'
+    || pathname.startsWith('/courses/');
 }
 
 function AccessLoading() {
@@ -23,16 +31,28 @@ export function AppAccess({ children }: { children: ReactNode }) {
   const router = useRouter();
   const currentUser = useAuthStore(state => state.currentUser);
   const initialized = useAuthStore(state => state.initialized);
-  const authRoute = isAuthRoute(pathname);
+  const publicRoute = isPublicRoute(pathname);
+  const authRoute = pathname === '/auth' || pathname.startsWith('/auth/');
+  const hideFooter = pathname === '/profile';
 
   useEffect(() => {
-    if (!initialized || currentUser || authRoute) return;
+    if (!initialized || currentUser || publicRoute) return;
     const next = `${window.location.pathname}${window.location.search}`;
     router.replace(`/auth/login?next=${encodeURIComponent(next)}`);
-  }, [authRoute, currentUser, initialized, pathname, router]);
+  }, [currentUser, initialized, pathname, publicRoute, router]);
 
   if (authRoute) {
     return <main className="min-h-screen">{children}</main>;
+  }
+
+  if (publicRoute) {
+    return (
+      <>
+        <Navigation />
+        <main>{children}</main>
+        {!hideFooter && <Footer />}
+      </>
+    );
   }
 
   if (!initialized || !currentUser) {
@@ -43,7 +63,7 @@ export function AppAccess({ children }: { children: ReactNode }) {
     <>
       <Navigation />
       <main>{children}</main>
-      <Footer />
+      {!hideFooter && <Footer />}
     </>
   );
 }

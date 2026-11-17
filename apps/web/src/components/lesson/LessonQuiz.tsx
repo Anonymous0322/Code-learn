@@ -72,8 +72,14 @@ const labels = {
 } as const;
 
 export function LessonQuiz({ lessonId, questions }: LessonQuizProps) {
-  const { language } = useI18n();
-  const text = labels[language as keyof typeof labels] || labels.en;
+  const { language, formatText } = useI18n();
+  const rawText = labels[language as keyof typeof labels] || labels.en;
+  const text = language === 'uz'
+    ? Object.fromEntries(Object.entries(rawText).map(([key, value]) => [key, formatText(value)])) as typeof labels.uz
+    : rawText;
+  const formatQuizText = (value: string) => (
+    /[`<>{}=;]/.test(value) ? value : formatText(value)
+  );
   const user = useAuthStore(state => state.currentUser);
   const loadQuizResult = useLearningProgressStore(state => state.loadQuizResult);
   const saveQuizResult = useLearningProgressStore(state => state.saveQuizResult);
@@ -144,7 +150,7 @@ export function LessonQuiz({ lessonId, questions }: LessonQuizProps) {
         {questions.map((question, questionIndex) => (
           <fieldset key={question.id} className="rounded-xl border border-white/10 bg-[#0a0f1d] p-4">
             <legend className="px-1 text-sm font-semibold text-white">
-              {questionIndex + 1}. {question.question}
+              {questionIndex + 1}. {formatQuizText(question.question)}
             </legend>
             <div className="mt-2 space-y-2">
               {question.options.map((option, optionIndex) => {
@@ -169,15 +175,15 @@ export function LessonQuiz({ lessonId, questions }: LessonQuizProps) {
                     }`}
                   >
                     <span className="mr-2 font-mono text-xs text-slate-500">{String.fromCharCode(65 + optionIndex)}.</span>
-                    {option}
+                    {formatQuizText(option)}
                   </button>
                 );
               })}
             </div>
             {submitted && (
               <div className={`mt-3 rounded-lg p-3 text-xs ${answers[question.id] === question.correctIndex ? 'bg-emerald-400/5 text-emerald-300' : 'bg-amber-400/5 text-amber-200'}`}>
-                <p>{answers[question.id] === question.correctIndex ? text.correct : `${text.incorrect}: ${question.options[question.correctIndex]}`}</p>
-                {question.explanation?.trim() && <p className="mt-2 leading-5 text-slate-300"><span className="font-semibold text-white">{text.explanation}:</span> {question.explanation}</p>}
+                <p>{answers[question.id] === question.correctIndex ? text.correct : `${text.incorrect}: ${formatQuizText(question.options[question.correctIndex])}`}</p>
+                {question.explanation?.trim() && <p className="mt-2 leading-5 text-slate-300"><span className="font-semibold text-white">{text.explanation}:</span> {formatQuizText(question.explanation)}</p>}
               </div>
             )}
           </fieldset>
@@ -207,8 +213,8 @@ export function LessonQuiz({ lessonId, questions }: LessonQuizProps) {
           <p className="mt-1 text-xs text-slate-400">{text.reviewIntro}</p>
           <ul className="mt-3 space-y-2">
             {questions.filter(question => answers[question.id] !== question.correctIndex).map(question => <li key={question.id} className="text-xs leading-5 text-slate-300">
-              <span className="font-semibold text-white">{question.question}</span>
-              {question.explanation?.trim() && <span className="block text-slate-400">{question.explanation}</span>}
+              <span className="font-semibold text-white">{formatQuizText(question.question)}</span>
+              {question.explanation?.trim() && <span className="block text-slate-400">{formatQuizText(question.explanation)}</span>}
             </li>)}
           </ul>
         </aside>

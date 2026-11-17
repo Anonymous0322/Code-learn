@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useI18n } from '@/components/providers';
 import { toModernUzbek } from '@/lib/utils';
 import { ForumCategory, ForumPost, useForumStore } from '@/store/forumStore';
+import { getSupabase } from '@/lib/supabase';
 
 const categories: ForumCategory[] = ['general', 'html', 'css', 'javascript', 'python', 'career'];
 
@@ -66,6 +67,9 @@ export default function ForumPage() {
   const [postBody, setPostBody] = useState('');
   const [replyBody, setReplyBody] = useState('');
   const [actionError, setActionError] = useState<string | null>(null);
+  const [reportTarget, setReportTarget] = useState<{ type: 'post' | 'reply'; id: string } | null>(null);
+  const [reportReason, setReportReason] = useState<'spam' | 'harassment' | 'inappropriate' | 'other'>('other');
+  const [reportDetails, setReportDetails] = useState('');
 
   useEffect(() => {
     void initialize();
@@ -147,6 +151,27 @@ export default function ForumPage() {
       setActionError(null);
     } catch (caught) {
       setActionError(caught instanceof Error ? caught.message : tr('Mavzu holatini o‘zgartirib bo‘lmadi.', 'Не удалось изменить статус темы.', 'Could not update the topic status.'));
+    }
+  };
+
+  const submitReport = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!user || !reportTarget) return;
+    try {
+      const { error: reportError } = await getSupabase().from('forum_reports').insert({
+        reporter_id: user.id,
+        post_id: reportTarget.type === 'post' ? reportTarget.id : null,
+        reply_id: reportTarget.type === 'reply' ? reportTarget.id : null,
+        reason: reportReason,
+        details: reportDetails.trim(),
+      });
+      if (reportError) throw reportError;
+      setReportTarget(null);
+      setReportDetails('');
+      setActionError(null);
+    } catch (caught) {
+      console.error('Forum kontenti haqida shikoyat yuborilmadi.', caught);
+      setActionError(tr('Shikoyat yuborilmadi. Bu kontentni oldin xabar qilgan bo‘lishingiz mumkin.', 'Жалоба не отправлена. Возможно, вы уже сообщали об этом контенте.', 'Report could not be submitted. You may already have reported this content.'));
     }
   };
 
@@ -301,6 +326,7 @@ export default function ForumPage() {
                 <h2 className="mt-4 text-xl font-bold leading-snug text-white">{activePost.title}</h2>
                 <div className="mt-4"><Author name={activePost.authorName} avatar={activePost.authorAvatar} date={localizedDate(activePost.createdAt, language)} /></div>
                 <p className="mt-5 whitespace-pre-wrap break-words text-sm leading-7 text-slate-300">{activePost.body}</p>
+                {user && user.id !== activePost.authorId && <button type="button" onClick={() => setReportTarget({ type: 'post', id: activePost.id })} className="mt-4 rounded-lg border border-amber-300/15 px-3 py-2 text-[10px] font-semibold text-amber-200 hover:bg-amber-300/[0.06]">⚑ {tr('Shikoyat qilish', 'Пожаловаться', 'Report')}</button>}
                 {user && (user.id === activePost.authorId || user.role === 'admin' || user.role === 'creator') && (
                   <div className="mt-5 flex flex-wrap gap-2 border-t border-white/[0.07] pt-4">
                     {user.id === activePost.authorId && (
@@ -329,9 +355,12 @@ export default function ForumPage() {
                       <div key={reply.id} className="rounded-xl border border-white/[0.07] bg-black/10 p-4">
                         <div className="flex items-start justify-between gap-3">
                           <Author name={reply.authorName} avatar={reply.authorAvatar} date={localizedDate(reply.createdAt, language)} />
-                          {user && (user.id === reply.authorId || user.role === 'admin' || user.role === 'creator') && (
-                            <button type="button" onClick={() => void handleDeleteReply(reply.id)} aria-label={tr('Javobni o‘chirish', 'Удалить ответ', 'Delete reply')} className="rounded-lg px-2 py-1 text-xs text-slate-500 transition hover:bg-rose-400/10 hover:text-rose-300">×</button>
-                          )}
+                          <div className="flex items-center gap-1">
+                            {user && user.id !== reply.authorId && <button type="button" onClick={() => setReportTarget({ type: 'reply', id: reply.id })} aria-label={tr('Javob haqida shikoyat', 'Пожаловаться на ответ', 'Report reply')} className="rounded-lg px-2 py-1 text-[10px] text-amber-200 hover:bg-amber-400/10">⚑</button>}
+                            {user && (user.id === reply.authorId || user.role === 'admin' || user.role === 'creator') && (
+                              <button type="button" onClick={() => void handleDeleteReply(reply.id)} aria-label={tr('Javobni o‘chirish', 'Удалить ответ', 'Delete reply')} className="rounded-lg px-2 py-1 text-xs text-slate-500 transition hover:bg-rose-400/10 hover:text-rose-300">×</button>
+                            )}
+                          </div>
                         </div>
                         <p className="mt-3 whitespace-pre-wrap break-words text-xs leading-6 text-slate-300">{reply.body}</p>
                       </div>
@@ -360,6 +389,26 @@ export default function ForumPage() {
           )}
         </section>
       </div>
+      {reportTarget && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4" onMouseDown={event => { if (event.target === event.currentTarget) setReportTarget(null); }}>
+          <form role="dialog" aria-modal="true" aria-labelledby="forum-report-title" onSubmit={event => void submitReport(event)} className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0b1020] p-5 shadow-2xl">
+            <h2 id="forum-report-title" className="text-lg font-semibold text-white">{tr('Kontent haqida shikoyat', 'Пожаловаться на контент', 'Report content')}</h2>
+            <label className="mt-4 block text-xs font-medium text-slate-300" htmlFor="report-reason">{tr('Sabab', 'Причина', 'Reason')}</label>
+            <select id="report-reason" value={reportReason} onChange={event => setReportReason(event.target.value as typeof reportReason)} className="mt-2 w-full rounded-lg border border-white/10 bg-[#11182a] px-3 py-2 text-sm text-white">
+              <option value="spam">{tr('Spam', 'Спам', 'Spam')}</option>
+              <option value="harassment">{tr('Haqorat yoki ta’qib', 'Оскорбления или травля', 'Harassment')}</option>
+              <option value="inappropriate">{tr('Nomaqbul kontent', 'Неприемлемый контент', 'Inappropriate content')}</option>
+              <option value="other">{tr('Boshqa', 'Другое', 'Other')}</option>
+            </select>
+            <label className="mt-4 block text-xs font-medium text-slate-300" htmlFor="report-details">{tr('Izoh (ixtiyoriy)', 'Комментарий (необязательно)', 'Details (optional)')}</label>
+            <textarea id="report-details" value={reportDetails} onChange={event => setReportDetails(event.target.value)} maxLength={1000} rows={3} className="mt-2 w-full rounded-lg border border-white/10 bg-[#11182a] px-3 py-2 text-sm text-white outline-none focus:border-cyan-400/40" />
+            <div className="mt-4 flex justify-end gap-2">
+              <button type="button" onClick={() => setReportTarget(null)} className="rounded-lg border border-white/15 px-3 py-2 text-xs text-slate-300">{tr('Bekor qilish', 'Отмена', 'Cancel')}</button>
+              <button type="submit" className="rounded-lg bg-amber-300/15 px-3 py-2 text-xs font-semibold text-amber-100">{tr('Shikoyat yuborish', 'Отправить жалобу', 'Submit report')}</button>
+            </div>
+          </form>
+        </div>
+      )}
     </main>
   );
 }

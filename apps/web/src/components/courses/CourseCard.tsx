@@ -11,9 +11,9 @@ interface CourseCardProps {
 
 export function CourseCard({ course }: CourseCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const { t, language } = useI18n();
-  const title = course.translations?.[language]?.title || course.title;
-  const description = course.translations?.[language]?.description || course.description;
+  const { t, language, formatText } = useI18n();
+  const title = formatText(course.translations?.[language]?.title || course.title);
+  const description = formatText(course.translations?.[language]?.description || course.description);
 
   const difficultyColors = {
     beginner: 'bg-neon-green/20 text-neon-green',

@@ -1,12 +1,15 @@
-function renderInline(text: string, keyPrefix: string) {
+import { useI18n } from '@/components/providers';
+
+function renderInline(text: string, keyPrefix: string, formatText: (value: string) => string) {
   return text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, index) => {
-    if (part.startsWith('**') && part.endsWith('**')) return <strong key={`${keyPrefix}-${index}`} className="font-semibold text-white">{part.slice(2, -2)}</strong>;
+    if (part.startsWith('**') && part.endsWith('**')) return <strong key={`${keyPrefix}-${index}`} className="font-semibold text-white">{formatText(part.slice(2, -2))}</strong>;
     if (part.startsWith('`') && part.endsWith('`')) return <code key={`${keyPrefix}-${index}`} className="rounded bg-black/30 px-1.5 py-0.5 font-mono text-neon-cyan">{part.slice(1, -1)}</code>;
-    return part;
+    return formatText(part);
   });
 }
 
 export function LessonContent({ content }: { content: string }) {
+  const { formatText } = useI18n();
   const lines = content.split('\n');
   const blocks = [];
   let codeLines: string[] | null = null;
@@ -28,11 +31,11 @@ export function LessonContent({ content }: { content: string }) {
     const heading = line.match(/^(#{1,3})\s+(.*)$/);
     if (heading) {
       const Tag = heading[1].length === 1 ? 'h2' : heading[1].length === 2 ? 'h3' : 'h4';
-      blocks.push(<Tag key={`heading-${index}`} className="pt-2 font-semibold text-white">{renderInline(heading[2], `heading-${index}`)}</Tag>);
+      blocks.push(<Tag key={`heading-${index}`} className="pt-2 font-semibold text-white">{renderInline(heading[2], `heading-${index}`, formatText)}</Tag>);
     } else if (line.startsWith('- ')) {
-      blocks.push(<p key={`list-${index}`} className="pl-4 before:mr-2 before:text-neon-cyan before:content-['•']">{renderInline(line.slice(2), `list-${index}`)}</p>);
+      blocks.push(<p key={`list-${index}`} className="pl-4 before:mr-2 before:text-neon-cyan before:content-['•']">{renderInline(line.slice(2), `list-${index}`, formatText)}</p>);
     } else {
-      blocks.push(<p key={`line-${index}`} className="min-h-5">{renderInline(line, `line-${index}`)}</p>);
+      blocks.push(<p key={`line-${index}`} className="min-h-5">{renderInline(line, `line-${index}`, formatText)}</p>);
     }
   }
 

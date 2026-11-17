@@ -60,6 +60,7 @@ notify pgrst, 'reload schema';
 1. Push the repository to GitHub.
 2. Import it in Vercel and set the **Root Directory** to `apps/web`.
 3. Add `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, and `NEXT_PUBLIC_SUPABASE_ANON_KEY` as Vercel environment variables for Preview and Production.
+   Also add `SUPABASE_SERVICE_ROLE_KEY` and a long random `CRON_SECRET` as server-only variables; do not prefix either with `NEXT_PUBLIC_`. Vercel runs `/api/cron/delete-accounts` daily at 03:00 UTC to process account deletion requests after their 30-day recovery period.
 4. Deploy. Vercel runs the Next.js build and creates preview deployments for branches and pull requests.
 5. Add the Vercel production domain (and any custom domain) to Supabase Authentication's redirect URL allow-list. Update `NEXT_PUBLIC_SITE_URL` to the final public URL and redeploy.
 
@@ -68,3 +69,5 @@ notify pgrst, 'reload schema';
 Admin course and lesson changes are saved to the Supabase `courses` table and are shared across deployments. The migration enables row-level security: published courses are public-readable; only admins can manage courses; learner records are scoped to their authenticated owner; admins can review lesson feedback. The `get_public_portfolio` RPC exposes only portfolios explicitly marked public.
 
 Apply future SQL migrations to the Supabase project before deploying app code that depends on them. Do not commit `.env.local` or service-role credentials.
+
+The growth, privacy, and moderation features also require applying `supabase/migrations/20261117000000_growth_privacy_moderation.sql` in chronological order. The privacy and terms pages are starter drafts, not legal advice; have them reviewed for applicable Uzbekistan requirements before relying on them.

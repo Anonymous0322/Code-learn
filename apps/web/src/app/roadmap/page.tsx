@@ -5,7 +5,7 @@ import { useI18n } from '@/components/providers';
 import { useCourseStore } from '@/store/courseStore';
 
 export default function RoadmapPage() {
-  const { language } = useI18n();
+  const { language, formatText } = useI18n();
   const initialized = useCourseStore(state => state.initialized);
   const courses = useCourseStore(state => state.courses).filter(course => course.isActive);
   const locale = language as 'en' | 'ru' | 'uz';
@@ -18,12 +18,12 @@ export default function RoadmapPage() {
   });
 
   return <main className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
-    <h1 className="font-[Space_Grotesk] text-4xl font-semibold text-white">{labels.title}</h1>
-    {!initialized ? <p className="mt-6 text-slate-400">{labels.loading}</p> : courses.length === 0 ? <p className="mt-6 text-slate-400">{labels.empty}</p> :
+    <h1 className="font-[Space_Grotesk] text-4xl font-semibold text-white">{formatText(labels.title)}</h1>
+    {!initialized ? <p className="mt-6 text-slate-400">{formatText(labels.loading)}</p> : courses.length === 0 ? <p className="mt-6 text-slate-400">{formatText(labels.empty)}</p> :
       <div className="mt-8 grid gap-4 sm:grid-cols-2">{courses.map(course => <article key={course.id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-6">
-        <h2 className="text-xl font-semibold text-white">{course.translations?.[language]?.title || course.title}</h2>
-        <p className="mt-2 text-sm text-slate-400">{course.translations?.[language]?.description || course.description}</p>
-        <div className="mt-5 flex items-center justify-between text-xs text-slate-400"><span>{course.levels?.length || 0} {labels.lessons}</span><Link href={`/courses/${course.slug}`} className="text-neon-cyan">{labels.open} →</Link></div>
+        <h2 className="text-xl font-semibold text-white">{formatText(course.translations?.[language]?.title || course.title)}</h2>
+        <p className="mt-2 text-sm text-slate-400">{formatText(course.translations?.[language]?.description || course.description)}</p>
+        <div className="mt-5 flex items-center justify-between text-xs text-slate-400"><span>{course.levels?.length || 0} {formatText(labels.lessons)}</span><Link href={`/courses/${course.slug}`} className="text-neon-cyan">{formatText(labels.open)} →</Link></div>
       </article>)}</div>}
   </main>;
 }

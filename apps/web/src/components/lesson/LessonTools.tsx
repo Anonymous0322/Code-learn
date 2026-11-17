@@ -21,8 +21,11 @@ const copy = {
 
 export function LessonTools({ courseId, lessonId, courseSlug, lessonSlug, lessonTitle }: LessonToolsProps) {
   const user = useAuthStore(state => state.currentUser);
-  const { language } = useI18n();
-  const text = copy[language as keyof typeof copy] || copy.en;
+  const { language, formatText, tr } = useI18n();
+  const rawText = copy[language as keyof typeof copy] || copy.en;
+  const text = language === 'uz'
+    ? Object.fromEntries(Object.entries(rawText).map(([key, value]) => [key, formatText(value)])) as typeof copy.uz
+    : rawText;
   const initialize = useLearningExtrasStore(state => state.initialize);
   const syncError = useLearningExtrasStore(state => state.syncError);
   const saveLesson = useLearningExtrasStore(state => state.saveLesson);
@@ -83,7 +86,7 @@ export function LessonTools({ courseId, lessonId, courseSlug, lessonSlug, lesson
       <label htmlFor={`lesson-feedback-${lessonId}`} className="text-sm font-semibold text-white">{text.feedback}</label>
       <textarea id={`lesson-feedback-${lessonId}`} value={feedback} onChange={event => setFeedback(event.target.value)} minLength={8} maxLength={2000} rows={4} required placeholder={text.feedbackPlaceholder} disabled={!user || busy} className="mt-2 w-full resize-y rounded-xl border border-white/10 bg-[#060914] p-3 text-sm text-white placeholder:text-slate-500 focus:border-neon-cyan focus:outline-none disabled:opacity-60" />
       <button type="submit" disabled={!user || busy || feedback.trim().length < 8} className="mt-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-semibold text-slate-200 hover:border-neon-cyan/40 disabled:opacity-50">{busy ? '…' : text.send}</button>
-      {!user && <p className="mt-2 text-xs text-slate-500">{text.login} <a href={`/auth/login?next=/learn/${courseSlug}/${lessonSlug}`} className="text-neon-cyan underline">{language === 'uz' ? 'Kiriş' : language === 'ru' ? 'Войти' : 'Sign in'}</a></p>}
+      {!user && <p className="mt-2 text-xs text-slate-500">{text.login} <a href={`/auth/login?next=/learn/${courseSlug}/${lessonSlug}`} className="text-neon-cyan underline">{tr('Kiriş', 'Войти', 'Sign in')}</a></p>}
     </form>
     {(message || error) && <p role={error ? 'alert' : 'status'} className={`sm:col-span-2 text-sm ${error ? 'text-amber-200' : 'text-emerald-300'}`}>{error || message}</p>}
     {syncError && <p role="alert" className="sm:col-span-2 text-xs text-amber-200">{syncError}</p>}

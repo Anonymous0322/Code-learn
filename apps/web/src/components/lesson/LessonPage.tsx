@@ -10,12 +10,14 @@ import { LessonPlayground } from '@/components/lesson/LessonPlayground';
 import { LessonQuiz } from '@/components/lesson/LessonQuiz';
 import { LessonContent } from '@/components/lesson/LessonContent';
 import { LessonTools } from '@/components/lesson/LessonTools';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 
 interface LessonPageProps {
   lesson: Lesson;
   course: Course;
   previousLessonHref?: string;
   nextLessonHref?: string;
+  isFinalLesson: boolean;
   isCompleted: boolean;
 }
 
@@ -25,9 +27,12 @@ const copy = {
   uz: { lesson: 'Dars', test: 'Test', description: 'Darslikni öqing, kodni sinab köring va tayyor bölgaç darsni yakunlang.', testDescription: 'Savollarga javob bering va davom etish uchun testni yuboring.', complete: 'Yakunlandi', finish: 'Yakunlash', submitTest: 'Bu bo‘limni yakunlashdan oldin test javoblarini yuboring.', next: 'Keyingi bo‘lim', previous: 'Oldingi bo‘lim', signIn: 'Davom etiş va natijani saqlaş uçun tizimga kiring.', saved: 'Natijani saqlab bölmadi. Internetni tekşirib qayta urinib köring.', course: 'Kurs' },
 } as const;
 
-export function LessonPage({ lesson, course, previousLessonHref, nextLessonHref, isCompleted }: LessonPageProps) {
-  const { language } = useI18n();
-  const text = copy[language as keyof typeof copy] || copy.en;
+export function LessonPage({ lesson, course, previousLessonHref, nextLessonHref, isFinalLesson, isCompleted }: LessonPageProps) {
+  const { language, formatText, tr } = useI18n();
+  const rawText = copy[language as keyof typeof copy] || copy.en;
+  const text = language === 'uz'
+    ? Object.fromEntries(Object.entries(rawText).map(([key, value]) => [key, formatText(value)])) as typeof copy.uz
+    : rawText;
   const user = useAuthStore(state => state.currentUser);
   const completeLesson = useLearningProgressStore(state => state.completeLesson);
   const [error, setError] = useState('');
@@ -42,19 +47,23 @@ export function LessonPage({ lesson, course, previousLessonHref, nextLessonHref,
     if (!user) { setError(text.signIn); return; }
     setSaving(true);
     setError('');
-    try { await completeLesson(lessonId); }
+    try {
+      await completeLesson(lessonId);
+      void trackAnalyticsEvent('lesson_completed', lessonId);
+      if (isFinalLesson) void trackAnalyticsEvent('course_completed', course.id);
+    }
     catch { setError(text.saved); }
     finally { setSaving(false); }
   };
 
   return <main className="mx-auto grid max-w-7xl gap-6 px-4 py-8 lg:grid-cols-[minmax(0,1fr)_280px] sm:px-6">
     <section className="min-w-0">
-      <Link href={`/courses/${course.slug}`} className="text-sm text-neon-cyan hover:underline">← {course.title}</Link>
+      <Link href={`/courses/${course.slug}`} className="text-sm text-neon-cyan hover:underline">← {formatText(course.title)}</Link>
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <span className="rounded-full border border-neon-cyan/20 bg-neon-cyan/10 px-3 py-1 text-xs text-neon-cyan">{isTest ? text.test : text.lesson} {lesson.orderIndex + 1}</span>
         {isCompleted && <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-300">✓ {text.complete}</span>}
       </div>
-      <h1 className="mt-3 font-[Space_Grotesk] text-3xl font-semibold text-white sm:text-4xl">{lesson.title}</h1>
+      <h1 className="mt-3 font-[Space_Grotesk] text-3xl font-semibold text-white sm:text-4xl">{formatText(lesson.title)}</h1>
       {!isTest && <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.035] p-5 sm:p-6">
         <LessonContent content={lesson.theory || lesson.description || text.description} />
       </div>}
@@ -62,7 +71,7 @@ export function LessonPage({ lesson, course, previousLessonHref, nextLessonHref,
       {isTest && lesson.quiz && <LessonQuiz lessonId={lessonId} questions={lesson.quiz} />}
       {!isTest && <LessonTools courseId={course.id} lessonId={lesson.id} courseSlug={course.slug} lessonSlug={lesson.slug} lessonTitle={lesson.title || ''} />}
 
-      {saving && <p className="mt-3 text-sm text-slate-400">{language === 'ru' ? 'Сохраняем прогресс…' : language === 'uz' ? 'Natija saqlanmoqda…' : 'Saving progress…'}</p>}
+      {saving && <p className="mt-3 text-sm text-slate-400">{tr('Natija saqlanmoqda…', 'Сохраняем прогресс…', 'Saving progress…')}</p>}
       {error && <p role="alert" className="mt-3 rounded-xl border border-amber-400/20 bg-amber-400/10 p-3 text-sm text-amber-200">{error}</p>}
 
       <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-5">
@@ -75,7 +84,7 @@ export function LessonPage({ lesson, course, previousLessonHref, nextLessonHref,
 
     <aside className="h-fit rounded-2xl border border-white/10 bg-white/[0.035] p-5">
       <p className="text-xs uppercase tracking-[0.18em] text-slate-500">{text.course}</p>
-      <h2 className="mt-2 font-semibold text-white">{course.title}</h2>
+      <h2 className="mt-2 font-semibold text-white">{formatText(course.title)}</h2>
       <p className="mt-1 text-sm text-slate-400">{isTest ? text.testDescription : text.description}</p>
     </aside>
   </main>;

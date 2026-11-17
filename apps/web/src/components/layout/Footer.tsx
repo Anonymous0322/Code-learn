@@ -53,6 +53,9 @@ export function Footer() {
             <ul className="space-y-2">
               <li><Link href="/about" className="text-sm text-text-secondary hover:text-neon-blue transition-colors">{t('about')}</Link></li>
               <li><Link href="/faq" className="text-sm text-text-secondary hover:text-neon-blue transition-colors">FAQ</Link></li>
+              <li><Link href="/privacy" className="text-sm text-text-secondary hover:text-neon-blue transition-colors">{tr('Maxfiylik siyosati', 'Политика конфиденциальности', 'Privacy policy')}</Link></li>
+              <li><Link href="/terms" className="text-sm text-text-secondary hover:text-neon-blue transition-colors">{tr('Foydalanish shartlari', 'Условия использования', 'Terms of use')}</Link></li>
+              <li><a href="mailto:ruhiddinov03@gmail.com" className="text-sm text-text-secondary hover:text-neon-blue transition-colors">{tr('Yordamga murojaat', 'Поддержка', 'Contact support')}</a></li>
             </ul>
           </div>
 

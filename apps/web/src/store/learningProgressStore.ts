@@ -2,6 +2,7 @@
 
 import { create } from 'zustand';
 import { getSupabase } from '@/lib/supabase';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 
 export interface QuizResult {
   score: number;
@@ -65,6 +66,7 @@ export const useLearningProgressStore = create<LearningProgressState>((set, get)
     if (error) throw error;
     const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tashkent' });
     set(state => ({ activeDays: state.activeDays.includes(today) ? state.activeDays : [...state.activeDays, today] }));
+    void trackAnalyticsEvent('weekly_return');
   },
 
   completeLesson: async lessonId => {

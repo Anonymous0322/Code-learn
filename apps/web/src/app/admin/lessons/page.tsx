@@ -32,8 +32,11 @@ const getEditorLanguage = (languageCode: string): NonNullable<LevelItem['editorL
 };
 
 export default function AdminLessonsPage() {
-  const { language, tr } = useI18n();
-  const text = labels[language as keyof typeof labels] || labels.en;
+  const { language, tr, formatText } = useI18n();
+  const rawText = labels[language as keyof typeof labels] || labels.en;
+  const text = language === 'uz'
+    ? Object.fromEntries(Object.entries(rawText).map(([key, value]) => [key, formatText(value)])) as typeof labels.uz
+    : rawText;
   const { courses, addLevel, updateLevel, deleteLevel, moveLevel } = useCourseStore();
   const currentUser = useAuthStore(state => state.currentUser);
   const createNotification = useNotificationStore(state => state.createNotification);
@@ -324,7 +327,7 @@ export default function AdminLessonsPage() {
             <span className="w-5 h-5 rounded bg-white/10 flex items-center justify-center text-[10px] uppercase font-mono text-neon-cyan">
               {course.languageCode.slice(0, 2)}
             </span>
-            <span>{course.translations?.[language]?.title || course.title}</span>
+            <span>{formatText(course.translations?.[language]?.title || course.title)}</span>
             <span className="text-[10px] opacity-60">({course.levels?.length || 0})</span>
           </button>
         ))}
@@ -336,9 +339,9 @@ export default function AdminLessonsPage() {
           <div className="flex flex-col gap-3 rounded-xl border border-white/10 bg-[#0a0f24] p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <h2 className="font-bold text-sm text-white">
-                {currentCourse.translations?.[language]?.title || currentCourse.title} {text.courseLessons}
+                {formatText(currentCourse.translations?.[language]?.title || currentCourse.title)} {text.courseLessons}
               </h2>
-              <p className="text-xs text-slate-400">{currentCourse.translations?.[language]?.description || currentCourse.description}</p>
+              <p className="text-xs text-slate-400">{formatText(currentCourse.translations?.[language]?.description || currentCourse.description)}</p>
             </div>
             <span className="shrink-0 text-xs font-mono font-bold text-neon-cyan">
               {text.total} {currentCourse.levels?.length || 0} {text.lessons}
@@ -358,22 +361,22 @@ export default function AdminLessonsPage() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className="font-bold text-xs sm:text-sm text-white truncate">
-                        {level.title}
+                        {formatText(level.translations?.[language]?.title || level.title)}
                       </h3>
                       <span className="shrink-0 rounded-full bg-neon-cyan/10 px-2 py-0.5 text-[9px] uppercase text-neon-cyan">{level.kind === 'test' ? tr('Test', 'Тест', 'Test') : tr('Dars', 'Урок', 'Lesson')}</span>
                     </div>
                     <p className="text-[11px] text-slate-400 truncate mt-0.5">
-                      {level.description}
+                      {formatText(level.translations?.[language]?.description || level.description)}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <button type="button" aria-label={`${text.up}: ${level.title}`} disabled={idx === 0} onClick={async () => {
+                  <button type="button" aria-label={`${text.up}: ${formatText(level.title)}`} disabled={idx === 0} onClick={async () => {
                     const result = await moveLevel(currentCourse.id, level.id, -1);
                     if (!result.success) setNotice({ text: result.message, type: 'error' });
                   }} className="rounded-lg border border-white/10 px-2 py-1.5 text-xs text-slate-300 disabled:opacity-30">↑</button>
-                  <button type="button" aria-label={`${text.down}: ${level.title}`} disabled={idx === orderedLevels.length - 1} onClick={async () => {
+                  <button type="button" aria-label={`${text.down}: ${formatText(level.title)}`} disabled={idx === orderedLevels.length - 1} onClick={async () => {
                     const result = await moveLevel(currentCourse.id, level.id, 1);
                     if (!result.success) setNotice({ text: result.message, type: 'error' });
                   }} className="rounded-lg border border-white/10 px-2 py-1.5 text-xs text-slate-300 disabled:opacity-30">↓</button>
@@ -386,13 +389,13 @@ export default function AdminLessonsPage() {
                   <button
                     type="button"
                     onClick={() => void handleDuplicate(level)}
-                    aria-label={`${tr('Darsdan nusxa olish', 'Дублировать урок', 'Duplicate lesson')}: ${level.title}`}
+                    aria-label={`${tr('Darsdan nusxa olish', 'Дублировать урок', 'Duplicate lesson')}: ${formatText(level.title)}`}
                     className="rounded-lg border border-neon-cyan/20 bg-neon-cyan/5 px-2.5 py-1.5 text-xs font-medium text-neon-cyan transition-colors hover:bg-neon-cyan/10"
                   >
                     {tr('Nusxalash', 'Дублировать', 'Duplicate')}
                   </button>
                   <button
-                    onClick={() => handleDelete(level.id, level.title)}
+                    onClick={() => handleDelete(level.id, formatText(level.title))}
                     className="px-2.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs font-medium border border-red-500/20 transition-colors"
                   >
                     🗑️
@@ -449,7 +452,7 @@ export default function AdminLessonsPage() {
               <div>
                 <label className="block text-slate-300 mb-1 font-medium">{text.course}</label>
                 <div className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white font-bold">
-                  {currentCourse.translations?.[language]?.title || currentCourse.title}
+                  {formatText(currentCourse.translations?.[language]?.title || currentCourse.title)}
                 </div>
               </div>
 

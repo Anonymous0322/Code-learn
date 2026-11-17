@@ -9,7 +9,7 @@ import { AnimatedNumber } from '@/components/AnimatedNumber';
 export default function AdminDashboardPage() {
   const { currentUser, users } = useAuthStore();
   const { courses } = useCourseStore();
-  const { tr, language } = useI18n();
+  const { tr, language, formatText } = useI18n();
 
   const totalLessons = courses.reduce((acc, c) => acc + (c.levels?.length || 0), 0);
   const totalUsers = users.length;
@@ -183,7 +183,7 @@ export default function AdminDashboardPage() {
                     {c.languageCode.slice(0, 2)}
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-white">{c.translations?.[language]?.title || c.title}</p>
+                    <p className="text-xs font-bold text-white">{formatText(c.translations?.[language]?.title || c.title)}</p>
                     <p className="text-[10px] text-slate-400">{c.levels?.length || 0} {tr('ta dars/modul', 'уроков/модулей', 'lessons/modules')}</p>
                   </div>
                 </div>

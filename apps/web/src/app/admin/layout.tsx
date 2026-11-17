@@ -121,6 +121,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     { label: tr('Darslar va modullar', 'Уроки и модули', 'Lessons and modules'), href: '/admin/lessons', icon: '📖' },
     { label: tr('Bildirishnomalar', 'Уведомления', 'Notifications'), href: '/admin/notifications', icon: '🔔' },
     { label: tr('Darslar böyiça fikrlar', 'Отзывы об уроках', 'Lesson feedback'), href: '/admin/feedback', icon: '💬' },
+    { label: tr('Analitika', 'Аналитика', 'Analytics'), href: '/admin/analytics', icon: '📈' },
+    { label: tr('Forum shikoyatlari', 'Жалобы форума', 'Forum reports'), href: '/admin/reports', icon: '🚩' },
     { label: tr('Foydalanuvçilar va rollar', 'Пользователи и роли', 'Users and roles'), href: '/admin/users', icon: '👥' },
     { label: tr('Tizim sozlamalari', 'Настройки системы', 'System settings'), href: '/admin/settings', icon: '⚙️' },
   ];

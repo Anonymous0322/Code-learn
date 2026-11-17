@@ -5,6 +5,7 @@ import { useCourseStore } from '@/store/courseStore';
 import { useI18n } from '@/components/providers';
 import { useAuthStore } from '@/store/authStore';
 import { useLearningProgressStore } from '@/store/learningProgressStore';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 import { useEffect } from 'react';
 
 const toSlug = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -12,7 +13,7 @@ const toSlug = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+
 export default function LessonDetailPage({ params }: { params: { courseSlug: string; lessonSlug: string } }) {
   const courses = useCourseStore(state => state.courses);
   const initialized = useCourseStore(state => state.initialized);
-  const { language, tr } = useI18n();
+  const { language, tr, formatText } = useI18n();
   const user = useAuthStore(state => state.currentUser);
   const completedLessonIds = useLearningProgressStore(state => state.completedLessonIds);
   const initializeProgress = useLearningProgressStore(state => state.initialize);
@@ -21,6 +22,9 @@ export default function LessonDetailPage({ params }: { params: { courseSlug: str
   const orderedLevels = [...(course?.levels || [])].sort((a, b) => a.orderIndex - b.orderIndex);
   const lessonIndex = orderedLevels.findIndex(item => (item.slug || toSlug(item.title)) === params.lessonSlug);
   const level = lessonIndex >= 0 ? orderedLevels[lessonIndex] : undefined;
+  useEffect(() => {
+    if (user && course && level) void trackAnalyticsEvent('lesson_started', `${course.id}:${level.id}`);
+  }, [course?.id, level?.id, user?.id]);
   const previousLevel = orderedLevels[lessonIndex - 1];
   const previousCompleted = !previousLevel || completedLessonIds.includes(`${course?.id}:${previousLevel.id}`);
   if (!initialized && (!course || !level)) return <main className="mx-auto max-w-7xl px-4 py-12 text-slate-400">{tr('Dars yuklanmoqda...', 'Загрузка урока...', 'Loading lesson...')}</main>;
@@ -30,6 +34,7 @@ export default function LessonDetailPage({ params }: { params: { courseSlug: str
   const nextLevel = orderedLevels[lessonIndex + 1];
   const nextLessonHref = nextLevel ? `/learn/${course.slug}/${nextLevel.slug || toSlug(nextLevel.title)}` : undefined;
   const isCompleted = completedLessonIds.includes(`${course.id}:${level.id}`);
+  const isFinalLesson = lessonIndex === orderedLevels.length - 1;
 
   if (!previousCompleted) return <main className="mx-auto max-w-3xl px-4 py-16 text-center">
     <h1 className="text-2xl font-semibold text-white">{tr('Avval oldingi darsni yakunlang', 'Сначала завершите предыдущий урок', 'Complete the previous lesson first')}</h1>
@@ -39,14 +44,14 @@ export default function LessonDetailPage({ params }: { params: { courseSlug: str
 
   const localizedCourse = {
     ...course,
-    title: course.translations?.[language]?.title || course.title,
-    description: course.translations?.[language]?.description || course.description,
+    title: formatText(course.translations?.[language]?.title || course.title),
+    description: formatText(course.translations?.[language]?.description || course.description),
   };
   const lesson = {
     ...level,
     kind: level.kind || 'lesson',
-    title: level.title,
-    description: level.description,
+    title: formatText(level.translations?.[language]?.title || level.title),
+    description: formatText(level.translations?.[language]?.description || level.description),
     slug: level.slug || toSlug(level.title),
     levelId: level.id,
     orderIndex: level.orderIndex,
@@ -57,8 +62,8 @@ export default function LessonDetailPage({ params }: { params: { courseSlug: str
     starterCode: level.starterCode,
     exercise: level.exercise,
     quiz: level.quiz,
-    theory: level.theory || level.description,
+    theory: level.translations?.[language]?.theory || level.theory || level.description,
   };
 
-  return <LessonPage lesson={lesson as any} course={localizedCourse as any} previousLessonHref={previousLessonHref} nextLessonHref={nextLessonHref} isCompleted={isCompleted} />;
+  return <LessonPage lesson={lesson as any} course={localizedCourse as any} previousLessonHref={previousLessonHref} nextLessonHref={nextLessonHref} isFinalLesson={isFinalLesson} isCompleted={isCompleted} />;
 }

@@ -12,15 +12,15 @@ interface CourseRoadmapProps { course: Course; progress: unknown | null }
 const toSlug = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 export function CourseRoadmap({ course }: CourseRoadmapProps) {
-  const { language, tr } = useI18n();
+  const { language, tr, formatText } = useI18n();
   const userId = useAuthStore(state => state.currentUser?.id || null);
   const completedLessonIds = useLearningProgressStore(state => state.completedLessonIds);
   const initializeProgress = useLearningProgressStore(state => state.initialize);
   useEffect(() => { initializeProgress(userId); }, [initializeProgress, userId]);
 
   const levels = [...(course.levels || [])].sort((a: any, b: any) => a.orderIndex - b.orderIndex);
-  const courseTitle = course.translations?.[language]?.title || course.title;
-  const courseDescription = course.translations?.[language]?.description || course.description;
+  const courseTitle = formatText(course.translations?.[language]?.title || course.title);
+  const courseDescription = formatText(course.translations?.[language]?.description || course.description);
   const completedCount = levels.filter((level: any) => completedLessonIds.includes(`${course.id}:${level.id}`)).length;
   const percent = levels.length ? Math.round(completedCount * 100 / levels.length) : 0;
   const nextLevel = levels.find((level: any) => !completedLessonIds.includes(`${course.id}:${level.id}`));
@@ -43,8 +43,8 @@ export function CourseRoadmap({ course }: CourseRoadmapProps) {
         const unlocked = index === 0 || completedLessonIds.includes(`${course.id}:${levels[index - 1].id}`);
         const href = `/learn/${course.slug}/${level.slug || toSlug(level.title)}`;
         return <article key={level.id} className={`rounded-xl border bg-white/[0.035] p-5 ${completed ? 'border-emerald-400/30' : unlocked ? 'border-white/10' : 'border-white/5 opacity-60'}`}>
-          <div className="flex items-center gap-3"><span className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${completed ? 'bg-emerald-500 text-white' : 'bg-white/10 text-slate-300'}`}>{completed ? '✓' : index + 1}</span><div><h2 className="font-semibold text-white">{level.title}</h2><span className="text-[10px] uppercase tracking-wide text-neon-cyan">{level.kind === 'test' ? tr('Test', 'Тест', 'Test') : tr('Dars', 'Урок', 'Lesson')}</span></div></div>
-          <p className="mt-3 min-h-10 text-sm text-slate-400">{level.description}</p>
+          <div className="flex items-center gap-3"><span className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${completed ? 'bg-emerald-500 text-white' : 'bg-white/10 text-slate-300'}`}>{completed ? '✓' : index + 1}</span><div><h2 className="font-semibold text-white">{formatText(level.title)}</h2><span className="text-[10px] uppercase tracking-wide text-neon-cyan">{level.kind === 'test' ? tr('Test', 'Тест', 'Test') : tr('Dars', 'Урок', 'Lesson')}</span></div></div>
+          <p className="mt-3 min-h-10 text-sm text-slate-400">{formatText(level.description)}</p>
           {unlocked ? <Link href={href} className="mt-4 inline-block text-sm text-neon-cyan hover:underline">{tr('Bo‘limni ochish', 'Открыть материал', 'Open item')} →</Link> : <p className="mt-4 text-xs text-slate-500">{tr('Oldingi bo‘limni yakunlang', 'Завершите предыдущий материал', 'Complete the previous item')} · 🔒</p>}
         </article>;
       })}
