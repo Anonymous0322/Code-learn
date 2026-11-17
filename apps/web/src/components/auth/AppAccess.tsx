@@ -33,7 +33,7 @@ export function AppAccess({ children }: { children: ReactNode }) {
   const initialized = useAuthStore(state => state.initialized);
   const publicRoute = isPublicRoute(pathname);
   const authRoute = pathname === '/auth' || pathname.startsWith('/auth/');
-  const hideFooter = pathname === '/profile';
+  const showFooter = pathname === '/';
 
   useEffect(() => {
     if (!initialized || currentUser || publicRoute) return;
@@ -50,7 +50,7 @@ export function AppAccess({ children }: { children: ReactNode }) {
       <>
         <Navigation />
         <main>{children}</main>
-        {!hideFooter && <Footer />}
+        {showFooter && <Footer />}
       </>
     );
   }
@@ -63,7 +63,7 @@ export function AppAccess({ children }: { children: ReactNode }) {
     <>
       <Navigation />
       <main>{children}</main>
-      {!hideFooter && <Footer />}
+      {showFooter && <Footer />}
     </>
   );
 }
