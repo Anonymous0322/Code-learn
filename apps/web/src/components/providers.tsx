@@ -11,7 +11,7 @@ export type Language = 'en' | 'ru' | 'uz';
 const translations = {
   en: {
     home: 'Home', courses: 'Courses', roadmap: 'Roadmap', about: 'About', login: 'Log in', signup: 'Sign up',
-    heroBadge: 'The best place to learn programming', heroTitle: 'Code. Learn. Build.', heroText: 'Master programming from the ground up. Interactive lessons, real examples, practical projects. Your journey as a developer starts here.', start: 'Start Learning', explore: 'Explore Courses',
+    heroBadge: 'CodeHub — from first idea to first project', heroTitleFirst: 'Turn your idea', heroTitleSecond: 'into a real project.', heroText: 'Learn programming from scratch with interactive lessons, in-browser practice, and projects you build yourself.', start: 'Start Learning', explore: 'Explore Courses',
     basics: 'START WITH THE BASICS', choose: 'Choose a language and begin your journey.', viewAll: 'View all courses', why: 'Why CodeHub?', faq: 'Frequently asked questions',
     allCourses: 'All Courses', chooseCourse: 'Choose a programming language and start your journey.', aboutTitle: 'A clearer way to become a developer.',
     heroFloatingNote: 'Never stop learning and growing',
@@ -58,7 +58,7 @@ const translations = {
   },
   ru: {
     home: 'Главная', courses: 'Курсы', roadmap: 'Путь', about: 'О нас', login: 'Войти', signup: 'Регистрация',
-    heroBadge: 'Лучшее место для изучения программирования', heroTitle: 'Код. Учись. Создавай.', heroText: 'Изучайте программирование с нуля. Интерактивные уроки, реальные примеры и практические проекты. Ваш путь разработчика начинается здесь.', start: 'Начать обучение', explore: 'Изучить курсы',
+    heroBadge: 'CodeHub — от идеи до первого проекта', heroTitleFirst: 'Превратите идею', heroTitleSecond: 'в свой проект.', heroText: 'Изучайте программирование с нуля: интерактивные уроки, практика в браузере и собственные проекты.', start: 'Начать обучение', explore: 'Смотреть курсы',
     basics: 'НАЧНИТЕ С ОСНОВ', choose: 'Выберите язык и начните свой путь.', viewAll: 'Все курсы', why: 'Почему CodeHub?', faq: 'Частые вопросы',
     allCourses: 'Все курсы', chooseCourse: 'Выберите язык программирования и начните обучение.', aboutTitle: 'Понятный путь к профессии разработчика.',
     heroFloatingNote: 'Никогда не переставайте учиться и расти',
@@ -105,7 +105,7 @@ const translations = {
   },
   uz: {
     home: 'Boş sahifa', courses: 'Kurslar', roadmap: 'Yöl xaritasi', about: 'Biz haqimizda', login: 'Kiriş', signup: 'Röyxatdan ötiş',
-    heroBadge: 'Dasturlaşni örganiş uçun eng yaxşi joy', heroTitle: 'Kod yoz. Örgan. Yarat.', heroText: 'Dasturlaşni noldan örganing. Interaktiv darslar, haqiqiy misollar va amaliy loyihalar. Dasturçi böliş yölingiz şu yerdan boşlanadi.', start: 'Örganişni boşlaş', explore: 'Kurslarni köriş',
+    heroBadge: 'CodeHub — g‘oyadan ilk loyihagacha', heroTitleFirst: 'G‘oyangizni', heroTitleSecond: 'kodga aylantiring.', heroText: 'Dasturlashni noldan o‘rganing: interaktiv darslarda bilim oling, brauzerda mashq qiling va o‘z loyihangizni yarating.', start: 'O‘rganishni boshlash', explore: 'Kurslarni ko‘rish',
     basics: 'ASOSLARDAN BOŞLANG', choose: 'Tilni tanlang va örganiş yölingizni boşlang.', viewAll: 'Barça kurslar', why: 'Nega CodeHub?', faq: 'Köp beriladigan savollar',
     allCourses: 'Barça kurslar', chooseCourse: 'Dasturlaş tilini tanlang va örganişni boşlang.', aboutTitle: 'Dasturçi bölişning tuşunarli yöli.',
     heroFloatingNote: 'Har doim örganişni va ösişni davom ettiring',

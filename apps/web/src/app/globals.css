@@ -203,6 +203,26 @@ button, a {
   background-clip: text;
 }
 
+.hero-title-accent {
+  background: linear-gradient(105deg, #fff 5%, #a9b9ff 42%, #d19cff 68%, #fff 95%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: heroTitleShine 7s ease-in-out infinite;
+}
+
+@keyframes heroTitleShine {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-title-accent {
+    animation: none;
+  }
+}
+
 .premium-grid {
   background-image: linear-gradient(rgba(123, 145, 255, 0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(123, 145, 255, 0.055) 1px, transparent 1px);
   background-size: 48px 48px;

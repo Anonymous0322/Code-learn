@@ -1,16 +1,18 @@
 'use client';
 
+import { motion, useReducedMotion } from 'framer-motion';
 import { useI18n } from '@/components/providers';
 
 interface HeroSectionProps {
-  title: string;
-  subtitle: string;
-  ctaText: string;
   ctaLink: string;
 }
 
 export function HeroSection({ ctaLink }: HeroSectionProps) {
   const { t } = useI18n();
+  const reduceMotion = useReducedMotion();
+  const enterFromBelow = reduceMotion ? {} : { opacity: 0, y: 18 };
+  const enterTransition = { duration: reduceMotion ? 0 : 0.55, ease: 'easeOut' as const };
+
   return (
     <section className="relative overflow-hidden border-b border-white/10 bg-[#050711]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_25%,rgba(39,73,224,0.22),transparent_33%),radial-gradient(circle_at_20%_35%,rgba(126,47,255,0.12),transparent_32%),linear-gradient(180deg,#080b18_0%,#050711_100%)]" />
@@ -18,21 +20,64 @@ export function HeroSection({ ctaLink }: HeroSectionProps) {
 
       <div className="relative z-10 mx-auto max-w-[1220px] px-4 pb-6 pt-12 sm:px-6 sm:pt-16 lg:px-8 lg:pt-20">
         <div className="grid items-center gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:gap-2">
-          <div className="relative z-20 max-w-xl animate-fade-in lg:pr-4">
-            <div className="mb-5 inline-flex items-center rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-medium text-slate-300 shadow-lg">
+          <motion.div
+            className="relative z-20 max-w-xl lg:pr-4"
+            initial={enterFromBelow}
+            animate={{ opacity: 1, y: 0 }}
+            transition={enterTransition}
+          >
+            <motion.div
+              className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-medium text-slate-300 shadow-lg"
+              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...enterTransition, delay: reduceMotion ? 0 : 0.12 }}
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-neon-cyan shadow-[0_0_10px_rgba(25,212,255,0.8)]" aria-hidden="true" />
               {t('heroBadge')}
-            </div>
+            </motion.div>
             <h1 className="font-[Space_Grotesk] text-4xl font-semibold leading-[1.04] tracking-[-0.04em] text-white sm:text-5xl lg:text-[3.7rem]">
-              {t('heroTitle')}
+              <motion.span
+                className="block"
+                initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...enterTransition, delay: reduceMotion ? 0 : 0.2 }}
+              >
+                {t('heroTitleFirst')}
+              </motion.span>
+              <motion.span
+                className="hero-title-accent block"
+                initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...enterTransition, delay: reduceMotion ? 0 : 0.32 }}
+              >
+                {t('heroTitleSecond')}
+              </motion.span>
             </h1>
-            <p className="mt-5 max-w-md text-sm leading-6 text-slate-400 sm:text-base">{t('heroText')}</p>
-            <div className="mt-7 flex flex-wrap gap-3">
+            <motion.p
+              className="mt-5 max-w-md text-sm leading-6 text-slate-400 sm:text-base"
+              initial={reduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: reduceMotion ? 0 : 0.5, delay: reduceMotion ? 0 : 0.42 }}
+            >
+              {t('heroText')}
+            </motion.p>
+            <motion.div
+              className="mt-7 flex flex-wrap gap-3"
+              initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...enterTransition, delay: reduceMotion ? 0 : 0.5 }}
+            >
               <a href={ctaLink} className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#7346ff] to-[#a83dff] px-5 py-2.5 text-xs font-bold text-white shadow-[0_8px_25px_rgba(132,65,255,0.32)] transition-transform hover:-translate-y-0.5">{t('start')}<span>→</span></a>
               <a href="#languages" className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.04] px-5 py-2.5 text-xs font-semibold text-slate-200 hover:border-white/40"><span>◎</span> {t('explore')}</a>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          <div className="relative min-h-[300px] overflow-hidden rounded-2xl bg-[#070b19] shadow-[0_20px_70px_rgba(0,0,0,0.45)] sm:min-h-[370px] lg:-mr-8 lg:min-h-[410px]">
+          <motion.div
+            className="relative min-h-[300px] overflow-hidden rounded-2xl bg-[#070b19] shadow-[0_20px_70px_rgba(0,0,0,0.45)] sm:min-h-[370px] lg:-mr-8 lg:min-h-[410px]"
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: reduceMotion ? 0 : 0.7, delay: reduceMotion ? 0 : 0.18 }}
+          >
             <video
               className="absolute inset-0 h-full w-full object-cover"
               src="/videos/hero-coding.mp4"
@@ -49,7 +94,7 @@ export function HeroSection({ ctaLink }: HeroSectionProps) {
             <div className="absolute inset-x-0 bottom-0 flex min-h-14 items-center justify-center bg-[#050711]/[0.98] px-4 py-2.5 text-center sm:min-h-16 sm:px-6 sm:py-3">
               <span className="text-xs font-semibold leading-5 text-slate-100 sm:text-base">{t('heroFloatingNote')}</span>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         <div className="relative z-20 mt-7 grid grid-cols-2 overflow-hidden rounded-xl border border-white/10 bg-[#10152b]/80 shadow-[0_12px_35px_rgba(0,0,0,0.25)] backdrop-blur sm:grid-cols-4">

@@ -100,9 +100,6 @@ export default function HomePage() {
   return (
     <div>
       <HeroSection
-        title="Learn to Code. From Zero to Developer."
-        subtitle="Master programming from absolute zero. Interactive lessons, real-time code practice, and progress tracking — all in your language."
-        ctaText="Start Learning"
         ctaLink="/courses"
       />
 
